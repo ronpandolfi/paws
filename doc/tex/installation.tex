@@ -1,59 +1,129 @@
 \chapter{installation}
 \label{ch:installation}
+\lstset{language=Bash}
 
 Successful building of \verb|slacx| depends on a few trusty, stable packages.
-Developmers should take care to favor a stable and cross-platform utility
+Developers should take care to favor a stable and cross-platform utility
 over a fancier option, in order to keep installation of \verb|slacx| fast and easy.
+
 
 \section{system dependencies}
 
-\verb|pip| 
-
-\verb|virtualenv| 
-
-\verb|setuptools| 
-
-\verb|wheel| 
+The packages described in this section 
+may already be prepared on your operating system.
+If you have already used \verb|pip| to install packages before,
+you can probably skip this section entirely
+and move on to section~\ref{subsec:virtualenv}.
 
 
-\section{python dependencies}
+\subsection{pip, setuptools, and wheel}
 
+\verb|pip| is a Python package manager
+(acronym: \verb|pip| Installs Python). 
+There are other ways to install packages, but for now
+this documentation will cover the usage of \verb|pip|.
+\verb|setuptools| is a Python library that supports
+many of the operations performed in this section.
+\verb|wheel| is a package distribution and installation library 
+supporting the \verb|wheel| distribution standard.
+Users will typically want to install these together.
 
-\section{installation}
+\verb|pip|, \verb|setuptools|, and \verb|wheel| are installed by default 
+on many Linux distributions and OSX, but should be upgraded.
+Enterprise Linux (e.g. RHEL, CentOS, SL, OL) are the exception.
+Enterprise Linux users should skip ahead 
+to section~\ref{subsec:pip_setuptools_rhel}.
+For other Linux distributions (Fedora, Ubuntu, etc.)
+it is suggested that the user employ the system's package manager 
+(skip ahead to section~\ref{subsec:pip_setuptools_non-enterprise}),
+though the user may choose instead 
+to use \verb|pip| to upgrade itself, as shown below.
 
-
-\subsection{Windows}
-
-\subsection{OSX}
-
-\subsection{Linux}
-
-\subsubsection{installing system packages}
-
-\lstset{language=Bash}
+Perform the upgrade by typing:
 \begin{lstlisting}
-sudo apt-get install python
-sudo apt-get install python-virtualenv
-sudo apt-get install python-pip
+pip install -U pip setuptools
 \end{lstlisting}
-\lstset{language=Python}
 
-\subsubsection{setting up a virtual environment}
 
-\lstset{language=Bash}
+\subsection{pip and setuptools for non-Enterprise Linux}
+\label{subsec:pip_setuptools_non-enterprise}
+
+The instructions differ for the various distributions.
+The commands listed here are copied 
+from the web at \verb|https://packaging.python.org/|.
+Enter the commands in a terminal, 
+as listed for your particular distribution.
+If your distribution is not covered here, 
+please consider adding it to the docs
+and submitting a pull request.
+
+\begin{itemize}
+\item Fedora 21: 
+    \begin{lstlisting}
+    sudo yum upgrade python-setuptools
+    sudo yum install python-pip python-wheel
+    \end{lstlisting}
+\item Fedora 22: 
+    \begin{lstlisting}
+    sudo dnf upgrade python-setuptools
+    sudo dnf install python-pip python-wheel
+    \end{lstlisting}
+\item Debian/Ubuntu: 
+    \begin{lstlisting}
+    sudo apt-get install python-setuptools python-pip python-wheel
+    \end{lstlisting}
+\end{itemize}
+
+
+\subsection{pip, wheel, and setuptools for Enterprise Linux}
+\label{subsec:pip_setuptools_rhel}
+
+\textit{tested on RHEL 6.8 (Santiago)}
+
+The easiest way to maintain \verb|pip|, \verb|setuptools|, and \verb|wheel|
+is to enable the \verb|EPEL| repository (Extra Packages for Enterprise Linux)
+for your particular distribution.
+
+
+\subsection{setting up a virtual environment with virtualenv}
+\label{subsec:virtualenv}
+
+Users familiar with \verb|virtualenv| may choose to skip this section.
+Building software in a virtual environment is suggested 
+as a way of sandboxing libraries that are used by other system components.
+After setting up \verb|pip|, \verb|setuptools|, and \verb|wheel| (above),
+the installation and setup of a virtual environment is easy.
+
+Begin by installing \verb|virtualenv|:
 \begin{lstlisting}
-cd slacx 
-virtualenv 
-source bin/activate
+pip install virtualenv
+\end{lstlisting}
+
+Now, assuming you want to put \verb|slacx| in directory \verb|<dir>|, 
+execute the following in a terminal
+
+\begin{lstlisting}
+mkdir <dir> 
+virtualenv <dir>
+source <dir>/bin/activate
 # To terminate virtualenv session:
 deactivate
 \end{lstlisting}
-\lstset{language=Python}
+
+
+
 
 \subsection{installing python dependencies}
 
 After installing the system packages and starting a virtual environment (above),
 the installation of the necessary Python packages should be easy.
+Install each of these packages by \verb|pip install <packagename>|.
+
+NOTE: If you are installing \verb|slacx| 
+from a wheel-compatible distribution, 
+the dependencies will be handled automatically,
+so there is no need to do this.
+
 \begin{itemize}
 \item \verb|numpy|: Python numerical computation library
 \item \verb|scipy|: Python scientific math library
@@ -69,5 +139,6 @@ the installation of the necessary Python packages should be easy.
 \item \verb|QDarkStyle|: A dark stylesheet for the Qt GUI- your eyes will be happier
 \item \verb|pillow|: A replacement for the outdated Python Imaging Library (PIL)
 \end{itemize}
+
 
 
