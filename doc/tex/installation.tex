@@ -32,10 +32,10 @@ Users will typically want to install these together.
 on many Linux distributions and OSX, but should be upgraded.
 Enterprise Linux (e.g. RHEL, CentOS, SL, OL) are the exception.
 Enterprise Linux users should skip ahead 
-to section~\ref{subsec:pip_setuptools_rhel}.
+to section~\ref{subsec:setup_rhel}.
 For other Linux distributions (Fedora, Ubuntu, etc.)
 it is suggested that the user employ the system's package manager 
-(skip ahead to section~\ref{subsec:pip_setuptools_non-enterprise}),
+(skip ahead to section~\ref{subsec:setup_non-enterprise}),
 though the user may choose instead 
 to use \verb|pip| to upgrade itself, as shown below.
 
@@ -45,8 +45,8 @@ pip install -U pip setuptools
 \end{lstlisting}
 
 
-\subsection{pip and setuptools for non-Enterprise Linux}
-\label{subsec:pip_setuptools_non-enterprise}
+\subsection{pip, wheel, and setuptools for non-Enterprise Linux}
+\label{subsec:setup_non-enterprise}
 
 The instructions differ for the various distributions.
 The commands listed here are copied 
@@ -54,7 +54,7 @@ from the web at \verb|https://packaging.python.org/|.
 Enter the commands in a terminal, 
 as listed for your particular distribution.
 If your distribution is not covered here, 
-please consider adding it to the docs
+please consider adding its instructions to the docs
 and submitting a pull request.
 
 \begin{itemize}
@@ -76,17 +76,83 @@ and submitting a pull request.
 
 
 \subsection{pip, wheel, and setuptools for Enterprise Linux}
-\label{subsec:pip_setuptools_rhel}
+\label{subsec:setup_rhel}
 
 \textit{tested on RHEL 6.8 (Santiago)}
+
+\subsubsection{adding the EPEL repository}
+
+NOTE: You may already have connection to the \verb|EPEL| repository.
+You can tell if you have \verb|EPEL| connected by entering:
+\begin{lstlisting}
+sudo yum repolist all
+\end{lstlisting}
+Look through the list, 
+under the \verb|repo name| heading,
+for a repo named \verb|EPEL|.
+If you have it, skip ahead to section~\ref{subsubsec:pip_from_epel}.
 
 The easiest way to maintain \verb|pip|, \verb|setuptools|, and \verb|wheel|
 is to enable the \verb|EPEL| repository (Extra Packages for Enterprise Linux)
 for your particular distribution.
+The \verb|EPEL| SIG (Special Interest Group) 
+maintains \verb|rpm| installers that add \verb|EPEL| 
+to RHEL's \verb|yum| repository list.
+Begin by downloading this installer
+and running it with \verb|rpm|.
+
+These instructions assume you are using RHEL6,
+where the \verb|EPEL| installer will be 
+\verb|epel-release-latest-6.noarch.rpm|.
+For other Enterprise Linux distributions,
+check the web at \verb|https://fedoraproject.org/wiki/EPEL|
+for the correct \verb|EPEL| installer file,
+and replace \verb|epel-release-latest-6.noarch.rpm|
+in the following instructions with the appropriate filename.
+\begin{lstlisting}
+wget https://dl.fedoraproject.org/pub/epel/epel-release-latest-6.noarch.rpm
+rpm -i epel-release-latest-6.noarch.rpm  
+\end{lstlisting}
+These commands should enable \verb|EPEL|.
+
+
+\subsubsection{installing pip from EPEL}
+\label{subsubsec:pip_from_epel}
+
+\verb|pip| is one (important) package that can be obtained from \verb|EPEL|.
+In many cases, \verb|pip| can be obtained simply by running:
+\begin{lstlisting}
+sudo yum install python-pip
+\end{lstlisting}
+In some cases, the \verb|python-pip| package will not be found,
+for example if the user's local network overloads \verb|EPEL|.
+One possibility is that the package will have a different name
+in the user's specific set of repositories.
+The next thing to try is:
+\begin{lstlisting}
+sudo yum install python27-python-pip
+\end{lstlisting}
+If this doesn't work, 
+the user must find a package that provides \verb|pip|.
+Try the following:
+\begin{lstlisting}
+sudo yum whatprovides *python-pip*
+\end{lstlisting}
+This may return a package name like 
+\verb|python27-python-pip-1.5.6-5.el6.noarch|.
+Try directly installing that package:
+\begin{lstlisting}
+sudo yum install python27-python-pip-1.5.6-5.el6.noarch
+\end{lstlisting}
+
 
 
 \subsection{setting up a virtual environment with virtualenv}
 \label{subsec:virtualenv}
+
+At this point, it is assumed the user has working installations of
+\verb|pip|, \verb|wheel|, and \verb|setuptools|.
+This will be the default case for many systems.
 
 Users familiar with \verb|virtualenv| may choose to skip this section.
 Building software in a virtual environment is suggested 
