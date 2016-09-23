@@ -110,7 +110,7 @@ for the correct \verb|EPEL| installer file,
 and replace \verb|epel-release-latest-6.noarch.rpm|
 in the following instructions with the appropriate filename.
 \begin{lstlisting}
-wget https://dl.fedoraproject.org/pub/epel/epel-release-latest-6.noarch.rpm
+wget~https://dl.fedoraproject.org/pub/epel/epel-release-latest-6.noarch.rpm
 rpm -i epel-release-latest-6.noarch.rpm  
 \end{lstlisting}
 These commands should enable \verb|EPEL|.
@@ -124,8 +124,7 @@ In many cases, \verb|pip| can be obtained simply by running:
 \begin{lstlisting}
 sudo yum install python-pip
 \end{lstlisting}
-In some cases, the \verb|python-pip| package will not be found,
-for example if the user's local network overloads \verb|EPEL|.
+In some cases, the \verb|python-pip| package will not be found.
 One possibility is that the package will have a different name
 in the user's specific set of repositories.
 The next thing to try is:
@@ -138,13 +137,90 @@ Try the following:
 \begin{lstlisting}
 sudo yum whatprovides *python-pip*
 \end{lstlisting}
-This may return a package name like 
+This may return a package name like \newline 
 \verb|python27-python-pip-1.5.6-5.el6.noarch|.
 Try directly installing that package:
 \begin{lstlisting}
 sudo yum install python27-python-pip-1.5.6-5.el6.noarch
 \end{lstlisting}
 
+Once \verb|pip| has been installed, it should be used 
+to install or upgrade \verb|wheel| and \verb|setuptools|.
+With a friendly configuration, the following will work:
+\begin{lstlisting}
+sudo pip install --upgrade setuptools 
+sudo pip install --upgrade wheel 
+\end{lstlisting}
+
+If these throw errors, for example,
+\begin{lstlisting}
+error while loading shared libraries: libpython2.7.so.1.0: cannot open shared object file: No such file or directory
+\end{lstlisting}
+the user will have to locate that shared library 
+and add its location to their \verb|LD_LIBRARY_PATH| environment variable.
+One way to locate the library is to ask \verb|yum| to find it:
+\begin{lstlisting}
+yum whatprovides *libpython2.7*
+\end{lstlisting}
+may produce something like:
+\begin{lstlisting}
+python27-python-libs-ver.rel.arch : Runtime libraries for Python
+Repo        : installed
+Matched from:
+Filename    : /path/to/libpython2.7.so.1.0
+\end{lstlisting}
+The search will also probably bring up some development and debugging libraries:
+\begin{lstlisting}
+python27-python-devel-2.7.8-3.el6.x86_64 : The libraries and header files needed for Python development
+Repo        : <repo-name> 
+Matched from:
+Filename    : /opt/rh/python27/root/usr/lib64/libpython2.7.so
+Filename    : /opt/rh/python27/root/usr/lib64/python2.7/config/libpython2.7.so
+\begin{lstlisting}
+and:
+\begin{lstlisting}
+python27-python-debug-2.7.8-3.el6.x86_64 : Debug version of the Python runtime
+Repo        : <repo-name> 
+Matched from:
+Filename    : /opt/rh/python27/root/usr/lib64/libpython2.7_d.so
+Filename    : /opt/rh/python27/root/usr/lib64/libpython2.7_d.so.1.0
+Filename    : /opt/rh/python27/root/usr/share/systemtap/tapset/libpython2.7-debug-64.stp
+Other       : libpython2.7_d.so.1.0()(64bit)
+\end{lstlisting}
+The package that needs to be installed in each case 
+(to get the required library)
+is named in the top line of each block.
+You might as well install any of these
+that are not already installed
+(note that \verb|python27-python-libs-ver.rel.arch|
+is already marked as installed in this case).
+Install the debug and development libraries if necessary:
+\begin{lstlisting}
+sudo yum install python27-python-debug-2.7.8-3.el6.x86_64
+sudo yum install python27-python-devel-2.7.8-3.el6.x86_64
+\end{lstlisting}
+
+The path of the shared object is the line following the \verb|Filename:| label.
+Take that line and place it in your \verb|LD_LIBRARY_PATH| 
+by adding to your shell configuration file, 
+e.g. for \verb|~/.bash_profile| or \verb|~\.bashrc|:
+\begin{lstlisting}
+echo 'export LD_LIBRARY_PATH=/path/to/dir/containing/libpython/:\$LD_LIBRARY_PATH' >> ~/.bash_profile
+source ~/.bash_profile
+\end{lstlisting}
+
+With this done, try again to install/upgrade \verb|setuptools| and \verb|wheel|:
+\begin{lstlisting}
+sudo pip install --upgrade setuptools 
+sudo pip install --upgrade wheel 
+\end{lstlisting}
+If this doesn't work, try setting up \verb|sudo| to preserve your \verb|LD_LIBRARY_PATH|:
+\begin{lstlisting}
+echo 'alias sudo='sudo LD_LIBRARY_PATH=\$LD_LIBRARY_PATH' >> ~/.bash_profile
+source ~/.bash_profile
+\end{lstlisting}
+Now, try again in install/upgrade \verb|setuptools| and \verb|wheel|.
+If it doesn't work, ask your sysadmin for help.
 
 
 \subsection{setting up a virtual environment with virtualenv}
@@ -162,12 +238,12 @@ the installation and setup of a virtual environment is easy.
 
 Begin by installing \verb|virtualenv|:
 \begin{lstlisting}
-pip install virtualenv
+sudo pip install virtualenv
 \end{lstlisting}
 
-Now, assuming you want to put \verb|slacx| in directory \verb|<dir>|, 
+Now, assuming you want to store the \verb|slacx| virtual environment
+in directory \verb|<dir>|,
 execute the following in a terminal
-
 \begin{lstlisting}
 mkdir <dir> 
 virtualenv <dir>
@@ -176,14 +252,38 @@ source <dir>/bin/activate
 deactivate
 \end{lstlisting}
 
+With the virtual environment active,
+Python packages can be installed without \verb|sudo|
+and will only affect the package space of the virtual environment.
+Any packages installed in the virtual environment are effectively invisible
+once the virtual environment is turned off by calling \verb|deactivate|.
 
 
+\subsection{additional system dependencies for supporting Qt}
+
+Since \verb|slacx| is built on the \verb|Qt| platform,
+a few more system libraries are needed.
+
+TODO:
+\begin{itemize}
+\item locate and install cmake
+\item locate qmake with yum whatprovides *bin/qmake
+\item install that package: if version dependency issues, find package appropriate for version.
+\item add qt binary dir to path
+\item set up cmake with a C and CXX compiler?
+\item install shiboken
+\end{itemize}
 
 \subsection{installing python dependencies}
 
 After installing the system packages and starting a virtual environment (above),
 the installation of the necessary Python packages should be easy.
-Install each of these packages by \verb|pip install <packagename>|.
+Ensure the virtual environment is active
+(you should see the name of the virtual environment 
+in parentheses to the left of the command prompt),
+then install each of these packages by \verb|pip install <packagename>|.
+Some of these may take a few minutes to install (\verb|scipy| for example).
+Be patient, make some coffee, \verb|pip| will probably eventually finish.
 
 NOTE: If you are installing \verb|slacx| 
 from a wheel-compatible distribution, 
