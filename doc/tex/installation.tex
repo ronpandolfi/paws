@@ -176,7 +176,7 @@ Repo        : <repo-name>
 Matched from:
 Filename    : /opt/rh/python27/root/usr/lib64/libpython2.7.so
 Filename    : /opt/rh/python27/root/usr/lib64/python2.7/config/libpython2.7.so
-\begin{lstlisting}
+\end{lstlisting}
 and:
 \begin{lstlisting}
 python27-python-debug-2.7.8-3.el6.x86_64 : Debug version of the Python runtime
@@ -203,11 +203,12 @@ sudo yum install python27-python-devel-2.7.8-3.el6.x86_64
 The path of the shared object is the line following the \verb|Filename:| label.
 Take that line and place it in your \verb|LD_LIBRARY_PATH| 
 by adding to your shell configuration file, 
-e.g. for \verb|~/.bash_profile| or \verb|~\.bashrc|:
+e.g. for \verb|~\.bashrc|:
 \begin{lstlisting}
-echo 'export LD_LIBRARY_PATH=/path/to/dir/containing/libpython/:\$LD_LIBRARY_PATH' >> ~/.bash_profile
-source ~/.bash_profile
+echo `export LD_LIBRARY_PATH=/dir/with/libpython/:$LD_LIBRARY_PATH' >> ~/.bashrc
+source ~/.bashrc
 \end{lstlisting}
+%stopzone
 
 With this done, try again to install/upgrade \verb|setuptools| and \verb|wheel|:
 \begin{lstlisting}
@@ -216,11 +217,76 @@ sudo pip install --upgrade wheel
 \end{lstlisting}
 If this doesn't work, try setting up \verb|sudo| to preserve your \verb|LD_LIBRARY_PATH|:
 \begin{lstlisting}
-echo 'alias sudo='sudo LD_LIBRARY_PATH=\$LD_LIBRARY_PATH' >> ~/.bash_profile
-source ~/.bash_profile
+echo "alias ldsudo=`sudo LD_LIBRARY_PATH=$LD_LIBRARY_PATH'" >> ~/.bashrc
+export ~/.bashrc
 \end{lstlisting}
-Now, try again in install/upgrade \verb|setuptools| and \verb|wheel|.
+%stopzone
+
+Now, try again in install/upgrade \verb|setuptools| and \verb|wheel|,
+but this time use \verb|ldsudo|.
 If it doesn't work, ask your sysadmin for help.
+Once these are done, some additional steps are needed
+to prepare the system for \verb|Qt| applications.
+Read on, section~\ref{subsubsec:pyside_linux}
+
+
+\subsubsection{preparing PySide Qt on Linux}
+\label{subsubsec:pyside_linux}
+
+Since \verb|slacx| is built on the \verb|Qt| platform 
+(via \verb|PySide| bindings),
+a few more system libraries are needed.
+\verb|Qt| itself is written in C++
+and uses C extensions,
+so C++ and C compilers will be needed.
+These compilers will be used with the 
+cross-platform \verb|cmake| utility,
+and \verb|Qt| makes extensive use of the \verb|qmake| tool.
+This section guides you through the installation of these libraries.
+
+\begin{enumerate}
+\item 
+Check for existing C and C++ compilers:
+\begin{lstlisting}
+which cc
+which c++
+\end{lstlisting}
+If the system has no \verb|cc| or \verb|c++|,
+find them with 
+\begin{lstlisting}
+yum whatprovides *bin/cc
+yum whatprovides *bin/c++
+\end{lstlisting}
+A list of compiler and developer suites, 
+for example various \verb|devtoolset| versions, will come up.
+Take a minute to find
+the latest and most general version.
+Take note of the package name and the directory containing the binaries.
+Install the package and add the directory for the compiler binaries to your path.
+\begin{lstlisting}
+sudo yum install devtoolset-<latest-versoin>-gcc.x86_64 
+echo `export PATH=/opt/rh/devtoolset-4/root/usr/bin/:$PATH' >> ~/.bashrc
+\end{lstlisting}
+%stopzone
+
+\item 
+Repeat this process for \verb|qmake|, which will come with other \verb|Qt| utilities.
+\begin{lstlisting}
+yum whatprovides *bin/qmake
+sudo yum install qt-devel-4.6.2-28.el6_5.x86_64 
+echo `export PATH=/usr/lib64/qt4/bin/:$PATH' >> ~/.bashrc
+\end{lstlisting}
+%stopzone
+
+\item 
+Repeat this process for \verb|cmake|. 
+For \verb|cmake|, no \verb|$PATH| modifications should be needed.
+\begin{lstlisting}
+yum whatprovides *bin/cmake
+sudo yum install cmake-2.8.12.2-4.el6.x86_64 
+\end{lstlisting}
+
+\end{enumerate}
 
 
 \subsection{setting up a virtual environment with virtualenv}
@@ -259,21 +325,6 @@ Any packages installed in the virtual environment are effectively invisible
 once the virtual environment is turned off by calling \verb|deactivate|.
 
 
-\subsection{additional system dependencies for supporting Qt}
-
-Since \verb|slacx| is built on the \verb|Qt| platform,
-a few more system libraries are needed.
-
-TODO:
-\begin{itemize}
-\item install compiler suite if needed
-\item put compilers in the path
-\item locate and install cmake
-\item locate qmake with yum whatprovides *bin/qmake
-\item install that package: if version dependency issues, find package appropriate for version.
-\item add the relevant qt binary dir for qmake and other qt utils to the path
-\end{itemize}
-
 \subsection{installing python dependencies}
 
 After installing the system packages and starting a virtual environment (above),
@@ -293,8 +344,9 @@ so there is no need to do this.
 \begin{itemize}
 \item \verb|numpy|: Python numerical computation library
 \item \verb|scipy|: Python scientific math library
-\item \verb|PySide|: Python \verb|Qt| bindings library
-%\item \verb|fabio|: Fable I/O library for reading image files from common detectors 
+\item \verb|PySide|: Python \verb|Qt| bindings library: 
+    Linux distributions may first need to see section~\ref{subsubsec:pyside_linux} above.
+\item \verb|fabio|: Fable I/O library, parses image files from common CCD array detectors devices
 %\item \verb|pyFAI|: Fast Azimuthal Integration library for reducing image data
 %\item \verb|h5py|: Library for manipulating files of the fast-readable hdf5 format
 %\item \verb|PyOpenGL|: Python bindings for OpenGL graphics library
@@ -302,6 +354,8 @@ so there is no need to do this.
 %\item \verb|PyYAML|: Python library for YAML serialization language 
 %\item \verb|qtconsole|: A terminal for executing python code including inline Qt figures
 \item \verb|PyQtGraph|: Scientific visualization library built on PyQt4/PySide
+\item \verb|matplotlib|: Highly versatile plotting library 
+\item \verb|lxml|: XML and HTML parsing library 
 \item \verb|QDarkStyle|: A dark stylesheet for the Qt GUI- your eyes will be happier
 \item \verb|pillow|: A replacement for the outdated Python Imaging Library (PIL)
 \end{itemize}
