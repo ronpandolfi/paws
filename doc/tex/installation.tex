@@ -110,7 +110,7 @@ for the correct \verb|EPEL| installer file,
 and replace \verb|epel-release-latest-6.noarch.rpm|
 in the following instructions with the appropriate filename.
 \begin{lstlisting}
-wget~https://dl.fedoraproject.org/pub/epel/epel-release-latest-6.noarch.rpm
+wget https://dl.fedoraproject.org/pub/epel/epel-release-latest-6.noarch.rpm
 rpm -i epel-release-latest-6.noarch.rpm  
 \end{lstlisting}
 These commands should enable \verb|EPEL|.
@@ -203,7 +203,7 @@ sudo yum install python27-python-devel-2.7.8-3.el6.x86_64
 The path of the shared object is the line following the \verb|Filename:| label.
 Take that line and place it in your \verb|LD_LIBRARY_PATH| 
 by adding to your shell configuration file, 
-e.g. for \verb|~\.bashrc|:
+e.g. for \verb|~/.bashrc|:
 \begin{lstlisting}
 echo `export LD_LIBRARY_PATH=/dir/with/libpython/:$LD_LIBRARY_PATH' >> ~/.bashrc
 source ~/.bashrc
