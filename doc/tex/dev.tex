@@ -49,7 +49,7 @@ Non-CLI \verb|git| clients should expose intuitive analogous procedures.
 \begin{itemize} 
 \item Check out your feature branch: \verb|git checkout my-feature-branch|
 \item Download the latest \verb|dev| commits from origin: \verb|git fetch origin| 
-\item Rebase on the \verb|dev| branch: \verb|git pull --rebase dev|
+\item Rebase on the \verb|dev| branch: \verb|git rebase dev|
     Review any conflicts and resolve them locally in your feature branch.
 \item Work on your feature.
 \item After working, stage your edits: \verb|git add .|
@@ -60,7 +60,7 @@ Non-CLI \verb|git| clients should expose intuitive analogous procedures.
 \textbf{--- start here when you are done with your feature ---}
 \begin{itemize} 
 \item Download the latest \verb|dev| commits from origin: \verb|git fetch origin| 
-\item Rebase on the \verb|dev| branch: \verb|git pull --rebase dev|
+\item Rebase on the \verb|dev| branch: \verb|git rebase dev|
 \item Push your commits to origin: \verb|git push origin my-feature-branch|
 \item Submit a pull request via the online interface.
     Request to pull \verb|my-feature-branch| into \verb|dev|.
