@@ -5,11 +5,68 @@ This chapter covers the best practices
 for contributing to \verb|slacx| via git (section~\ref{sec:slacx_dev})
 and instructions for developing operations
 for use in the \verb|slacx| workflow engine (section~\ref{sec:op_dev}).
-
+These instructions are intended for people
+who are familiar with the \verb|slacx| development team
+and have received an invitation to work in their private repository.
+Public forking of the repository is not currently allowed.
 
 \section{contributing to slacx}
 \label{sec:slacx_dev}
 
+The \verb|slacx| repository is currently private.
+Request access by getting in touch with the \verb|slacx| developers.
+Try \verb|slacx-developers@slac.stanford.edu|. 
+Code development is currently under the ``shared repository model'',
+meaning developers have write access to the main repository.
+In this model, you must be careful with your edits.
+In particular, \textbf{all coding should be done in feature branches}.
+Never push changes directly to the \verb|dev| or \verb|master| branches.
+If you do, we will roll back to before the changes took place
+and initiate the process outlined below for pulling the new feature into \verb|dev|.
+
+The repository has a \verb|master| branch that is intended to be the most stable version,
+and a \verb|dev| branch that is intended for development.
+The rest of the branches are feature branches.
+Once you have access, clone the repository
+and create your own development or feature branch.
+When you are satisfied, pull in the latest from \verb|dev|
+and submit a pull request from your feature branch to \verb|dev|.
+Below are are step-by-step instructions for the command line.
+Non-CLI \verb|git| clients should expose intuitive analogous procedures.
+
+\begin{itemize} 
+\item Clone the repository: \verb|git clone https://lensonp@bitbucket.org/smashml/slacx.git|.
+    This should create a local source code directory,
+    and automatically set the source repository as the remote \verb|origin|.
+    To make sure, you can use \verb|git remote -v|.
+\item Create a \verb|dev| branch that tracks the origin's \verb|dev| branch.
+    Simply, you can use \verb|git checkout dev|, which is implied shorthand for
+    \verb|git checkout --track origin/dev|, which is shorthand for
+    \verb|git checkout -b dev origin/dev|. 
+\item Create your own feature branch: \verb|git branch my-feature-branch| 
+\end{itemize} 
+\textbf{--- start here every time you work on your feature ---}
+\begin{itemize} 
+\item Check out your feature branch: \verb|git checkout my-feature-branch|
+\item Download the latest \verb|dev| commits from origin: \verb|git fetch origin| 
+\item Rebase on the \verb|dev| branch: \verb|git pull --rebase dev|
+    Review any conflicts and resolve them locally in your feature branch.
+\item Work on your feature.
+\item After working, stage your edits: \verb|git add .|
+\item After staging your edits, commit them with a description: 
+    \verb|git commit -m 'description of edits'|
+\item Push your commits to origin: \verb|git push origin my-feature-branch|
+\end{itemize} 
+\textbf{--- start here when you are done with your feature ---}
+\begin{itemize} 
+\item Download the latest \verb|dev| commits from origin: \verb|git fetch origin| 
+\item Rebase on the \verb|dev| branch: \verb|git pull --rebase dev|
+\item Push your commits to origin: \verb|git push origin my-feature-branch|
+\item Submit a pull request via the online interface.
+    Request to pull \verb|my-feature-branch| into \verb|dev|.
+    The \verb|slacx| development team will discuss, edit, 
+    and ultimately accept your feature.
+\end{itemize} 
 
 \section{developing operations for slacx}
 \label{sec:op_dev}
