@@ -16,12 +16,12 @@ Public forking of the repository is not currently allowed.
 The \verb|slacx| repository is currently private.
 Request access by getting in touch with the \verb|slacx| developers.
 Try \verb|slacx-developers@slac.stanford.edu|. 
-Code development is currently under the ``shared repository model'',
+Code development is currently following the ``shared repository model'',
 meaning developers have write access to the main repository.
 In this model, you must be careful with your edits.
 In particular, \textbf{all coding should be done in feature branches}.
 Never push changes directly to the \verb|dev| or \verb|master| branches.
-If you do, we will roll back to before the changes took place
+If you do, we will roll back the problematic changes, 
 and initiate the process outlined below for pulling the new feature into \verb|dev|.
 
 The repository has a \verb|master| branch that is intended to be the most stable version,
@@ -29,16 +29,15 @@ and a \verb|dev| branch that is intended for development.
 The rest of the branches are feature branches.
 Once you have access, clone the repository
 and create your own development or feature branch.
-When you are satisfied, pull in the latest from \verb|dev|
+When you are satisfied, make sure your feature is current with \verb|dev|
 and submit a pull request from your feature branch to \verb|dev|.
 Below are are step-by-step instructions for the command line.
 Non-CLI \verb|git| clients should expose intuitive analogous procedures.
 
 \begin{itemize} 
 \item Clone the repository: \verb|git clone https://lensonp@bitbucket.org/smashml/slacx.git|.
-    This should create a local source code directory,
-    and automatically set the source repository as the remote \verb|origin|.
-    To make sure, you can use \verb|git remote -v|.
+    This should create a local source code directory.
+    Descend into that directory.
 \item Create a \verb|dev| branch that tracks the origin's \verb|dev| branch.
     Simply, you can use \verb|git checkout dev|, which is implied shorthand for
     \verb|git checkout --track origin/dev|, which is shorthand for

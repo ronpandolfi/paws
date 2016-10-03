@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-2.3-1.40.12 (TeX Live 2011/TWW) (format=pdflatex 2016.9.21)  3 OCT 2016 14:38
+This is pdfTeX, Version 3.1415926-2.3-1.40.12 (TeX Live 2011/TWW) (format=pdflatex 2016.9.21)  3 OCT 2016 14:47
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -153,13 +153,13 @@ LaTeX Font Info:    Font shape `OT1/cmtt/bx/n' in size <8> not available
 [4] [5] [6] [7]) (./dev.tex [8]
 Chapter 2.
 
-Overfull \hbox (76.02538pt too wide) in paragraph at lines 38--42
+Overfull \hbox (76.02538pt too wide) in paragraph at lines 38--41
 []\OT1/cmr/m/n/10 Clone the repos-i-tory: []\OT1/cmtt/m/n/10 git clone https://
 lensonp@bitbucket.org/smashml/slacx.git\OT1/cmr/m/n/10 .
  []
 
 
-Overfull \hbox (82.19258pt too wide) in paragraph at lines 42--46
+Overfull \hbox (82.19258pt too wide) in paragraph at lines 41--45
 \OT1/cmr/m/n/10 use []\OT1/cmtt/m/n/10 git checkout dev\OT1/cmr/m/n/10 , which 
 is im-plied short-hand for []\OT1/cmtt/m/n/10 git checkout --track origin/dev\O
 T1/cmr/m/n/10 ,
@@ -168,19 +168,19 @@ T1/cmr/m/n/10 ,
 [9
 
 ]
-Overfull \hbox (117.8044pt too wide) in paragraph at lines 56--58
+Overfull \hbox (117.8044pt too wide) in paragraph at lines 55--57
 []\OT1/cmr/m/n/10 After stag-ing your ed-its, com-mit them with a de-scrip-tion
 : []\OT1/cmtt/m/n/10 git commit -m 'description of edits' 
  []
 
 
-Overfull \hbox (33.9071pt too wide) in paragraph at lines 65--69
+Overfull \hbox (33.9071pt too wide) in paragraph at lines 64--68
 []\OT1/cmr/m/n/10 Submit a pull re-quest via the on-line in-ter-face. Re-quest 
 to pull []\OT1/cmtt/m/n/10 my-feature-branch
  []
 
 
-Overfull \hbox (27.47218pt too wide) in paragraph at lines 99--113
+Overfull \hbox (27.47218pt too wide) in paragraph at lines 98--112
 []\OT1/cmr/m/n/10 In ei-ther case, the user/de-vel-oper writes their op-er-a-ti
 on into a mod-ule []\OT1/cmtt/m/n/10 somefile.py
  []
@@ -189,7 +189,7 @@ on into a mod-ule []\OT1/cmtt/m/n/10 somefile.py
 Here is how much of TeX's memory you used:
  2536 strings out of 493633
  35017 string characters out of 3142976
- 170934 words of memory out of 3000000
+ 174934 words of memory out of 3000000
  5851 multiletter control sequences out of 15000+200000
  9658 words of font info for 35 fonts, out of 3000000 for 9000
  831 hyphenation exceptions out of 8191
@@ -205,7 +205,7 @@ lic/amsfonts/cm/cmsy10.pfb></opt/TWWfsw/texlive2011p/texmf-dist/fonts/type1/pub
 lic/amsfonts/cm/cmti10.pfb></opt/TWWfsw/texlive2011p/texmf-dist/fonts/type1/pub
 lic/amsfonts/cm/cmtt10.pfb></opt/TWWfsw/texlive2011p/texmf-dist/fonts/type1/pub
 lic/amsfonts/cm/cmtt8.pfb>
-Output written on top.pdf (13 pages, 156680 bytes).
+Output written on top.pdf (13 pages, 156590 bytes).
 PDF statistics:
  87 PDF objects out of 1000 (max. 8388607)
  61 compressed objects within 1 object stream
