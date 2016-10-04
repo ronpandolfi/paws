@@ -14,21 +14,34 @@ Public forking of the repository is not currently allowed.
 \label{sec:slacx_dev}
 
 The \verb|slacx| repository is currently private.
-Request access by getting in touch with the \verb|slacx| developers.
-Try \verb|slacx-developers@slac.stanford.edu|. 
+Request access by getting in touch with the \verb|slacx| developers
+at \verb|slacx-developers@slac.stanford.edu|. 
 If you are looking for a long term relationship,
 you can send an email to join the slacx-developers listserv.
-Send an email to \newline
-\verb|listserv@listserv.slac.stanford.edu| \newline
-with no subject and the following text in the body: \newline
-\verb|CHARSET UTF-8 ADD SLACX-DEVELOPERS <your@email.address> <Your Name>|
+Send an email to 
+\begin{lstlisting}
+listserv@listserv.slac.stanford.edu
+\end{lstlisting}
+with no subject and the following text in the body: 
+\begin{lstlisting}
+SUB SLACX-DEVELOPERS
+\end{lstlisting}
+If you want to unsubscribe, use:
+\begin{lstlisting}
+UNSUB SLACX-DEVELOPERS
+\end{lstlisting}
+If you need to configure your list settings, see the ListServ manual at
+\begin{lstlisting}
+http://www.lsoft.com/manuals/16.0/htmlhelp/list%20subscribers/coverpage.html
+\end{lstlisting}
 
 Code development is currently following the ``shared repository model'',
 meaning developers have write access to the main repository.
 In this model, you must be careful with your edits.
 In particular, \textbf{all coding should be done in feature branches}.
-Never push changes directly to the \verb|dev| or \verb|master| branches.
-If you do, we will roll back the problematic changes, 
+Never push changes directly to the \verb|master| branch,
+and only push to the \verb|dev| branch if you are absolutely sure it's a good idea.
+If bad commits happen, we will roll back the problematic changes 
 and initiate the process outlined below for pulling the new feature into \verb|dev|.
 
 The repository has a \verb|master| branch that is intended to be the most stable version,
@@ -42,7 +55,7 @@ Below are are step-by-step instructions for the command line.
 Non-CLI \verb|git| clients should expose intuitive analogous procedures.
 
 \begin{itemize} 
-\item Clone the repository: \verb|git clone https://lensonp@bitbucket.org/smashml/slacx.git|.
+\item Clone the repository: \verb|git clone <REPO-URL>|.
     This should create a local source code directory.
     Descend into that directory.
 \item Create a \verb|dev| branch that tracks the origin's \verb|dev| branch.
