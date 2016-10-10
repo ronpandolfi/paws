@@ -49,43 +49,141 @@ and a \verb|dev| branch that is intended for development.
 The rest of the branches are feature branches.
 Once you have access, clone the repository
 and create your own development or feature branch.
-When you are satisfied, make sure your feature is current with \verb|dev|
+When you are satisfied, make sure your feature is up to date with \verb|dev|
 and submit a pull request from your feature branch to \verb|dev|.
-Below are are step-by-step instructions for the command line.
-Non-CLI \verb|git| clients should expose intuitive analogous procedures.
+Below are are step-by-step instructions
+for the command line a \verb|PyCharm| interfaces.
+NB: these instructions assume you are developing a feature for the code,
+and it should be incorporated into the \verb|dev| branch.
+If your feature is more appropriate for the \verb|master| branch,
+for example if it is a stability or infrastructure or documentation fix,
+you should rebase on \verb|master| during development,
+and always finish with a pull request.
+ \newline
 
-\begin{itemize} 
-\item Clone the repository: \verb|git clone <REPO-URL>|.
-    This should create a local source code directory.
-    Descend into that directory.
-\item Create a \verb|dev| branch that tracks the origin's \verb|dev| branch.
-    Simply, you can use \verb|git checkout dev|, which is implied shorthand for
-    \verb|git checkout --track origin/dev|, which is shorthand for
-    \verb|git checkout -b dev origin/dev|. 
-\item Create your own feature branch: \verb|git branch my-feature-branch| 
-\end{itemize} 
-\textbf{--- start here every time you work on your feature ---}
-\begin{itemize} 
-\item Check out your feature branch: \verb|git checkout my-feature-branch|
-\item Download the latest \verb|dev| commits from origin: \verb|git fetch origin| 
-\item Rebase on the \verb|dev| branch: \verb|git rebase dev|
-    Review any conflicts and resolve them locally in your feature branch.
-\item Work on your feature.
-\item After working, stage your edits: \verb|git add .|
-\item After staging your edits, commit them with a description: 
-    \verb|git commit -m 'description of edits'|
-\item Push your commits to origin: \verb|git push origin my-feature-branch|
-\end{itemize} 
-\textbf{--- start here when you are done with your feature ---}
-\begin{itemize} 
-\item Download the latest \verb|dev| commits from origin: \verb|git fetch origin| 
-\item Rebase on the \verb|dev| branch: \verb|git rebase dev|
-\item Push your commits to origin: \verb|git push origin my-feature-branch|
-\item Submit a pull request via the online interface.
+\textbf{--- start here the first time you work on slacx ---} 
+\begin{enumerate} 
+    \item Clone the repository: 
+    \begin{itemize} 
+        \item CL: \verb|git clone <REPO-URL>|. 
+        \item \verb|PyCharm|:  
+    \end{itemize} 
+    This copies the remote repository (hosted online)
+    to a local directory (on your machine). 
+    Your new directory contains the source code
+    and a local \verb|master| branch 
+    that tracks the remote \verb|master| branch.
+    \item Create a \verb|dev| branch that tracks the origin's \verb|dev| branch.
+    \begin{itemize} 
+        \item CL: \verb|git checkout -b dev origin/dev|. 
+        %\verb|git checkout dev|, 
+        %which is implied shorthand for
+        %\verb|git checkout --track origin/dev|, which is shorthand for
+        \item \verb|PyCharm|: 
+    \end{itemize} 
+    \item Create your own feature branch. 
+    \label{itm:init_laststep}
+    \begin{itemize} 
+        \item CL: \verb|git branch my-feature-branch| 
+        \item \verb|PyCharm|:  
+    \end{itemize} 
+%\end{enumerate} 
+    \item \textbf{--- start here every time you work on your feature ---}
+%\begin{enumerate}
+    %\item Ensure there are no unstaged changes lying around.
+    %\begin{itemize} 
+    %    \item CL: \verb|git status|
+    %    \item \verb|PyCharm|:  
+    %\end{itemize} 
+    %If you have made changes, \verb|git| will track them,
+    %throw errors in the next steps.
+    %Either commit the changes to your feature branch,
+    %or get rid of them. To get rid of them:
+    %\begin{itemize} 
+    %    \item CL: first run \verb|git stash|, then \verb|git stash drop|
+    %    \item \verb|PyCharm|:  
+    %\end{itemize} 
+    \item Check out the \verb|dev| branch.
+    \label{itm:rebase_start}
+    \begin{itemize} 
+        \item CL: \verb|git checkout dev|
+        \item \verb|PyCharm|:  
+    \end{itemize} 
+    \item Pull the latest commits from the remote \verb|dev| branch.
+    \begin{itemize} 
+        \item CL: \verb|git pull origin dev|
+        \item \verb|PyCharm|:  
+    \end{itemize} 
+    \item Check out your feature branch.
+    \begin{itemize} 
+        \item CL: \verb|git checkout my-feature-branch|
+        \item \verb|PyCharm|:  
+    \end{itemize} 
+    \item Rebase your feature branch on the \verb|dev| branch. 
+    \label{itm:rebase_end}
+    \begin{itemize} 
+        \item CL: \verb|git rebase dev| 
+        \item \verb|PyCharm|:  
+    \end{itemize} 
+    If you have conflicts during the rebase, 
+    this step can be skipped for the moment,
+    but these conflicts will eventually need to be cleaned up
+    so that you can continue rebasing regularly on \verb|dev|.
+    \item Finally, \textbf{work on your feature}. 
+    \item After working, make sure you are still on your feature branch, 
+    then stage your edits. 
+    \begin{itemize} 
+        \item CL: \verb|git add .| 
+        \item \verb|PyCharm|:  
+    \end{itemize} 
+    \item After staging your edits, commit them with a description. 
+    \label{itm:commitfeature} 
+    \begin{itemize} 
+        \item CL: \verb|git commit -m 'description of edits'| 
+        \item \verb|PyCharm|:  
+    \end{itemize} 
+    \item Push your commits on your feature branch to the origin (remote) repository.
+    \label{itm:pushfeature} 
+    \begin{itemize} 
+        \item CL: \verb|git push origin my-feature-branch| 
+        \item \verb|PyCharm|:  
+    \end{itemize} 
+    Now your colleagues can see what you have done,
+    and use your changes in their own code if they need to!
+%\end{enumerate} 
+    \item \textbf{--- start here when you are done with your feature ---}
+%\begin{enumerate}
+    \item Follow steps~\ref{itm:rebase_start} through~\ref{itm:rebase_end} above
+    to rebase your feature branch on \verb|dev| one last time.
+    \item If the rebase changed anything, 
+    use step~\ref{itm:pushfeature} 
+    above for one last push to the remote repo.
+    \item If you think it's safe 
+    (i.e. you know that your changes 
+    are not likely to crash your co-workers' codes 
+    when they are merged to the \verb|dev| branch), 
+    you can now merge your feature into the \verb|dev| branch.
+    \begin{itemize} 
+        \item CL: 
+        %\verb|git checkout dev|, 
+        %then \verb|git merge my-feature-branch|, 
+        %then \verb|git push origin dev|.
+        \begin{lstlisting}
+            git checkout dev 
+            git merge my-feature-branch 
+            % stop and think. any doubts? 
+            git push origin dev
+        \end{lstlisting}
+        \item \verb|PyCharm|:  
+    \end{itemize} 
+    \item If you aren't 100\% sure that it's safe to merge your feature into \verb|dev|,
+    submit a pull request via the online interface.
     Request to pull \verb|my-feature-branch| into \verb|dev|.
-    The \verb|slacx| development team will discuss, edit, 
+    The \verb|slacx| development team will discuss, possibly edit, 
     and ultimately accept your feature.
-\end{itemize} 
+    \item If your feature was more appropriate for the \verb|master| branch,
+    submit a pull request for the \verb|master| branch.
+\end{enumerate} 
 
 \section{developing operations for slacx}
 \label{sec:op_dev}
@@ -150,7 +248,7 @@ may find all the information they need in this template alone.
 # with the slacx workflow manager.
 # That common interface is ensured by inheriting it
 # from an abstract class called 'Operation'.
-from core.operations.slacxop import Operation
+from slacxop import Operation
 
 # Name the operation, specify inheritance (Operation)
 class <OperationName>(Operation):
