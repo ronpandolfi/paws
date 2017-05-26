@@ -21,7 +21,7 @@ class FindLocalMaxima(Operation):
     def __init__(self):
         input_names = ['q', 'I', 'delta_I']
         output_names = ['q_pk', 'I_pk']
-        super(PeakFeatures,self).__init__(input_names, output_names)
+        super(FindLocalMaxima,self).__init__(input_names, output_names)
         self.input_doc['q'] = '1d array for x-axis of spectrum, named q for momentum transfer vector'
         self.input_doc['I'] = '1d array for spectral intensities at q values'
         self.input_doc['delta_I'] = str('Criterion for peak finding: point is a maximum '
