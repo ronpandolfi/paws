@@ -1,0 +1,353 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>paws.core.operations.PROCESSING.smoothing &#8212; paws 0.4.0 documentation</title>
+    
+    <link rel="stylesheet" href="../../../../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../../../',
+        VERSION:     '0.4.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../search.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../../index.html">paws 0.4.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../operations.html" accesskey="U">paws.core.operations</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for paws.core.operations.PROCESSING.smoothing</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">..operation</span> <span class="k">import</span> <span class="n">Operation</span>
+<span class="kn">from</span> <span class="nn">..</span> <span class="k">import</span> <span class="n">optools</span>
+
+
+<div class="viewcode-block" id="SavitzkyGolay"><a class="viewcode-back" href="../../../../../moduledoc_files/paws.core.operations.PROCESSING.html#paws.core.operations.PROCESSING.smoothing.SavitzkyGolay">[docs]</a><span class="k">class</span> <span class="nc">SavitzkyGolay</span><span class="p">(</span><span class="n">Operation</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Applies a Savitzky-Golay (polynomial fit approximation) filter to 1d data.</span>
+
+<span class="sd">    Uses error bars on intensity if available.  Set *dy* to *None* otherwise.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">input_names</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="s1">&#39;y&#39;</span><span class="p">,</span> <span class="s1">&#39;dy&#39;</span><span class="p">,</span> <span class="s1">&#39;order&#39;</span><span class="p">,</span> <span class="s1">&#39;base&#39;</span><span class="p">]</span>
+        <span class="n">output_names</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;smoothdata&#39;</span><span class="p">]</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">SavitzkyGolay</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">input_names</span><span class="p">,</span> <span class="n">output_names</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_doc</span><span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;1d ndarray; independent variable&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_doc</span><span class="p">[</span><span class="s1">&#39;y&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;1d ndarray; dependent variable, same shape as *x*&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_doc</span><span class="p">[</span><span class="s1">&#39;dy&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;1d ndarray; error estimate in *y*, same shape as *y*; if unavailable, set to *None*&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_doc</span><span class="p">[</span><span class="s1">&#39;order&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;integer order of polynomial approximation (zero to five)&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_doc</span><span class="p">[</span><span class="s1">&#39;base&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;-1, 0, or positive integer; see class docs&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">output_doc</span><span class="p">[</span><span class="s1">&#39;smoothdata&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;smoothed 1d ndarray&#39;</span>
+        <span class="c1"># source &amp; type</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_src</span><span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">optools</span><span class="o">.</span><span class="n">wf_input</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_src</span><span class="p">[</span><span class="s1">&#39;y&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">optools</span><span class="o">.</span><span class="n">wf_input</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_src</span><span class="p">[</span><span class="s1">&#39;dy&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">optools</span><span class="o">.</span><span class="n">wf_input</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_src</span><span class="p">[</span><span class="s1">&#39;order&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">optools</span><span class="o">.</span><span class="n">text_input</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_src</span><span class="p">[</span><span class="s1">&#39;base&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">optools</span><span class="o">.</span><span class="n">text_input</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_type</span><span class="p">[</span><span class="s1">&#39;order&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">optools</span><span class="o">.</span><span class="n">int_type</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_type</span><span class="p">[</span><span class="s1">&#39;base&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">optools</span><span class="o">.</span><span class="n">int_type</span>
+        <span class="c1"># defaults</span>
+        <span class="c1">#self.inputs[&#39;dy&#39;] = None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">categories</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;1D DATA PROCESSING.SMOOTHING&#39;</span><span class="p">]</span>
+
+<div class="viewcode-block" id="SavitzkyGolay.run"><a class="viewcode-back" href="../../../../../moduledoc_files/paws.core.operations.PROCESSING.html#paws.core.operations.PROCESSING.smoothing.SavitzkyGolay.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">outputs</span><span class="p">[</span><span class="s1">&#39;smoothdata&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">savitzky_golay</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="p">[</span><span class="s1">&#39;y&#39;</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="p">[</span><span class="s1">&#39;order&#39;</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="p">[</span><span class="s1">&#39;base&#39;</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="p">[</span><span class="s1">&#39;dy&#39;</span><span class="p">])</span></div></div>
+
+
+<div class="viewcode-block" id="RectangularSmooth"><a class="viewcode-back" href="../../../../../moduledoc_files/paws.core.operations.PROCESSING.html#paws.core.operations.PROCESSING.smoothing.RectangularSmooth">[docs]</a><span class="k">class</span> <span class="nc">RectangularSmooth</span><span class="p">(</span><span class="n">Operation</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Applies rectangular (moving average) smoothing filter to 1d data.</span>
+
+<span class="sd">    User-specified error estimate used to weight points.  Set *dy* to *None* if unavailable.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">input_names</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">,</span> <span class="s1">&#39;error&#39;</span><span class="p">,</span> <span class="s1">&#39;m&#39;</span><span class="p">]</span>
+        <span class="n">output_names</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;smoothdata&#39;</span><span class="p">]</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">RectangularSmooth</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">input_names</span><span class="p">,</span> <span class="n">output_names</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_doc</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;1d ndarray&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_doc</span><span class="p">[</span><span class="s1">&#39;error&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;1d ndarray, same shape as data; if unavailable, set to *None*&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_doc</span><span class="p">[</span><span class="s1">&#39;m&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;odd integer number of data points to average locally&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">output_doc</span><span class="p">[</span><span class="s1">&#39;smoothdata&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;smoothed 1d ndarray&#39;</span>
+        <span class="c1"># source &amp; type</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_src</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">optools</span><span class="o">.</span><span class="n">wf_input</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_src</span><span class="p">[</span><span class="s1">&#39;error&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">optools</span><span class="o">.</span><span class="n">wf_input</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_src</span><span class="p">[</span><span class="s1">&#39;m&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">optools</span><span class="o">.</span><span class="n">text_input</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_type</span><span class="p">[</span><span class="s1">&#39;m&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">optools</span><span class="o">.</span><span class="n">int_type</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">categories</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;1D DATA PROCESSING.SMOOTHING&#39;</span><span class="p">]</span>
+
+<div class="viewcode-block" id="RectangularSmooth.run"><a class="viewcode-back" href="../../../../../moduledoc_files/paws.core.operations.PROCESSING.html#paws.core.operations.PROCESSING.smoothing.RectangularSmooth.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">outputs</span><span class="p">[</span><span class="s1">&#39;smoothdata&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">moving_average</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="p">[</span><span class="s1">&#39;m&#39;</span><span class="p">],</span> <span class="s1">&#39;square&#39;</span><span class="p">,</span>
+                                                    <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="p">[</span><span class="s1">&#39;error&#39;</span><span class="p">])</span></div></div>
+
+<div class="viewcode-block" id="TriangularSmooth"><a class="viewcode-back" href="../../../../../moduledoc_files/paws.core.operations.PROCESSING.html#paws.core.operations.PROCESSING.smoothing.TriangularSmooth">[docs]</a><span class="k">class</span> <span class="nc">TriangularSmooth</span><span class="p">(</span><span class="n">Operation</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Applies triangular-weighted (moving average) smoothing filter to 1d data.</span>
+
+<span class="sd">    User-specified error estimate used to weight points.  Set *dy* to *None* if unavailable.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">input_names</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">,</span> <span class="s1">&#39;error&#39;</span><span class="p">,</span> <span class="s1">&#39;m&#39;</span><span class="p">]</span>
+        <span class="n">output_names</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;smoothdata&#39;</span><span class="p">]</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">TriangularSmooth</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">input_names</span><span class="p">,</span> <span class="n">output_names</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_doc</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;1d ndarray&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_doc</span><span class="p">[</span><span class="s1">&#39;error&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;1d ndarray, same shape as data; if unavailable, set to *None*&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_doc</span><span class="p">[</span><span class="s1">&#39;m&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;odd integer number of data points to average locally&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">output_doc</span><span class="p">[</span><span class="s1">&#39;smoothdata&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;smoothed 1d ndarray&#39;</span>
+        <span class="c1"># source &amp; type</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_src</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">optools</span><span class="o">.</span><span class="n">wf_input</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_src</span><span class="p">[</span><span class="s1">&#39;error&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">optools</span><span class="o">.</span><span class="n">wf_input</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_src</span><span class="p">[</span><span class="s1">&#39;m&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">optools</span><span class="o">.</span><span class="n">text_input</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_type</span><span class="p">[</span><span class="s1">&#39;m&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">optools</span><span class="o">.</span><span class="n">int_type</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">categories</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;1D DATA PROCESSING.SMOOTHING&#39;</span><span class="p">]</span>
+
+<div class="viewcode-block" id="TriangularSmooth.run"><a class="viewcode-back" href="../../../../../moduledoc_files/paws.core.operations.PROCESSING.html#paws.core.operations.PROCESSING.smoothing.TriangularSmooth.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">outputs</span><span class="p">[</span><span class="s1">&#39;smoothdata&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">moving_average</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="p">[</span><span class="s1">&#39;m&#39;</span><span class="p">],</span> <span class="s1">&#39;triangle&#39;</span><span class="p">,</span>
+                                                    <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="p">[</span><span class="s1">&#39;error&#39;</span><span class="p">])</span></div></div>
+
+
+<div class="viewcode-block" id="moving_average"><a class="viewcode-back" href="../../../../../moduledoc_files/paws.core.operations.PROCESSING.html#paws.core.operations.PROCESSING.smoothing.moving_average">[docs]</a><span class="k">def</span> <span class="nf">moving_average</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">shape</span><span class="p">,</span> <span class="n">error</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">m</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">m</span> <span class="o">!=</span> <span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="p">)):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Argument *m* should be an odd integer.&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">error</span><span class="o">.</span><span class="n">any</span><span class="p">()</span> <span class="ow">and</span> <span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="n">error</span><span class="o">.</span><span class="n">shape</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Arguments *data* and *error* should have the same shape.&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">shape</span> <span class="o">==</span> <span class="s1">&#39;square&#39;</span><span class="p">:</span>
+        <span class="n">shape_weight</span> <span class="o">=</span> <span class="n">square_weighting</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">shape</span> <span class="o">==</span> <span class="s1">&#39;triangle&#39;</span><span class="p">:</span>
+        <span class="n">shape_weight</span> <span class="o">=</span> <span class="n">triangular_weighting</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Argument *shape* should be either &quot;square&quot; or &quot;triangle&quot;.&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">error</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">error_weight</span> <span class="o">=</span> <span class="n">specified_error_weights</span><span class="p">(</span><span class="n">error</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">error_weight</span> <span class="o">=</span> <span class="n">no_specified_error_weights</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+    <span class="nb">sum</span> <span class="o">=</span> <span class="n">data</span> <span class="o">*</span> <span class="n">shape_weight</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">error_weight</span>
+    <span class="n">weights</span> <span class="o">=</span> <span class="n">shape_weight</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">error_weight</span>
+    <span class="k">for</span> <span class="n">ii</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
+        <span class="nb">sum</span><span class="p">[</span><span class="n">ii</span><span class="p">:]</span> <span class="o">+=</span> <span class="p">(</span><span class="n">data</span><span class="p">[:</span><span class="o">-</span><span class="n">ii</span><span class="p">]</span> <span class="o">*</span> <span class="n">shape_weight</span><span class="p">[</span><span class="n">ii</span><span class="p">]</span> <span class="o">*</span> <span class="n">error_weight</span><span class="p">[:</span><span class="o">-</span><span class="n">ii</span><span class="p">])</span>
+        <span class="nb">sum</span><span class="p">[:</span><span class="o">-</span><span class="n">ii</span><span class="p">]</span> <span class="o">+=</span> <span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">ii</span><span class="p">:]</span> <span class="o">*</span> <span class="n">shape_weight</span><span class="p">[</span><span class="n">ii</span><span class="p">]</span> <span class="o">*</span> <span class="n">error_weight</span><span class="p">[</span><span class="n">ii</span><span class="p">:])</span>
+        <span class="n">weights</span><span class="p">[</span><span class="n">ii</span><span class="p">:]</span> <span class="o">+=</span> <span class="p">(</span><span class="n">shape_weight</span><span class="p">[</span><span class="n">ii</span><span class="p">]</span> <span class="o">*</span> <span class="n">error_weight</span><span class="p">[:</span><span class="o">-</span><span class="n">ii</span><span class="p">])</span>
+        <span class="n">weights</span><span class="p">[:</span><span class="o">-</span><span class="n">ii</span><span class="p">]</span> <span class="o">+=</span> <span class="p">(</span><span class="n">shape_weight</span><span class="p">[</span><span class="n">ii</span><span class="p">]</span> <span class="o">*</span> <span class="n">error_weight</span><span class="p">[</span><span class="n">ii</span><span class="p">:])</span>
+    <span class="n">mean</span> <span class="o">=</span> <span class="nb">sum</span> <span class="o">/</span> <span class="n">weights</span>
+    <span class="k">return</span> <span class="n">mean</span></div>
+
+
+<div class="viewcode-block" id="triangular_weighting"><a class="viewcode-back" href="../../../../../moduledoc_files/paws.core.operations.PROCESSING.html#paws.core.operations.PROCESSING.smoothing.triangular_weighting">[docs]</a><span class="k">def</span> <span class="nf">triangular_weighting</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+    <span class="n">weights</span> <span class="o">=</span> <span class="p">(</span><span class="n">n</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">n</span> <span class="o">+</span> <span class="mi">1</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">))</span><span class="o">/</span><span class="nb">float</span><span class="p">(</span><span class="n">n</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">weights</span></div>
+
+<div class="viewcode-block" id="square_weighting"><a class="viewcode-back" href="../../../../../moduledoc_files/paws.core.operations.PROCESSING.html#paws.core.operations.PROCESSING.smoothing.square_weighting">[docs]</a><span class="k">def</span> <span class="nf">square_weighting</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+    <span class="n">weights</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">n</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">weights</span></div>
+
+<div class="viewcode-block" id="no_specified_error_weights"><a class="viewcode-back" href="../../../../../moduledoc_files/paws.core.operations.PROCESSING.html#paws.core.operations.PROCESSING.smoothing.no_specified_error_weights">[docs]</a><span class="k">def</span> <span class="nf">no_specified_error_weights</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+    <span class="n">weights</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">weights</span></div>
+
+<div class="viewcode-block" id="specified_error_weights"><a class="viewcode-back" href="../../../../../moduledoc_files/paws.core.operations.PROCESSING.html#paws.core.operations.PROCESSING.smoothing.specified_error_weights">[docs]</a><span class="k">def</span> <span class="nf">specified_error_weights</span><span class="p">(</span><span class="n">error</span><span class="p">):</span>
+    <span class="n">weights</span> <span class="o">=</span> <span class="n">error</span><span class="o">**-</span><span class="mi">2</span>
+    <span class="k">return</span> <span class="n">weights</span></div>
+
+
+<div class="viewcode-block" id="savitzky_golay"><a class="viewcode-back" href="../../../../../moduledoc_files/paws.core.operations.PROCESSING.html#paws.core.operations.PROCESSING.smoothing.savitzky_golay">[docs]</a><span class="k">def</span> <span class="nf">savitzky_golay</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">order</span><span class="p">,</span> <span class="n">base</span><span class="p">,</span> <span class="n">dy</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">dy</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">dy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">y</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+    <span class="n">m</span> <span class="o">=</span> <span class="n">choose_m</span><span class="p">(</span><span class="n">order</span><span class="p">,</span> <span class="n">base</span><span class="p">)</span> <span class="c1"># Order, base checked here; number of fit points chosen</span>
+    <span class="n">order</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">order</span><span class="p">)</span>
+    <span class="n">size</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">size</span>
+    <span class="n">smoothed</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">ii</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">size</span><span class="p">):</span>
+        <span class="c1"># For each pixel, trim out a section of nearby pixels</span>
+        <span class="n">start</span><span class="p">,</span> <span class="n">end</span> <span class="o">=</span> <span class="n">choose_start_and_end</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">base</span><span class="p">,</span> <span class="n">ii</span><span class="p">,</span> <span class="n">size</span><span class="p">)</span>
+        <span class="c1"># Formulate the equation to be solved for polynomial coefficients</span>
+        <span class="n">matrix</span><span class="p">,</span> <span class="n">vector</span> <span class="o">=</span> <span class="n">make_poly_matrices</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="n">start</span><span class="p">:</span><span class="n">end</span><span class="p">],</span> <span class="n">y</span><span class="p">[</span><span class="n">start</span><span class="p">:</span><span class="n">end</span><span class="p">],</span> <span class="n">dy</span><span class="p">[</span><span class="n">start</span><span class="p">:</span><span class="n">end</span><span class="p">],</span> <span class="n">order</span><span class="p">)</span>
+        <span class="c1"># Solve equation</span>
+        <span class="n">coefficients</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">matrix</span><span class="p">,</span> <span class="n">vector</span><span class="p">))</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+        <span class="c1"># Find chosen approximation</span>
+        <span class="n">smoothed</span><span class="p">[</span><span class="n">ii</span><span class="p">]</span> <span class="o">=</span> <span class="n">polynomial</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="n">ii</span><span class="p">],</span> <span class="n">coefficients</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">smoothed</span></div>
+
+
+<div class="viewcode-block" id="choose_start_and_end"><a class="viewcode-back" href="../../../../../moduledoc_files/paws.core.operations.PROCESSING.html#paws.core.operations.PROCESSING.smoothing.choose_start_and_end">[docs]</a><span class="k">def</span> <span class="nf">choose_start_and_end</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">base</span><span class="p">,</span> <span class="n">ii</span><span class="p">,</span> <span class="n">size</span><span class="p">):</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">m</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+    <span class="c1"># Base controls edge conditions</span>
+    <span class="k">if</span> <span class="n">base</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+        <span class="n">constant_base</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">constant_base</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">start</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">ii</span> <span class="o">-</span> <span class="n">n</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="n">end</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">ii</span> <span class="o">+</span> <span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">size</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">constant_base</span><span class="p">:</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">ii</span> <span class="o">-</span> <span class="n">n</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">):</span>
+            <span class="n">start</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">end</span> <span class="o">=</span> <span class="n">m</span>
+        <span class="k">elif</span> <span class="p">(</span><span class="n">ii</span> <span class="o">+</span> <span class="n">n</span> <span class="o">-</span> <span class="mi">1</span> <span class="o">&gt;</span> <span class="n">size</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="n">start</span> <span class="o">=</span> <span class="n">size</span> <span class="o">-</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">m</span>
+            <span class="n">end</span> <span class="o">=</span> <span class="n">size</span> <span class="o">-</span> <span class="mi">1</span>
+    <span class="k">return</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span></div>
+
+
+<div class="viewcode-block" id="choose_m"><a class="viewcode-back" href="../../../../../moduledoc_files/paws.core.operations.PROCESSING.html#paws.core.operations.PROCESSING.smoothing.choose_m">[docs]</a><span class="k">def</span> <span class="nf">choose_m</span><span class="p">(</span><span class="n">order</span><span class="p">,</span> <span class="n">base</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Choose a number of points to use for SG fit.</span>
+
+<span class="sd">    :param order: integer order of polynomial fit</span>
+<span class="sd">    :param base: an edge condition specification parameter</span>
+<span class="sd">    :return m: integer number of data points to use</span>
+
+<span class="sd">    Helper function for *savitzky_golay*.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">if</span> <span class="p">((</span><span class="n">order</span> <span class="o">!=</span> <span class="nb">int</span><span class="p">(</span><span class="n">order</span><span class="p">))</span> <span class="ow">or</span> <span class="p">(</span><span class="n">base</span> <span class="o">!=</span> <span class="nb">int</span><span class="p">(</span><span class="n">base</span><span class="p">))):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Arguments *order* and *base* must be integers.&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">order</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Argument *order* must be a nonnegative integer.&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">base</span> <span class="o">&lt;</span> <span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Argument *base* must be -1, 0, or a positive integer.&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">order</span> <span class="o">&gt;</span> <span class="mi">5</span><span class="p">):</span>
+        <span class="nb">print</span> <span class="s2">&quot;Warning: Using polynomials above order 5 not recommended.  There may be cases where this breaks.&quot;</span>
+    <span class="n">order</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">order</span><span class="p">)</span>
+    <span class="n">base</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">base</span><span class="p">)</span>
+    <span class="c1"># &quot;Minimal&quot; point base case.  Chooses the minimum number of points</span>
+    <span class="c1"># that is both sufficient to fit polynomial of order *order* and odd.</span>
+    <span class="k">if</span> <span class="n">base</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+        <span class="n">is_order_odd</span> <span class="o">=</span> <span class="p">((</span><span class="n">order</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span><span class="o">*</span><span class="mi">2</span> <span class="o">!=</span> <span class="n">order</span><span class="p">)</span>
+        <span class="n">m</span> <span class="o">=</span> <span class="n">order</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">+</span> <span class="mi">1</span><span class="o">*</span><span class="n">is_order_odd</span>
+    <span class="c1"># &quot;Balanced&quot; point base case.</span>
+    <span class="k">elif</span> <span class="n">base</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">m</span> <span class="o">=</span> <span class="mi">2</span><span class="o">*</span><span class="n">order</span> <span class="o">+</span> <span class="mi">1</span>
+    <span class="c1"># &quot;Additional&quot; point base case.</span>
+    <span class="k">elif</span> <span class="n">base</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">m</span> <span class="o">=</span> <span class="mi">2</span><span class="o">*</span><span class="p">(</span><span class="n">order</span> <span class="o">+</span> <span class="n">base</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+    <span class="k">return</span> <span class="n">m</span></div>
+
+
+<div class="viewcode-block" id="polynomial"><a class="viewcode-back" href="../../../../../moduledoc_files/paws.core.operations.PROCESSING.html#paws.core.operations.PROCESSING.smoothing.polynomial">[docs]</a><span class="k">def</span> <span class="nf">polynomial</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">coefficients</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Evaluate a polynomial with given coefficients at location x.</span>
+
+<span class="sd">    :param x: numeric value of coordinate</span>
+<span class="sd">    :param coefficients: 1d ndarray of one or more elements; zeroth element is zero-order coefficient, 1st is 1st-order coefficient, etc.</span>
+<span class="sd">    :return value: value of the specified polynomial at *x*</span>
+
+<span class="sd">    In *coefficients*, zeroth element is zero-order coefficient (i.e. constant offset),</span>
+<span class="sd">    1st is 1st-order coefficient (i.e. linear slope), etc.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">order</span> <span class="o">=</span> <span class="n">coefficients</span><span class="o">.</span><span class="n">size</span> <span class="o">-</span> <span class="mi">1</span>
+    <span class="n">powers</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">order</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">value</span> <span class="o">=</span> <span class="p">((</span><span class="n">x</span><span class="o">**</span><span class="n">powers</span><span class="p">)</span> <span class="o">*</span> <span class="n">coefficients</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">value</span></div>
+
+
+<div class="viewcode-block" id="vertical"><a class="viewcode-back" href="../../../../../moduledoc_files/paws.core.operations.PROCESSING.html#paws.core.operations.PROCESSING.smoothing.vertical">[docs]</a><span class="k">def</span> <span class="nf">vertical</span><span class="p">(</span><span class="n">array1d</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Turn 1d array into 2d vertical vector.&#39;&#39;&#39;</span>
+    <span class="n">array1d</span> <span class="o">=</span> <span class="n">array1d</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">array1d</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">array1d</span></div>
+
+
+<div class="viewcode-block" id="horizontal"><a class="viewcode-back" href="../../../../../moduledoc_files/paws.core.operations.PROCESSING.html#paws.core.operations.PROCESSING.smoothing.horizontal">[docs]</a><span class="k">def</span> <span class="nf">horizontal</span><span class="p">(</span><span class="n">array1d</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Turn 1d array into 2d horizontal vector.&#39;&#39;&#39;</span>
+    <span class="n">array1d</span> <span class="o">=</span> <span class="n">array1d</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="n">array1d</span><span class="o">.</span><span class="n">size</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">array1d</span></div>
+
+
+<div class="viewcode-block" id="dummy"><a class="viewcode-back" href="../../../../../moduledoc_files/paws.core.operations.PROCESSING.html#paws.core.operations.PROCESSING.smoothing.dummy">[docs]</a><span class="k">def</span> <span class="nf">dummy</span><span class="p">(</span><span class="n">array1d</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Turn 1d array into dummy-index vector for 2d matrix computation.</span>
+
+<span class="sd">    Sum over the dummy index by taking *object.sum(axis=0)*.&#39;&#39;&#39;</span>
+    <span class="n">array1d</span> <span class="o">=</span> <span class="n">array1d</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">array1d</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="mi">1</span> <span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">array1d</span></div>
+
+
+<div class="viewcode-block" id="make_poly_matrices"><a class="viewcode-back" href="../../../../../moduledoc_files/paws.core.operations.PROCESSING.html#paws.core.operations.PROCESSING.smoothing.make_poly_matrices">[docs]</a><span class="k">def</span> <span class="nf">make_poly_matrices</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">error</span><span class="p">,</span> <span class="n">order</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Make the matrices necessary to solve a polynomial fit of order *order*.</span>
+
+<span class="sd">    :param x: 1d array representing independent variable</span>
+<span class="sd">    :param y: 1d array representing dependent variable</span>
+<span class="sd">    :param error: 1d array representing uncertainty in *y*</span>
+<span class="sd">    :param order: integer order of polynomial fit</span>
+<span class="sd">    :return matrix, vector: MC=V, where M is *matrix*, V is *vector*,</span>
+<span class="sd">        and C is the polynomial coefficients to be solved for.</span>
+<span class="sd">        *matrix* is an array of shape (order+1, order+1).</span>
+<span class="sd">        *vector* is an array of shape (order+1, 1).</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">if</span> <span class="p">((</span><span class="n">x</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="n">y</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">y</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="n">error</span><span class="o">.</span><span class="n">shape</span><span class="p">)):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Arguments *x*, *y*, and *error* must all have the same shape.&#39;</span><span class="p">)</span>
+    <span class="n">index</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">order</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">vector</span> <span class="o">=</span> <span class="p">(</span><span class="n">dummy</span><span class="p">(</span><span class="n">y</span><span class="p">)</span> <span class="o">*</span> <span class="n">dummy</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">**</span> <span class="n">vertical</span><span class="p">(</span><span class="n">index</span><span class="p">)</span> <span class="o">*</span> <span class="n">dummy</span><span class="p">(</span><span class="n">error</span><span class="p">))</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">index_block</span> <span class="o">=</span> <span class="n">horizontal</span><span class="p">(</span><span class="n">index</span><span class="p">)</span> <span class="o">+</span> <span class="n">vertical</span><span class="p">(</span><span class="n">index</span><span class="p">)</span>
+    <span class="n">matrix</span> <span class="o">=</span> <span class="p">(</span><span class="n">dummy</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">**</span> <span class="n">index_block</span> <span class="o">*</span> <span class="n">dummy</span><span class="p">(</span><span class="n">error</span><span class="p">))</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">matrix</span><span class="p">,</span> <span class="n">vector</span></div>
+
+
+
+
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../../index.html">paws 0.4.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../operations.html" >paws.core.operations</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2017, Lenson A. Pellouchoud.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.2.
+    </div>
+  </body>
+</html>

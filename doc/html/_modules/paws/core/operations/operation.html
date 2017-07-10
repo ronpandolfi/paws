@@ -1,0 +1,316 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>paws.core.operations.operation &#8212; paws 0.4.0 documentation</title>
+    
+    <link rel="stylesheet" href="../../../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../../',
+        VERSION:     '0.4.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">paws 0.4.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../operations.html" accesskey="U">paws.core.operations</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for paws.core.operations.operation</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">abc</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">OrderedDict</span>
+
+<span class="kn">import</span> <span class="nn">optools</span>
+
+<div class="viewcode-block" id="Operation"><a class="viewcode-back" href="../../../../moduledoc_files/paws.core.operations.html#paws.core.operations.operation.Operation">[docs]</a><span class="k">class</span> <span class="nc">Operation</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="n">__metaclass__</span> <span class="o">=</span> <span class="n">abc</span><span class="o">.</span><span class="n">ABCMeta</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Abstract class template for implementing paws operations.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">input_names</span><span class="p">,</span><span class="n">output_names</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The input_names and output_names (lists of strings)</span>
+<span class="sd">        are used to specify names for the parameters </span>
+<span class="sd">        that will be used to perform the operation.</span>
+<span class="sd">        These lists are used as keys to build dicts</span>
+<span class="sd">        Operation.inputs and Operation.outputs.</span>
+<span class="sd">        The Operation.categories attribute is a list that indicates</span>
+<span class="sd">        where the operation can be found in the OpManager tree.</span>
+<span class="sd">        The Operation will appear one time for each category in the list.</span>
+<span class="sd">        Subcategories are indicated by a &quot;.&quot;, for example:</span>
+<span class="sd">        self.categories = [&#39;CAT1&#39;,&#39;CAT2.SUBCAT&#39;,&#39;CAT3&#39;].</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_locator</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">()</span> 
+        <span class="bp">self</span><span class="o">.</span><span class="n">outputs</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">()</span> 
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_doc</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_src</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_type</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="c1">#self.output_container = {}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">output_doc</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="c1"># For each of the var names, assign to None </span>
+        <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">input_names</span><span class="p">:</span> 
+            <span class="bp">self</span><span class="o">.</span><span class="n">input_src</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">optools</span><span class="o">.</span><span class="n">no_input</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">input_type</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">optools</span><span class="o">.</span><span class="n">none_type</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">input_locator</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span> 
+            <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">input_doc</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">output_names</span><span class="p">:</span> 
+            <span class="c1">#self.output_container[name] = optools.OutputContainer() </span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">outputs</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">output_doc</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="c1"># Set default category to be &#39;MISC&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">categories</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;MISC&#39;</span><span class="p">]</span>
+
+<div class="viewcode-block" id="Operation.load_defaults"><a class="viewcode-back" href="../../../../moduledoc_files/paws.core.operations.html#paws.core.operations.operation.Operation.load_defaults">[docs]</a>    <span class="k">def</span> <span class="nf">load_defaults</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="n">src</span> <span class="o">=</span> <span class="n">optools</span><span class="o">.</span><span class="n">no_input</span>
+            <span class="n">tp</span> <span class="o">=</span> <span class="n">optools</span><span class="o">.</span><span class="n">none_type</span>
+            <span class="n">val</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">input_src</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">==</span> <span class="n">optools</span><span class="o">.</span><span class="n">no_input</span><span class="p">:</span>
+                <span class="n">src</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">input_src</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
+                <span class="c1">#if (self.input_type[name] == optools.none_type</span>
+                <span class="c1">#and src in [optools.wf_input,optools.fs_input,optools.batch_input,optools.plugin_input]):</span>
+                <span class="c1">#    self.input_type[name] = optools.auto_type</span>
+                <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">input_type</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">==</span> <span class="n">optools</span><span class="o">.</span><span class="n">none_type</span>
+                <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">input_type</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="ow">in</span> <span class="n">optools</span><span class="o">.</span><span class="n">invalid_types</span><span class="p">[</span><span class="n">src</span><span class="p">]):</span>
+                    <span class="n">tp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">input_type</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="p">[</span><span class="n">name</span><span class="p">],</span><span class="nb">list</span><span class="p">):</span>
+                            <span class="n">val</span> <span class="o">=</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="p">[</span><span class="n">name</span><span class="p">]]</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="n">val</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="p">[</span><span class="n">name</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">input_locator</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">optools</span><span class="o">.</span><span class="n">InputLocator</span><span class="p">(</span><span class="n">src</span><span class="p">,</span><span class="n">tp</span><span class="p">,</span><span class="n">val</span><span class="p">)</span></div>
+
+    <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
+<div class="viewcode-block" id="Operation.run"><a class="viewcode-back" href="../../../../moduledoc_files/paws.core.operations.html#paws.core.operations.operation.Operation.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Operation.run() should use all of the items in Operation.inputs</span>
+<span class="sd">        and set values for all of the items in Operation.outputs.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="Operation.description"><a class="viewcode-back" href="../../../../moduledoc_files/paws.core.operations.html#paws.core.operations.operation.Operation.description">[docs]</a>    <span class="k">def</span> <span class="nf">description</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        self.description() returns a string </span>
+<span class="sd">        documenting the input and output structure </span>
+<span class="sd">        and usage instructions for the Operation</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span>
+        <span class="s2">&quot;Operation description: &quot;</span>
+        <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">doc_as_string</span><span class="p">()</span>
+        <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">--- Input ---&quot;</span>
+        <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">input_description</span><span class="p">()</span> 
+        <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">--- Output ---&quot;</span>
+        <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_description</span><span class="p">())</span></div>
+
+<div class="viewcode-block" id="Operation.doc_as_string"><a class="viewcode-back" href="../../../../moduledoc_files/paws.core.operations.html#paws.core.operations.operation.Operation.doc_as_string">[docs]</a>    <span class="k">def</span> <span class="nf">doc_as_string</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__doc__</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s2">&quot;\s\s+&quot;</span><span class="p">,</span><span class="s2">&quot; &quot;</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="vm">__doc__</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">,</span><span class="s1">&#39;&#39;</span><span class="p">))</span> 
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot;no documentation found&quot;</span></div>
+
+<div class="viewcode-block" id="Operation.input_description"><a class="viewcode-back" href="../../../../moduledoc_files/paws.core.operations.html#paws.core.operations.operation.Operation.input_description">[docs]</a>    <span class="k">def</span> <span class="nf">input_description</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">a</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="n">inp_indx</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span> 
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">input_locator</span><span class="p">[</span><span class="n">name</span><span class="p">]:</span>
+                <span class="n">display_val</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">input_locator</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">display_val</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> 
+            <span class="n">a</span> <span class="o">=</span> <span class="n">a</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">Input </span><span class="si">{}</span><span class="s2">:</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">inp_indx</span><span class="p">)</span> 
+            <span class="o">+</span> <span class="n">optools</span><span class="o">.</span><span class="n">parameter_doc</span><span class="p">(</span><span class="n">name</span><span class="p">,</span><span class="n">display_val</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">input_doc</span><span class="p">[</span><span class="n">name</span><span class="p">]))</span>
+            <span class="n">inp_indx</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">return</span> <span class="n">a</span></div>
+
+<div class="viewcode-block" id="Operation.output_description"><a class="viewcode-back" href="../../../../moduledoc_files/paws.core.operations.html#paws.core.operations.operation.Operation.output_description">[docs]</a>    <span class="k">def</span> <span class="nf">output_description</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">a</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="n">out_indx</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">name</span><span class="p">,</span><span class="n">val</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">outputs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span> 
+            <span class="n">a</span> <span class="o">=</span> <span class="n">a</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">Output </span><span class="si">{}</span><span class="s2">:</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">out_indx</span><span class="p">)</span> 
+            <span class="o">+</span> <span class="n">optools</span><span class="o">.</span><span class="n">parameter_doc</span><span class="p">(</span><span class="n">name</span><span class="p">,</span><span class="n">val</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">output_doc</span><span class="p">[</span><span class="n">name</span><span class="p">]))</span>
+            <span class="n">out_indx</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">return</span> <span class="n">a</span></div></div>
+                
+<div class="viewcode-block" id="Batch"><a class="viewcode-back" href="../../../../moduledoc_files/paws.core.operations.html#paws.core.operations.operation.Batch">[docs]</a><span class="k">class</span> <span class="nc">Batch</span><span class="p">(</span><span class="n">Operation</span><span class="p">):</span>
+    <span class="n">__metaclass__</span> <span class="o">=</span> <span class="n">abc</span><span class="o">.</span><span class="n">ABCMeta</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Abstract class template for implementing batch execution operations.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">input_names</span><span class="p">,</span><span class="n">output_names</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Batch</span><span class="p">,</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">input_names</span><span class="p">,</span><span class="n">output_names</span><span class="p">)</span>
+
+
+    <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
+<div class="viewcode-block" id="Batch.output_list"><a class="viewcode-back" href="../../../../moduledoc_files/paws.core.operations.html#paws.core.operations.operation.Batch.output_list">[docs]</a>    <span class="k">def</span> <span class="nf">output_list</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Produce a list of OrderedDicts representing the outputs for each batch input.</span>
+<span class="sd">        Each OrderedDict should be populated with [input_uri:input_value] pairs.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+    <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
+<div class="viewcode-block" id="Batch.input_list"><a class="viewcode-back" href="../../../../moduledoc_files/paws.core.operations.html#paws.core.operations.operation.Batch.input_list">[docs]</a>    <span class="k">def</span> <span class="nf">input_list</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Produce a list of OrderedDicts representing each set of inputs for the Batch to run.</span>
+<span class="sd">        Each OrderedDict should be populated with [input_uri:input_value] pairs.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+    <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
+<div class="viewcode-block" id="Batch.input_routes"><a class="viewcode-back" href="../../../../moduledoc_files/paws.core.operations.html#paws.core.operations.operation.Batch.input_routes">[docs]</a>    <span class="k">def</span> <span class="nf">input_routes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Produce a list of the input routes used by the Batch,</span>
+<span class="sd">        in the same order as each of the OrderedDicts </span>
+<span class="sd">        provided by Batch.input_list()</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+    <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
+<div class="viewcode-block" id="Batch.saved_items"><a class="viewcode-back" href="../../../../moduledoc_files/paws.core.operations.html#paws.core.operations.operation.Batch.saved_items">[docs]</a>    <span class="k">def</span> <span class="nf">saved_items</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return a list of items to be saved after each execution.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span> </div>
+
+    <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
+<div class="viewcode-block" id="Batch.batch_ops"><a class="viewcode-back" href="../../../../moduledoc_files/paws.core.operations.html#paws.core.operations.operation.Batch.batch_ops">[docs]</a>    <span class="k">def</span> <span class="nf">batch_ops</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return a list of operation uris to be included in the Batch execution stack.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div></div>
+
+
+
+<div class="viewcode-block" id="Realtime"><a class="viewcode-back" href="../../../../moduledoc_files/paws.core.operations.html#paws.core.operations.operation.Realtime">[docs]</a><span class="k">class</span> <span class="nc">Realtime</span><span class="p">(</span><span class="n">Operation</span><span class="p">):</span>
+    <span class="n">__metaclass__</span> <span class="o">=</span> <span class="n">abc</span><span class="o">.</span><span class="n">ABCMeta</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Abstract class template for implementing realtime execution as an Operation.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">input_names</span><span class="p">,</span><span class="n">output_names</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Realtime</span><span class="p">,</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">input_names</span><span class="p">,</span><span class="n">output_names</span><span class="p">)</span>
+
+    <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
+<div class="viewcode-block" id="Realtime.output_list"><a class="viewcode-back" href="../../../../moduledoc_files/paws.core.operations.html#paws.core.operations.operation.Realtime.output_list">[docs]</a>    <span class="k">def</span> <span class="nf">output_list</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Produce a list of OrderedDicts representing the outputs for each realtime input.</span>
+<span class="sd">        Each OrderedDict should be populated with [input_uri:input_value] pairs.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+    <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
+<div class="viewcode-block" id="Realtime.input_iter"><a class="viewcode-back" href="../../../../moduledoc_files/paws.core.operations.html#paws.core.operations.operation.Realtime.input_iter">[docs]</a>    <span class="k">def</span> <span class="nf">input_iter</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Produce an iterator over OrderedDicts representing each set of inputs to run.</span>
+<span class="sd">        Each dict should be populated with [input_uri:input_value] pairs.</span>
+<span class="sd">        When there is no new set of inputs to run, should return None.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+    <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
+<div class="viewcode-block" id="Realtime.input_routes"><a class="viewcode-back" href="../../../../moduledoc_files/paws.core.operations.html#paws.core.operations.operation.Realtime.input_routes">[docs]</a>    <span class="k">def</span> <span class="nf">input_routes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Produce a list of [input_uri] routes </span>
+<span class="sd">        in the same order as the OrderedDicts </span>
+<span class="sd">        produced by Realtime.input_iter()</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+    <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
+<div class="viewcode-block" id="Realtime.saved_items"><a class="viewcode-back" href="../../../../moduledoc_files/paws.core.operations.html#paws.core.operations.operation.Realtime.saved_items">[docs]</a>    <span class="k">def</span> <span class="nf">saved_items</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return a list of item uris to be saved after each execution.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span> </div>
+
+    <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
+<div class="viewcode-block" id="Realtime.realtime_ops"><a class="viewcode-back" href="../../../../moduledoc_files/paws.core.operations.html#paws.core.operations.operation.Realtime.realtime_ops">[docs]</a>    <span class="k">def</span> <span class="nf">realtime_ops</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return a list of operation uris to be included in the Realtime execution stack.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="Realtime.delay"><a class="viewcode-back" href="../../../../moduledoc_files/paws.core.operations.html#paws.core.operations.operation.Realtime.delay">[docs]</a>    <span class="k">def</span> <span class="nf">delay</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the number of MILLIseconds to pause between iterations.</span>
+<span class="sd">        Overload this method to change the pause time- default is 1 second.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="mi">1000</span></div></div>
+
+
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">paws 0.4.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../operations.html" >paws.core.operations</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2017, Lenson A. Pellouchoud.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.2.
+    </div>
+  </body>
+</html>

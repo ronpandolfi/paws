@@ -1,0 +1,233 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>paws.core.operations.PACKAGING.PIF.pif_ternary &#8212; paws 0.4.0 documentation</title>
+    
+    <link rel="stylesheet" href="../../../../../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../../../../',
+        VERSION:     '0.4.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../../../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../../search.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../../../index.html">paws 0.4.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../../operations.html" accesskey="U">paws.core.operations</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for paws.core.operations.PACKAGING.PIF.pif_ternary</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pypif.obj</span> <span class="k">as</span> <span class="nn">pifobj</span>
+
+<span class="kn">from</span> <span class="nn">...operation</span> <span class="k">import</span> <span class="n">Operation</span>
+<span class="kn">from</span> <span class="nn">...</span> <span class="k">import</span> <span class="n">optools</span>
+
+<div class="viewcode-block" id="PifTernary"><a class="viewcode-back" href="../../../../../../moduledoc_files/paws.core.operations.PACKAGING.PIF.html#paws.core.operations.PACKAGING.PIF.pif_ternary.PifTernary">[docs]</a><span class="k">class</span> <span class="nc">PifTernary</span><span class="p">(</span><span class="n">Operation</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Package results from ternary wafer synthesis into a pypif.obj.ChemicalSystem object.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">input_names</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">,</span><span class="s1">&#39;q_I&#39;</span><span class="p">,</span><span class="s1">&#39;q_texture&#39;</span><span class="p">,</span><span class="s1">&#39;I_features&#39;</span><span class="p">,</span><span class="s1">&#39;pk_idx&#39;</span><span class="p">,</span><span class="s1">&#39;date_time&#39;</span><span class="p">,</span><span class="s1">&#39;t_utc&#39;</span><span class="p">]</span>
+        <span class="n">output_names</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;pif&#39;</span><span class="p">]</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">PifTernary</span><span class="p">,</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">input_names</span><span class="p">,</span><span class="n">output_names</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_doc</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;user input string used as pif record uid&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_doc</span><span class="p">[</span><span class="s1">&#39;q_I&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;array of q and I(q) values for xrd spectrum&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_doc</span><span class="p">[</span><span class="s1">&#39;q_texture&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;array of q and texture(q) for xrd spectrum&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_doc</span><span class="p">[</span><span class="s1">&#39;I_features&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;output of IntensityFeatures operation, providing Imax, Iave, Imax_Iave_ratio&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_doc</span><span class="p">[</span><span class="s1">&#39;pk_idx&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;indices in q,I where peaks can be found&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_doc</span><span class="p">[</span><span class="s1">&#39;date_time&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;string date/time from measurement header file for pif record tags&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_doc</span><span class="p">[</span><span class="s1">&#39;t_utc&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;time in seconds utc&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_src</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">optools</span><span class="o">.</span><span class="n">text_input</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_src</span><span class="p">[</span><span class="s1">&#39;q_I&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">optools</span><span class="o">.</span><span class="n">wf_input</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_src</span><span class="p">[</span><span class="s1">&#39;q_texture&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">optools</span><span class="o">.</span><span class="n">wf_input</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_src</span><span class="p">[</span><span class="s1">&#39;I_features&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">optools</span><span class="o">.</span><span class="n">wf_input</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_src</span><span class="p">[</span><span class="s1">&#39;pk_idx&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">optools</span><span class="o">.</span><span class="n">wf_input</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_src</span><span class="p">[</span><span class="s1">&#39;date_time&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">optools</span><span class="o">.</span><span class="n">wf_input</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_src</span><span class="p">[</span><span class="s1">&#39;t_utc&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">optools</span><span class="o">.</span><span class="n">wf_input</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_type</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">optools</span><span class="o">.</span><span class="n">str_type</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_type</span><span class="p">[</span><span class="s1">&#39;q_I&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">optools</span><span class="o">.</span><span class="n">ref_type</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_type</span><span class="p">[</span><span class="s1">&#39;q_texture&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">optools</span><span class="o">.</span><span class="n">ref_type</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_type</span><span class="p">[</span><span class="s1">&#39;I_features&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">optools</span><span class="o">.</span><span class="n">ref_type</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_type</span><span class="p">[</span><span class="s1">&#39;pk_idx&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">optools</span><span class="o">.</span><span class="n">ref_type</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_type</span><span class="p">[</span><span class="s1">&#39;date_time&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">optools</span><span class="o">.</span><span class="n">ref_type</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_type</span><span class="p">[</span><span class="s1">&#39;t_utc&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">optools</span><span class="o">.</span><span class="n">ref_type</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">output_doc</span><span class="p">[</span><span class="s1">&#39;pif&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;pif object containing the relevant data for this experiment&#39;</span>
+
+<div class="viewcode-block" id="PifTernary.run"><a class="viewcode-back" href="../../../../../../moduledoc_files/paws.core.operations.PACKAGING.PIF.html#paws.core.operations.PACKAGING.PIF.pif_ternary.PifTernary.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">uid_pre</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span>
+        <span class="n">q_I</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="p">[</span><span class="s1">&#39;q_I&#39;</span><span class="p">]</span>
+        <span class="n">q_tex</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="p">[</span><span class="s1">&#39;q_texture&#39;</span><span class="p">]</span>
+        <span class="n">I_feats</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="p">[</span><span class="s1">&#39;I_features&#39;</span><span class="p">]</span>
+        <span class="n">pk_idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="p">[</span><span class="s1">&#39;pk_idx&#39;</span><span class="p">]</span>
+        <span class="n">t_str</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="p">[</span><span class="s1">&#39;date_time&#39;</span><span class="p">]</span>
+        <span class="n">t_utc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="p">[</span><span class="s1">&#39;t_utc&#39;</span><span class="p">]</span>
+        <span class="n">uid_full</span> <span class="o">=</span> <span class="n">uid_pre</span><span class="o">+</span><span class="s1">&#39;_&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">t_utc</span><span class="p">))</span>
+        <span class="n">q</span> <span class="o">=</span> <span class="n">q_I</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">I_of_q</span> <span class="o">=</span> <span class="n">q_I</span><span class="p">[:,</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">q_pk</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">q</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="n">pk_idx</span><span class="p">])</span>
+        <span class="n">I_pk</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">I_of_q</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="n">pk_idx</span><span class="p">])</span>
+        <span class="n">main_sys</span> <span class="o">=</span> <span class="n">pifobj</span><span class="o">.</span><span class="n">ChemicalSystem</span><span class="p">()</span>
+        <span class="n">main_sys</span><span class="o">.</span><span class="n">uid</span> <span class="o">=</span> <span class="n">uid_full</span>
+        <span class="n">main_sys</span><span class="o">.</span><span class="n">properties</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">xrd_to_pif_properties</span><span class="p">(</span><span class="n">q</span><span class="p">,</span><span class="n">I_of_q</span><span class="p">)</span>
+        <span class="n">main_sys</span><span class="o">.</span><span class="n">properties</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">texture_to_pif_properties</span><span class="p">(</span><span class="n">q_tex</span><span class="p">[:,</span><span class="mi">0</span><span class="p">],</span><span class="n">q_tex</span><span class="p">[:,</span><span class="mi">1</span><span class="p">])</span>
+        <span class="n">main_sys</span><span class="o">.</span><span class="n">properties</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pks_to_pif_properties</span><span class="p">(</span><span class="n">q_pk</span><span class="p">,</span><span class="n">I_pk</span><span class="p">)</span>
+        <span class="n">main_sys</span><span class="o">.</span><span class="n">properties</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">intensity_features_to_pif_properties</span><span class="p">(</span><span class="n">I_feats</span><span class="p">)</span>
+        <span class="n">main_sys</span><span class="o">.</span><span class="n">tags</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;sample id: &#39;</span><span class="o">+</span><span class="n">uid_pre</span><span class="p">,</span><span class="s1">&#39;date: &#39;</span><span class="o">+</span><span class="n">t_str</span><span class="p">,</span><span class="s1">&#39;utc: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">t_utc</span><span class="p">))]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">outputs</span><span class="p">[</span><span class="s1">&#39;pif&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">main_sys</span></div>
+
+<div class="viewcode-block" id="PifTernary.intensity_features_to_pif_properties"><a class="viewcode-back" href="../../../../../../moduledoc_files/paws.core.operations.PACKAGING.PIF.html#paws.core.operations.PACKAGING.PIF.pif_ternary.PifTernary.intensity_features_to_pif_properties">[docs]</a>    <span class="k">def</span> <span class="nf">intensity_features_to_pif_properties</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">I_feats</span><span class="p">):</span>
+        <span class="n">pImax</span> <span class="o">=</span> <span class="n">pifobj</span><span class="o">.</span><span class="n">Property</span><span class="p">()</span>
+        <span class="n">pImax</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;maximum XRD intensity&#39;</span>
+        <span class="n">pImax</span><span class="o">.</span><span class="n">scalars</span> <span class="o">=</span> <span class="p">[</span> <span class="n">pifobj</span><span class="o">.</span><span class="n">Scalar</span><span class="p">(</span><span class="n">I_feats</span><span class="p">[</span><span class="s1">&#39;Imax&#39;</span><span class="p">])</span> <span class="p">]</span>
+        <span class="n">pImax</span><span class="o">.</span><span class="n">units</span> <span class="o">=</span> <span class="s1">&#39;counts&#39;</span>
+        <span class="n">pIave</span> <span class="o">=</span> <span class="n">pifobj</span><span class="o">.</span><span class="n">Property</span><span class="p">()</span>
+        <span class="n">pIave</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;average XRD intensity&#39;</span>
+        <span class="n">pIave</span><span class="o">.</span><span class="n">scalars</span> <span class="o">=</span> <span class="p">[</span> <span class="n">pifobj</span><span class="o">.</span><span class="n">Scalar</span><span class="p">(</span><span class="n">I_feats</span><span class="p">[</span><span class="s1">&#39;Iave&#39;</span><span class="p">])</span> <span class="p">]</span>
+        <span class="n">pIave</span><span class="o">.</span><span class="n">units</span> <span class="o">=</span> <span class="s1">&#39;counts&#39;</span>
+        <span class="n">pratio</span> <span class="o">=</span> <span class="n">pifobj</span><span class="o">.</span><span class="n">Property</span><span class="p">()</span>
+        <span class="n">pratio</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;maximum-over-average XRD intensity&#39;</span>
+        <span class="n">pratio</span><span class="o">.</span><span class="n">scalars</span> <span class="o">=</span> <span class="p">[</span> <span class="n">pifobj</span><span class="o">.</span><span class="n">Scalar</span><span class="p">(</span><span class="n">I_feats</span><span class="p">[</span><span class="s1">&#39;Imax_Iave_ratio&#39;</span><span class="p">])</span> <span class="p">]</span>
+        <span class="n">pratio</span><span class="o">.</span><span class="n">units</span> <span class="o">=</span> <span class="s1">&#39;unitless&#39;</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">pImax</span><span class="p">,</span><span class="n">pIave</span><span class="p">,</span><span class="n">pratio</span><span class="p">]</span> </div>
+
+<div class="viewcode-block" id="PifTernary.pks_to_pif_properties"><a class="viewcode-back" href="../../../../../../moduledoc_files/paws.core.operations.PACKAGING.PIF.html#paws.core.operations.PACKAGING.PIF.pif_ternary.PifTernary.pks_to_pif_properties">[docs]</a>    <span class="k">def</span> <span class="nf">pks_to_pif_properties</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">q_pk</span><span class="p">,</span><span class="n">I_pk</span><span class="p">):</span>
+        <span class="n">props</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">q_pk</span><span class="p">)):</span>
+            <span class="n">p</span> <span class="o">=</span> <span class="n">pifobj</span><span class="o">.</span><span class="n">Property</span><span class="p">()</span>
+            <span class="n">p</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;XRD peak&#39;</span>
+            <span class="n">p</span><span class="o">.</span><span class="n">scalars</span> <span class="o">=</span> <span class="p">[</span> <span class="n">pifobj</span><span class="o">.</span><span class="n">Scalar</span><span class="p">(</span><span class="n">I_pk</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="p">]</span>
+            <span class="n">p</span><span class="o">.</span><span class="n">conditions</span> <span class="o">=</span> <span class="p">[]</span> 
+            <span class="n">p</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="n">pifobj</span><span class="o">.</span><span class="n">Value</span><span class="p">(</span><span class="s1">&#39;scattering vector&#39;</span><span class="p">,[</span><span class="n">pifobj</span><span class="o">.</span><span class="n">Scalar</span><span class="p">(</span><span class="n">q_pk</span><span class="p">[</span><span class="n">i</span><span class="p">])],</span><span class="kc">None</span><span class="p">,</span><span class="kc">None</span><span class="p">,</span><span class="s1">&#39;Angstrom^-1&#39;</span><span class="p">)</span> <span class="p">)</span>
+            <span class="n">p</span><span class="o">.</span><span class="n">units</span> <span class="o">=</span> <span class="s1">&#39;counts&#39;</span>
+            <span class="n">props</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">props</span></div>
+
+<div class="viewcode-block" id="PifTernary.texture_to_pif_properties"><a class="viewcode-back" href="../../../../../../moduledoc_files/paws.core.operations.PACKAGING.PIF.html#paws.core.operations.PACKAGING.PIF.pif_ternary.PifTernary.texture_to_pif_properties">[docs]</a>    <span class="k">def</span> <span class="nf">texture_to_pif_properties</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">q</span><span class="p">,</span><span class="n">tex_q</span><span class="p">):</span>
+        <span class="n">props</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">q</span><span class="p">)):</span>
+            <span class="n">p</span> <span class="o">=</span> <span class="n">pifobj</span><span class="o">.</span><span class="n">Property</span><span class="p">()</span>
+            <span class="n">p</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;texture&#39;</span>
+            <span class="n">p</span><span class="o">.</span><span class="n">scalars</span> <span class="o">=</span> <span class="p">[</span> <span class="n">pifobj</span><span class="o">.</span><span class="n">Scalar</span><span class="p">(</span><span class="n">tex_q</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="p">]</span>
+            <span class="n">p</span><span class="o">.</span><span class="n">conditions</span> <span class="o">=</span> <span class="p">[]</span> 
+            <span class="n">p</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="n">pifobj</span><span class="o">.</span><span class="n">Value</span><span class="p">(</span><span class="s1">&#39;scattering vector&#39;</span><span class="p">,[</span><span class="n">pifobj</span><span class="o">.</span><span class="n">Scalar</span><span class="p">(</span><span class="n">q</span><span class="p">[</span><span class="n">i</span><span class="p">])],</span><span class="kc">None</span><span class="p">,</span><span class="kc">None</span><span class="p">,</span><span class="s1">&#39;Angstrom^-1&#39;</span><span class="p">)</span> <span class="p">)</span>
+            <span class="n">p</span><span class="o">.</span><span class="n">units</span> <span class="o">=</span> <span class="s1">&#39;counts&#39;</span>
+            <span class="n">props</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">props</span></div>
+
+<div class="viewcode-block" id="PifTernary.xrd_to_pif_properties"><a class="viewcode-back" href="../../../../../../moduledoc_files/paws.core.operations.PACKAGING.PIF.html#paws.core.operations.PACKAGING.PIF.pif_ternary.PifTernary.xrd_to_pif_properties">[docs]</a>    <span class="k">def</span> <span class="nf">xrd_to_pif_properties</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">q</span><span class="p">,</span><span class="n">I_q</span><span class="p">):</span>
+        <span class="n">props</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">q</span><span class="p">)):</span>
+            <span class="n">p</span> <span class="o">=</span> <span class="n">pifobj</span><span class="o">.</span><span class="n">Property</span><span class="p">()</span>
+            <span class="n">p</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;XRD intensity&#39;</span>
+            <span class="n">p</span><span class="o">.</span><span class="n">scalars</span> <span class="o">=</span> <span class="p">[</span> <span class="n">pifobj</span><span class="o">.</span><span class="n">Scalar</span><span class="p">(</span><span class="n">I_q</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="p">]</span>
+            <span class="n">p</span><span class="o">.</span><span class="n">conditions</span> <span class="o">=</span> <span class="p">[]</span> 
+            <span class="n">p</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="n">pifobj</span><span class="o">.</span><span class="n">Value</span><span class="p">(</span><span class="s1">&#39;scattering vector&#39;</span><span class="p">,[</span><span class="n">pifobj</span><span class="o">.</span><span class="n">Scalar</span><span class="p">(</span><span class="n">q</span><span class="p">[</span><span class="n">i</span><span class="p">])],</span><span class="kc">None</span><span class="p">,</span><span class="kc">None</span><span class="p">,</span><span class="s1">&#39;Angstrom^-1&#39;</span><span class="p">)</span> <span class="p">)</span>
+            <span class="n">p</span><span class="o">.</span><span class="n">units</span> <span class="o">=</span> <span class="s1">&#39;counts&#39;</span>
+            <span class="n">props</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">props</span></div></div>
+        
+<span class="c1">#    def make_piftemperature(self,t):</span>
+<span class="c1">#        v = pifobj.Value()</span>
+<span class="c1">#        v.name = &#39;temperature&#39;</span>
+<span class="c1">#        tscl = pifobj.Scalar()</span>
+<span class="c1">#        tscl.value = str(t)</span>
+<span class="c1">#        v.scalars = [tscl]</span>
+<span class="c1">#        v.units = &#39;degrees Celsius&#39;</span>
+<span class="c1">#        return v</span>
+<span class="c1">#</span>
+<span class="c1">#    def make_pifvector(self,v):</span>
+<span class="c1">#        pifv = []</span>
+<span class="c1">#        for n in v:</span>
+<span class="c1">#            s = pifobj.Scalar()</span>
+<span class="c1">#            s.value = str(n)</span>
+<span class="c1">#            pifv.append(s)</span>
+<span class="c1">#        return pifv</span>
+<span class="c1">#</span>
+<span class="c1">#    def pifscalar(self,scl,errlo,errhi):</span>
+<span class="c1">#        s = pifobj.Scalar()</span>
+<span class="c1">#        s.value = str(scl) </span>
+<span class="c1">#        s.minimum = str(scl) </span>
+<span class="c1">#        s.maximum = str(scl) </span>
+<span class="c1">#        s.inclusiveMinimum = True</span>
+<span class="c1">#        s.inclusiveMaximum = True</span>
+<span class="c1">#        s.uncertainty = &#39;+{},-{}&#39;.format(errlo,errhi)</span>
+<span class="c1">#        s.approximate = True</span>
+<span class="c1">#        return s</span>
+
+
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../../../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../../../index.html">paws 0.4.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../../operations.html" >paws.core.operations</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2017, Lenson A. Pellouchoud.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.2.
+    </div>
+  </body>
+</html>

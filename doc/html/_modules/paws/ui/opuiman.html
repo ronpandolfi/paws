@@ -1,0 +1,163 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>paws.ui.opuiman &#8212; paws 0.4.0 documentation</title>
+    
+    <link rel="stylesheet" href="../../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '0.4.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">paws 0.4.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../ui.html" accesskey="U">paws.ui</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for paws.ui.opuiman</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">functools</span> <span class="k">import</span> <span class="n">partial</span>
+
+<span class="kn">from</span> <span class="nn">PySide</span> <span class="k">import</span> <span class="n">QtCore</span><span class="p">,</span> <span class="n">QtGui</span><span class="p">,</span> <span class="n">QtUiTools</span>
+
+<span class="kn">from</span> <span class="nn">.</span> <span class="k">import</span> <span class="n">uitools</span>
+<span class="kn">from</span> <span class="nn">..core</span> <span class="k">import</span> <span class="n">pawstools</span>
+<span class="kn">from</span> <span class="nn">..core.operations.operation</span> <span class="k">import</span> <span class="n">Operation</span>
+
+<div class="viewcode-block" id="OpUiManager"><a class="viewcode-back" href="../../../moduledoc_files/paws.ui.html#paws.ui.opuiman.OpUiManager">[docs]</a><span class="k">class</span> <span class="nc">OpUiManager</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">opman</span><span class="p">):</span>
+        <span class="n">ui_file</span> <span class="o">=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">QFile</span><span class="p">(</span><span class="n">pawstools</span><span class="o">.</span><span class="n">rootdir</span><span class="o">+</span><span class="s2">&quot;/ui/qtui/op_editor.ui&quot;</span><span class="p">)</span>
+        <span class="n">ui_file</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">QFile</span><span class="o">.</span><span class="n">ReadOnly</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ui</span> <span class="o">=</span> <span class="n">QtUiTools</span><span class="o">.</span><span class="n">QUiLoader</span><span class="p">()</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">ui_file</span><span class="p">)</span>
+        <span class="n">ui_file</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">opman</span> <span class="o">=</span> <span class="n">opman</span> 
+        <span class="bp">self</span><span class="o">.</span><span class="n">setup_ui</span><span class="p">()</span>
+
+<div class="viewcode-block" id="OpUiManager.get_op"><a class="viewcode-back" href="../../../moduledoc_files/paws.ui.html#paws.ui.opuiman.OpUiManager.get_op">[docs]</a>    <span class="k">def</span> <span class="nf">get_op</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">idx</span><span class="p">):</span>
+        <span class="n">itm</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">opman</span><span class="o">.</span><span class="n">get_item</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">itm</span><span class="o">.</span><span class="n">data</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">op_flag</span> <span class="o">=</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">Operation</span><span class="p">)</span>
+            <span class="c1">#op_flag = isinstance(x,Operation)</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="n">op_flag</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="n">op_flag</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">clear_op</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">set_op</span><span class="p">(</span><span class="n">x</span><span class="p">())</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">clear_op</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">op_info</span><span class="o">.</span><span class="n">setPlainText</span><span class="p">(</span><span class="s1">&#39;Selected item: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">x</span><span class="p">))</span></div>
+    
+<div class="viewcode-block" id="OpUiManager.clear_op"><a class="viewcode-back" href="../../../moduledoc_files/paws.ui.html#paws.ui.opuiman.OpUiManager.clear_op">[docs]</a>    <span class="k">def</span> <span class="nf">clear_op</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">op_name</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="n">n_widg</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">op_source_layout</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_widg</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+            <span class="n">itm</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">op_source_layout</span><span class="o">.</span><span class="n">takeAt</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+            <span class="n">itm</span><span class="o">.</span><span class="n">widget</span><span class="p">()</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="OpUiManager.set_op"><a class="viewcode-back" href="../../../moduledoc_files/paws.ui.html#paws.ui.opuiman.OpUiManager.set_op">[docs]</a>    <span class="k">def</span> <span class="nf">set_op</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">op</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Set up ui elements around existing input op&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">op</span> <span class="o">=</span> <span class="n">op</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">op_info</span><span class="o">.</span><span class="n">setPlainText</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">op</span><span class="o">.</span><span class="n">description</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">build_source</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="OpUiManager.build_source"><a class="viewcode-back" href="../../../moduledoc_files/paws.ui.html#paws.ui.opuiman.OpUiManager.build_source">[docs]</a>    <span class="k">def</span> <span class="nf">build_source</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">op_name</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">op</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="OpUiManager.edit_op"><a class="viewcode-back" href="../../../moduledoc_files/paws.ui.html#paws.ui.opuiman.OpUiManager.edit_op">[docs]</a>    <span class="k">def</span> <span class="nf">edit_op</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">print</span> <span class="s1">&#39;edit op&#39;</span></div>
+
+<div class="viewcode-block" id="OpUiManager.enable_ops"><a class="viewcode-back" href="../../../moduledoc_files/paws.ui.html#paws.ui.opuiman.OpUiManager.enable_ops">[docs]</a>    <span class="k">def</span> <span class="nf">enable_ops</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">print</span> <span class="s1">&#39;enable ops&#39;</span></div>
+
+<div class="viewcode-block" id="OpUiManager.setup_ui"><a class="viewcode-back" href="../../../moduledoc_files/paws.ui.html#paws.ui.opuiman.OpUiManager.setup_ui">[docs]</a>    <span class="k">def</span> <span class="nf">setup_ui</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">setWindowTitle</span><span class="p">(</span><span class="s2">&quot;operation setup&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">op_selector</span><span class="o">.</span><span class="n">setModel</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">opman</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">op_selector</span><span class="o">.</span><span class="n">hideColumn</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">op_selector</span><span class="o">.</span><span class="n">clicked</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span> <span class="n">partial</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_op</span><span class="p">)</span> <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">edit_op_button</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="s2">&quot;&amp;Edit operation&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">enable_op_button</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="s2">&quot;&amp;Enable operations&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">edit_op_button</span><span class="o">.</span><span class="n">clicked</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">edit_op</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">enable_op_button</span><span class="o">.</span><span class="n">clicked</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">enable_ops</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">op_selector</span><span class="o">.</span><span class="n">clicked</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span> <span class="n">partial</span><span class="p">(</span><span class="n">uitools</span><span class="o">.</span><span class="n">toggle_expand</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">op_selector</span><span class="p">)</span> <span class="p">)</span> 
+        <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">op_name</span><span class="o">.</span><span class="n">setAlignment</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">AlignCenter</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">op_name</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="s1">&#39;-select an operation to view source-&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">splitter</span><span class="o">.</span><span class="n">setStretchFactor</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1000</span><span class="p">)</span>    
+        <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">setStyleSheet</span><span class="p">(</span> <span class="s2">&quot;QLineEdit { border: none }&quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">styleSheet</span><span class="p">()</span> <span class="p">)</span></div></div>
+
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">paws 0.4.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../ui.html" >paws.ui</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2017, Lenson A. Pellouchoud.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.2.
+    </div>
+  </body>
+</html>

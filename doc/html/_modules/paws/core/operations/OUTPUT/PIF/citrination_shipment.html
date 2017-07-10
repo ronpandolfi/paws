@@ -1,0 +1,275 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>paws.core.operations.OUTPUT.PIF.citrination_shipment &#8212; paws 0.4.0 documentation</title>
+    
+    <link rel="stylesheet" href="../../../../../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../../../../',
+        VERSION:     '0.4.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../../../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../../search.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../../../index.html">paws 0.4.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../../operations.html" accesskey="U">paws.core.operations</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for paws.core.operations.OUTPUT.PIF.citrination_shipment</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">os</span>
+
+<span class="kn">from</span> <span class="nn">pypif</span> <span class="k">import</span> <span class="n">pif</span>
+<span class="kn">from</span> <span class="nn">citrination_client</span> <span class="k">import</span> <span class="n">CitrinationClient</span> 
+
+<span class="kn">from</span> <span class="nn">...operation</span> <span class="k">import</span> <span class="n">Operation</span>
+<span class="kn">from</span> <span class="nn">...</span> <span class="k">import</span> <span class="n">optools</span>
+        
+<span class="c1"># TODO: Note that the entire data set can be one json,</span>
+<span class="c1"># of an array of pif records, and this will lead to a faster upload.</span>
+
+<div class="viewcode-block" id="CreateDataSet"><a class="viewcode-back" href="../../../../../../moduledoc_files/paws.core.operations.OUTPUT.PIF.html#paws.core.operations.OUTPUT.PIF.citrination_shipment.CreateDataSet">[docs]</a><span class="k">class</span> <span class="nc">CreateDataSet</span><span class="p">(</span><span class="n">Operation</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Take a Citrination client as input and use it to create a data set.</span>
+<span class="sd">    Output the index of the created data set.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">input_names</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;client&#39;</span><span class="p">,</span><span class="s1">&#39;name&#39;</span><span class="p">,</span><span class="s1">&#39;description&#39;</span><span class="p">,</span><span class="s1">&#39;share&#39;</span><span class="p">]</span>
+        <span class="n">output_names</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;ok_flag&#39;</span><span class="p">,</span><span class="s1">&#39;dsid&#39;</span><span class="p">]</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">CreateDataSet</span><span class="p">,</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">input_names</span><span class="p">,</span><span class="n">output_names</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_doc</span><span class="p">[</span><span class="s1">&#39;client&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;A reference to a running Citrination client.&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_doc</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;Name for the new data set.&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_doc</span><span class="p">[</span><span class="s1">&#39;description&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;Description for the new data set.&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_doc</span><span class="p">[</span><span class="s1">&#39;share&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;Flag whether or not dataset should be shared with all users on the instance.&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">output_doc</span><span class="p">[</span><span class="s1">&#39;ok_flag&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;Indicator of whether or not the data set was created successfully.&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">output_doc</span><span class="p">[</span><span class="s1">&#39;dsid&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;The index of the new data set, if created successfully.&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_src</span><span class="p">[</span><span class="s1">&#39;client&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">optools</span><span class="o">.</span><span class="n">plugin_input</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_src</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">optools</span><span class="o">.</span><span class="n">text_input</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_src</span><span class="p">[</span><span class="s1">&#39;description&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">optools</span><span class="o">.</span><span class="n">text_input</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_src</span><span class="p">[</span><span class="s1">&#39;share&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">optools</span><span class="o">.</span><span class="n">text_input</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_type</span><span class="p">[</span><span class="s1">&#39;client&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">optools</span><span class="o">.</span><span class="n">ref_type</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_type</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">optools</span><span class="o">.</span><span class="n">str_type</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_type</span><span class="p">[</span><span class="s1">&#39;description&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">optools</span><span class="o">.</span><span class="n">str_type</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_type</span><span class="p">[</span><span class="s1">&#39;share&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">optools</span><span class="o">.</span><span class="n">bool_type</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="p">[</span><span class="s1">&#39;description&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;New Citrination data set&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="p">[</span><span class="s1">&#39;share&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+
+<div class="viewcode-block" id="CreateDataSet.run"><a class="viewcode-back" href="../../../../../../moduledoc_files/paws.core.operations.OUTPUT.PIF.html#paws.core.operations.OUTPUT.PIF.citrination_shipment.CreateDataSet.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">c</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="p">[</span><span class="s1">&#39;client&#39;</span><span class="p">]</span>
+        <span class="n">f</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">r</span> <span class="o">=</span> <span class="n">c</span><span class="o">.</span><span class="n">create_data_set</span><span class="p">()</span>
+            <span class="c1">#if &#39;dataset&#39; in r.keys():</span>
+            <span class="c1">#    s = &#39;client successfully queried data set {}.&#39;.format(dsid)</span>
+            <span class="c1">#    f = True</span>
+            <span class="c1">#else:</span>
+            <span class="c1">#    s = &#39;client queried data set {} but found no dataset in response dict: Response: {}&#39;.format(dsid,r)</span>
+            <span class="c1">#    f = True</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
+            <span class="n">s</span> <span class="o">=</span> <span class="s1">&#39;client failed to create data set. Error message: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ex</span><span class="o">.</span><span class="n">message</span><span class="p">)</span>
+            <span class="n">f</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">outputs</span><span class="p">[</span><span class="s1">&#39;ok_flag&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">f</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">outputs</span><span class="p">[</span><span class="s1">&#39;dsid&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span> </div></div>
+
+<div class="viewcode-block" id="CheckDataSet"><a class="viewcode-back" href="../../../../../../moduledoc_files/paws.core.operations.OUTPUT.PIF.html#paws.core.operations.OUTPUT.PIF.citrination_shipment.CheckDataSet">[docs]</a><span class="k">class</span> <span class="nc">CheckDataSet</span><span class="p">(</span><span class="n">Operation</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Take a Citrination client as input and use it to query a data set.</span>
+<span class="sd">    Output some indication of whether or not the query was successful.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">input_names</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;client&#39;</span><span class="p">,</span><span class="s1">&#39;dsid&#39;</span><span class="p">]</span>
+        <span class="n">output_names</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;ok_flag&#39;</span><span class="p">,</span><span class="s1">&#39;status&#39;</span><span class="p">]</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">CheckDataSet</span><span class="p">,</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">input_names</span><span class="p">,</span><span class="n">output_names</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_doc</span><span class="p">[</span><span class="s1">&#39;client&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;A reference to a running Citrination client.&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_doc</span><span class="p">[</span><span class="s1">&#39;dsid&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;The data set to be queried.&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">output_doc</span><span class="p">[</span><span class="s1">&#39;ok_flag&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;Indicator of whether or not the data set passes the test.&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">output_doc</span><span class="p">[</span><span class="s1">&#39;status&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;Message describing the state of the data set.&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_src</span><span class="p">[</span><span class="s1">&#39;client&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">optools</span><span class="o">.</span><span class="n">plugin_input</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_src</span><span class="p">[</span><span class="s1">&#39;dsid&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">optools</span><span class="o">.</span><span class="n">text_input</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_type</span><span class="p">[</span><span class="s1">&#39;dsid&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">optools</span><span class="o">.</span><span class="n">int_type</span>
+
+<div class="viewcode-block" id="CheckDataSet.run"><a class="viewcode-back" href="../../../../../../moduledoc_files/paws.core.operations.OUTPUT.PIF.html#paws.core.operations.OUTPUT.PIF.citrination_shipment.CheckDataSet.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">c</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="p">[</span><span class="s1">&#39;client&#39;</span><span class="p">]</span>
+        <span class="n">dsid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="p">[</span><span class="s1">&#39;dsid&#39;</span><span class="p">]</span> 
+        <span class="n">f</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">r</span> <span class="o">=</span> <span class="n">c</span><span class="o">.</span><span class="n">get_dataset_files</span><span class="p">(</span><span class="n">dsid</span><span class="p">)</span>
+            <span class="k">if</span> <span class="s1">&#39;dataset&#39;</span> <span class="ow">in</span> <span class="n">r</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="n">s</span> <span class="o">=</span> <span class="s1">&#39;client successfully queried data set </span><span class="si">{}</span><span class="s1">.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">dsid</span><span class="p">)</span>
+                <span class="n">f</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">s</span> <span class="o">=</span> <span class="s1">&#39;client queried data set </span><span class="si">{}</span><span class="s1"> but found no dataset in response dict: Response: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">dsid</span><span class="p">,</span><span class="n">r</span><span class="p">)</span>
+                <span class="n">f</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
+            <span class="n">s</span> <span class="o">=</span> <span class="s1">&#39;client failed to query data set number </span><span class="si">{}</span><span class="s1">. Error message: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">dsid</span><span class="p">,</span><span class="n">ex</span><span class="o">.</span><span class="n">message</span><span class="p">)</span>
+            <span class="n">f</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">outputs</span><span class="p">[</span><span class="s1">&#39;ok_flag&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">f</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">outputs</span><span class="p">[</span><span class="s1">&#39;status&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">s</span></div></div>
+
+<div class="viewcode-block" id="ShipToDataSet"><a class="viewcode-back" href="../../../../../../moduledoc_files/paws.core.operations.OUTPUT.PIF.html#paws.core.operations.OUTPUT.PIF.citrination_shipment.ShipToDataSet">[docs]</a><span class="k">class</span> <span class="nc">ShipToDataSet</span><span class="p">(</span><span class="n">Operation</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Take a pypif.obj.System object and ship it to a given Citrination data set.    </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">input_names</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;pif&#39;</span><span class="p">,</span><span class="s1">&#39;client&#39;</span><span class="p">,</span><span class="s1">&#39;dsid&#39;</span><span class="p">,</span><span class="s1">&#39;json_path&#39;</span><span class="p">,</span><span class="s1">&#39;json_flag&#39;</span><span class="p">,</span><span class="s1">&#39;ship_flag&#39;</span><span class="p">]</span>
+        <span class="n">output_names</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;response&#39;</span><span class="p">]</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">ShipToDataSet</span><span class="p">,</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">input_names</span><span class="p">,</span><span class="n">output_names</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_doc</span><span class="p">[</span><span class="s1">&#39;pif&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;A pypif.obj.System object&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_doc</span><span class="p">[</span><span class="s1">&#39;client&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;A working Citrination client&#39;</span> 
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_doc</span><span class="p">[</span><span class="s1">&#39;dsid&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;Data set ID where the pif will be stored on Citrination&#39;</span> 
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_doc</span><span class="p">[</span><span class="s1">&#39;json_path&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;Filesystem path where the json of the pif will be saved&#39;</span> 
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_doc</span><span class="p">[</span><span class="s1">&#39;json_flag&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;Flag for whether or not to save the pif as json&#39;</span> 
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_doc</span><span class="p">[</span><span class="s1">&#39;ship_flag&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;Flag for actually shipping the pif&#39;</span> 
+        <span class="bp">self</span><span class="o">.</span><span class="n">output_doc</span><span class="p">[</span><span class="s1">&#39;response&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;The Citrination server response to the shipment&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_src</span><span class="p">[</span><span class="s1">&#39;pif&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">optools</span><span class="o">.</span><span class="n">wf_input</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_src</span><span class="p">[</span><span class="s1">&#39;client&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">optools</span><span class="o">.</span><span class="n">plugin_input</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_src</span><span class="p">[</span><span class="s1">&#39;dsid&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">optools</span><span class="o">.</span><span class="n">wf_input</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_src</span><span class="p">[</span><span class="s1">&#39;json_path&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">optools</span><span class="o">.</span><span class="n">fs_input</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_src</span><span class="p">[</span><span class="s1">&#39;json_flag&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">optools</span><span class="o">.</span><span class="n">text_input</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_src</span><span class="p">[</span><span class="s1">&#39;ship_flag&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">optools</span><span class="o">.</span><span class="n">text_input</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_type</span><span class="p">[</span><span class="s1">&#39;pif&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">optools</span><span class="o">.</span><span class="n">ref_type</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_type</span><span class="p">[</span><span class="s1">&#39;client&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">optools</span><span class="o">.</span><span class="n">ref_type</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_type</span><span class="p">[</span><span class="s1">&#39;dsid&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">optools</span><span class="o">.</span><span class="n">ref_type</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_type</span><span class="p">[</span><span class="s1">&#39;json_path&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">optools</span><span class="o">.</span><span class="n">path_type</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_type</span><span class="p">[</span><span class="s1">&#39;json_flag&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">optools</span><span class="o">.</span><span class="n">bool_type</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_type</span><span class="p">[</span><span class="s1">&#39;ship_flag&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">optools</span><span class="o">.</span><span class="n">bool_type</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="p">[</span><span class="s1">&#39;ship_flag&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="p">[</span><span class="s1">&#39;json_flag&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+
+<div class="viewcode-block" id="ShipToDataSet.run"><a class="viewcode-back" href="../../../../../../moduledoc_files/paws.core.operations.OUTPUT.PIF.html#paws.core.operations.OUTPUT.PIF.citrination_shipment.ShipToDataSet.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">cl</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="p">[</span><span class="s1">&#39;client&#39;</span><span class="p">]</span> 
+        <span class="n">dsid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="p">[</span><span class="s1">&#39;dsid&#39;</span><span class="p">]</span> 
+        <span class="n">p</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="p">[</span><span class="s1">&#39;pif&#39;</span><span class="p">]</span>        
+        <span class="n">json_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="p">[</span><span class="s1">&#39;json_path&#39;</span><span class="p">]</span>
+        <span class="n">json_flag</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="p">[</span><span class="s1">&#39;json_flag&#39;</span><span class="p">]</span>
+        <span class="n">ship_flag</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="p">[</span><span class="s1">&#39;ship_flag&#39;</span><span class="p">]</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">json_file</span> <span class="o">=</span> <span class="n">json_path</span><span class="o">+</span><span class="s1">&#39;/&#39;</span><span class="o">+</span><span class="n">p</span><span class="o">.</span><span class="n">uid</span><span class="o">+</span><span class="s1">&#39;.json&#39;</span>
+            <span class="c1"># make p an array of pifs to get a big json that has all records</span>
+            <span class="n">pif</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="nb">open</span><span class="p">(</span><span class="n">json_file</span><span class="p">,</span><span class="s1">&#39;w&#39;</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">ship_flag</span><span class="p">:</span>
+                <span class="n">r</span> <span class="o">=</span> <span class="n">cl</span><span class="o">.</span><span class="n">upload_file</span><span class="p">(</span><span class="n">json_file</span><span class="p">,</span><span class="n">data_set_id</span> <span class="o">=</span> <span class="n">dsid</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">r</span> <span class="o">=</span> <span class="s1">&#39;dry run: no shipment occurred. pif object: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">pif</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">p</span><span class="p">))</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">json_flag</span><span class="p">:</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">json_file</span><span class="p">)</span> 
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
+            <span class="n">r</span> <span class="o">=</span> <span class="s1">&#39;An error occurred while shipping. Error message: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ex</span><span class="o">.</span><span class="n">message</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">outputs</span><span class="p">[</span><span class="s1">&#39;response&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">r</span></div></div>
+
+
+<div class="viewcode-block" id="ShipJSON"><a class="viewcode-back" href="../../../../../../moduledoc_files/paws.core.operations.OUTPUT.PIF.html#paws.core.operations.OUTPUT.PIF.citrination_shipment.ShipJSON">[docs]</a><span class="k">class</span> <span class="nc">ShipJSON</span><span class="p">(</span><span class="n">Operation</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Take a .json file containing a pif, and ship the pif to a given Citrination data set.    </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">input_names</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;json_path&#39;</span><span class="p">,</span><span class="s1">&#39;client&#39;</span><span class="p">,</span><span class="s1">&#39;dsid&#39;</span><span class="p">,</span><span class="s1">&#39;ship_flag&#39;</span><span class="p">]</span>
+        <span class="n">output_names</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;response&#39;</span><span class="p">]</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">ShipJSON</span><span class="p">,</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">input_names</span><span class="p">,</span><span class="n">output_names</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_doc</span><span class="p">[</span><span class="s1">&#39;json_path&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;Filesystem path where the json of the pif is saved&#39;</span> 
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_doc</span><span class="p">[</span><span class="s1">&#39;client&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;A working Citrination client&#39;</span> 
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_doc</span><span class="p">[</span><span class="s1">&#39;dsid&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;Data set ID where the pif will be stored on Citrination&#39;</span> 
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_doc</span><span class="p">[</span><span class="s1">&#39;ship_flag&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;Flag for actually shipping the pif&#39;</span> 
+        <span class="bp">self</span><span class="o">.</span><span class="n">output_doc</span><span class="p">[</span><span class="s1">&#39;response&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;The Citrination server response to the shipment&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_src</span><span class="p">[</span><span class="s1">&#39;json_path&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">optools</span><span class="o">.</span><span class="n">fs_input</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_src</span><span class="p">[</span><span class="s1">&#39;client&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">optools</span><span class="o">.</span><span class="n">plugin_input</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_src</span><span class="p">[</span><span class="s1">&#39;dsid&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">optools</span><span class="o">.</span><span class="n">wf_input</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_src</span><span class="p">[</span><span class="s1">&#39;ship_flag&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">optools</span><span class="o">.</span><span class="n">text_input</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_type</span><span class="p">[</span><span class="s1">&#39;json_path&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">optools</span><span class="o">.</span><span class="n">path_type</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_type</span><span class="p">[</span><span class="s1">&#39;client&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">optools</span><span class="o">.</span><span class="n">ref_type</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_type</span><span class="p">[</span><span class="s1">&#39;dsid&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">optools</span><span class="o">.</span><span class="n">ref_type</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_type</span><span class="p">[</span><span class="s1">&#39;ship_flag&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">optools</span><span class="o">.</span><span class="n">bool_type</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="p">[</span><span class="s1">&#39;ship_flag&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+
+<div class="viewcode-block" id="ShipJSON.run"><a class="viewcode-back" href="../../../../../../moduledoc_files/paws.core.operations.OUTPUT.PIF.html#paws.core.operations.OUTPUT.PIF.citrination_shipment.ShipJSON.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">json_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="p">[</span><span class="s1">&#39;json_path&#39;</span><span class="p">]</span>
+        <span class="n">cl</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="p">[</span><span class="s1">&#39;client&#39;</span><span class="p">]</span> 
+        <span class="n">dsid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="p">[</span><span class="s1">&#39;dsid&#39;</span><span class="p">]</span> 
+        <span class="n">ship_flag</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="p">[</span><span class="s1">&#39;ship_flag&#39;</span><span class="p">]</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">ship_flag</span><span class="p">:</span>
+                <span class="n">r</span> <span class="o">=</span> <span class="n">cl</span><span class="o">.</span><span class="n">upload_file</span><span class="p">(</span><span class="n">json_path</span><span class="p">,</span><span class="n">data_set_id</span> <span class="o">=</span> <span class="n">dsid</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">r</span> <span class="o">=</span> <span class="s1">&#39;dry run: no shipment occurred. json path: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">json_path</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
+            <span class="n">r</span> <span class="o">=</span> <span class="s1">&#39;An error occurred while shipping. Error message: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ex</span><span class="o">.</span><span class="n">message</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">outputs</span><span class="p">[</span><span class="s1">&#39;response&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">r</span></div></div>
+
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../../../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../../../index.html">paws 0.4.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../../operations.html" >paws.core.operations</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2017, Lenson A. Pellouchoud.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.2.
+    </div>
+  </body>
+</html>

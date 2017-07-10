@@ -1,0 +1,573 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>paws.core.operations.PROCESSING.SAXS package &#8212; paws 0.4.0 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.4.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="paws.core.operations.TESTS package" href="paws.core.operations.TESTS.html" />
+    <link rel="prev" title="paws.core.operations.PROCESSING package" href="paws.core.operations.PROCESSING.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="paws.core.operations.TESTS.html" title="paws.core.operations.TESTS package"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="paws.core.operations.PROCESSING.html" title="paws.core.operations.PROCESSING package"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">paws 0.4.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../apidoc.html" >API Documentation</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="paws.html" >paws package</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="paws.core.html" >paws.core package</a> &#187;</li>
+          <li class="nav-item nav-item-4"><a href="paws.core.operations.html" >paws.core.operations package</a> &#187;</li>
+          <li class="nav-item nav-item-5"><a href="paws.core.operations.PROCESSING.html" accesskey="U">paws.core.operations.PROCESSING package</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="paws-core-operations-processing-saxs-package">
+<h1>paws.core.operations.PROCESSING.SAXS package<a class="headerlink" href="#paws-core-operations-processing-saxs-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-paws.core.operations.PROCESSING.SAXS.background_subtraction">
+<span id="paws-core-operations-processing-saxs-background-subtraction-module"></span><h2>paws.core.operations.PROCESSING.SAXS.background_subtraction module<a class="headerlink" href="#module-paws.core.operations.PROCESSING.SAXS.background_subtraction" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="paws.core.operations.PROCESSING.SAXS.background_subtraction.BgSubtractByTemperature">
+<em class="property">class </em><code class="descclassname">paws.core.operations.PROCESSING.SAXS.background_subtraction.</code><code class="descname">BgSubtractByTemperature</code><a class="reference internal" href="../_modules/paws/core/operations/PROCESSING/SAXS/background_subtraction.html#BgSubtractByTemperature"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#paws.core.operations.PROCESSING.SAXS.background_subtraction.BgSubtractByTemperature" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="paws.core.operations.html#paws.core.operations.operation.Operation" title="paws.core.operations.operation.Operation"><code class="xref py py-class docutils literal"><span class="pre">paws.core.operations.operation.Operation</span></code></a></p>
+<p>Find a background spectrum from a batch of background spectra,
+where the temperature of the background spectrum is as close as possible
+to the (input) temperature of the measured spectrum.
+Then subtract that background spectrum from the input spectrum.
+The measured and background spectra are expected to have the same domain.</p>
+<dl class="method">
+<dt id="paws.core.operations.PROCESSING.SAXS.background_subtraction.BgSubtractByTemperature.run">
+<code class="descname">run</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paws/core/operations/PROCESSING/SAXS/background_subtraction.html#BgSubtractByTemperature.run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#paws.core.operations.PROCESSING.SAXS.background_subtraction.BgSubtractByTemperature.run" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="paws.core.operations.PROCESSING.SAXS.background_subtraction.SubtractMaximumBackground">
+<em class="property">class </em><code class="descclassname">paws.core.operations.PROCESSING.SAXS.background_subtraction.</code><code class="descname">SubtractMaximumBackground</code><a class="reference internal" href="../_modules/paws/core/operations/PROCESSING/SAXS/background_subtraction.html#SubtractMaximumBackground"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#paws.core.operations.PROCESSING.SAXS.background_subtraction.SubtractMaximumBackground" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="paws.core.operations.html#paws.core.operations.operation.Operation" title="paws.core.operations.operation.Operation"><code class="xref py py-class docutils literal"><span class="pre">paws.core.operations.operation.Operation</span></code></a></p>
+<p>Subtract a background from a foreground, with scaling to prevent over-subtraction.</p>
+<p>Has optional arguments for error vectors.  If no error estimate is available, set these to <em>None</em>.
+If either error vector is <em>None</em>, the output error vector will also be <em>None</em>.</p>
+<p>Can also, optionally, window to a region in q.</p>
+<dl class="method">
+<dt id="paws.core.operations.PROCESSING.SAXS.background_subtraction.SubtractMaximumBackground.run">
+<code class="descname">run</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paws/core/operations/PROCESSING/SAXS/background_subtraction.html#SubtractMaximumBackground.run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#paws.core.operations.PROCESSING.SAXS.background_subtraction.SubtractMaximumBackground.run" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="paws.core.operations.PROCESSING.SAXS.background_subtraction.subtract_maximum_background">
+<code class="descclassname">paws.core.operations.PROCESSING.SAXS.background_subtraction.</code><code class="descname">subtract_maximum_background</code><span class="sig-paren">(</span><em>q_f</em>, <em>q_b</em>, <em>I_f</em>, <em>I_b</em>, <em>dI_f=None</em>, <em>dI_b=None</em>, <em>q1=None</em>, <em>q2=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paws/core/operations/PROCESSING/SAXS/background_subtraction.html#subtract_maximum_background"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#paws.core.operations.PROCESSING.SAXS.background_subtraction.subtract_maximum_background" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-paws.core.operations.PROCESSING.SAXS.saxs">
+<span id="paws-core-operations-processing-saxs-saxs-module"></span><h2>paws.core.operations.PROCESSING.SAXS.saxs module<a class="headerlink" href="#module-paws.core.operations.PROCESSING.SAXS.saxs" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="paws.core.operations.PROCESSING.SAXS.saxs.FetchReferences">
+<em class="property">class </em><code class="descclassname">paws.core.operations.PROCESSING.SAXS.saxs.</code><code class="descname">FetchReferences</code><a class="reference internal" href="../_modules/paws/core/operations/PROCESSING/SAXS/saxs.html#FetchReferences"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#paws.core.operations.PROCESSING.SAXS.saxs.FetchReferences" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="paws.core.operations.html#paws.core.operations.operation.Operation" title="paws.core.operations.operation.Operation"><code class="xref py py-class docutils literal"><span class="pre">paws.core.operations.operation.Operation</span></code></a></p>
+<p>Fetch previously generated and stored metrics used for guessing diffraction pattern properties.</p>
+<p>This function is for examination, and is not necessary for computation.
+The file in question is auto-fetched by operations that rely on it.</p>
+<dl class="method">
+<dt id="paws.core.operations.PROCESSING.SAXS.saxs.FetchReferences.run">
+<code class="descname">run</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paws/core/operations/PROCESSING/SAXS/saxs.html#FetchReferences.run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#paws.core.operations.PROCESSING.SAXS.saxs.FetchReferences.run" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="paws.core.operations.PROCESSING.SAXS.saxs.GenerateReferences">
+<em class="property">class </em><code class="descclassname">paws.core.operations.PROCESSING.SAXS.saxs.</code><code class="descname">GenerateReferences</code><a class="reference internal" href="../_modules/paws/core/operations/PROCESSING/SAXS/saxs.html#GenerateReferences"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#paws.core.operations.PROCESSING.SAXS.saxs.GenerateReferences" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="paws.core.operations.html#paws.core.operations.operation.Operation" title="paws.core.operations.operation.Operation"><code class="xref py py-class docutils literal"><span class="pre">paws.core.operations.operation.Operation</span></code></a></p>
+<p>Generate metrics used for guessing diffraction pattern properties.</p>
+<p>DOES NOT STORE.  IS NOT AUTOMATICALLY AVAILABLE TO OTHER OPERATIONS.</p>
+<p>Use OverwriteReferences to store the resulting dictionary, if desired.</p>
+<dl class="method">
+<dt id="paws.core.operations.PROCESSING.SAXS.saxs.GenerateReferences.run">
+<code class="descname">run</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paws/core/operations/PROCESSING/SAXS/saxs.html#GenerateReferences.run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#paws.core.operations.PROCESSING.SAXS.saxs.GenerateReferences.run" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="paws.core.operations.PROCESSING.SAXS.saxs.GenerateSphericalDiffraction">
+<em class="property">class </em><code class="descclassname">paws.core.operations.PROCESSING.SAXS.saxs.</code><code class="descname">GenerateSphericalDiffraction</code><a class="reference internal" href="../_modules/paws/core/operations/PROCESSING/SAXS/saxs.html#GenerateSphericalDiffraction"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#paws.core.operations.PROCESSING.SAXS.saxs.GenerateSphericalDiffraction" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="paws.core.operations.html#paws.core.operations.operation.Operation" title="paws.core.operations.operation.Operation"><code class="xref py py-class docutils literal"><span class="pre">paws.core.operations.operation.Operation</span></code></a></p>
+<p>Generate a SAXS diffraction pattern for spherical nanoparticles.</p>
+<p>Uses r0 in real units and, if asked to generate q, gives q in real units.</p>
+<dl class="method">
+<dt id="paws.core.operations.PROCESSING.SAXS.saxs.GenerateSphericalDiffraction.run">
+<code class="descname">run</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paws/core/operations/PROCESSING/SAXS/saxs.html#GenerateSphericalDiffraction.run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#paws.core.operations.PROCESSING.SAXS.saxs.GenerateSphericalDiffraction.run" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="paws.core.operations.PROCESSING.SAXS.saxs.GuessProperties">
+<em class="property">class </em><code class="descclassname">paws.core.operations.PROCESSING.SAXS.saxs.</code><code class="descname">GuessProperties</code><a class="reference internal" href="../_modules/paws/core/operations/PROCESSING/SAXS/saxs.html#GuessProperties"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#paws.core.operations.PROCESSING.SAXS.saxs.GuessProperties" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="paws.core.operations.html#paws.core.operations.operation.Operation" title="paws.core.operations.operation.Operation"><code class="xref py py-class docutils literal"><span class="pre">paws.core.operations.operation.Operation</span></code></a></p>
+<p>Guess the polydispersity, mean size, and amplitude of spherical diffraction pattern.</p>
+<p>Assumes the data have already been background subtracted, smoothed, and otherwise cleaned.</p>
+<dl class="method">
+<dt id="paws.core.operations.PROCESSING.SAXS.saxs.GuessProperties.run">
+<code class="descname">run</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paws/core/operations/PROCESSING/SAXS/saxs.html#GuessProperties.run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#paws.core.operations.PROCESSING.SAXS.saxs.GuessProperties.run" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="paws.core.operations.PROCESSING.SAXS.saxs.OptimizeSphericalDiffractionFit">
+<em class="property">class </em><code class="descclassname">paws.core.operations.PROCESSING.SAXS.saxs.</code><code class="descname">OptimizeSphericalDiffractionFit</code><a class="reference internal" href="../_modules/paws/core/operations/PROCESSING/SAXS/saxs.html#OptimizeSphericalDiffractionFit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#paws.core.operations.PROCESSING.SAXS.saxs.OptimizeSphericalDiffractionFit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="paws.core.operations.html#paws.core.operations.operation.Operation" title="paws.core.operations.operation.Operation"><code class="xref py py-class docutils literal"><span class="pre">paws.core.operations.operation.Operation</span></code></a></p>
+<p>From an initial guess, optimize r0, I0, and fractional_variation.</p>
+<dl class="method">
+<dt id="paws.core.operations.PROCESSING.SAXS.saxs.OptimizeSphericalDiffractionFit.run">
+<code class="descname">run</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paws/core/operations/PROCESSING/SAXS/saxs.html#OptimizeSphericalDiffractionFit.run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#paws.core.operations.PROCESSING.SAXS.saxs.OptimizeSphericalDiffractionFit.run" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="paws.core.operations.PROCESSING.SAXS.saxs.OverwriteReferences">
+<em class="property">class </em><code class="descclassname">paws.core.operations.PROCESSING.SAXS.saxs.</code><code class="descname">OverwriteReferences</code><a class="reference internal" href="../_modules/paws/core/operations/PROCESSING/SAXS/saxs.html#OverwriteReferences"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#paws.core.operations.PROCESSING.SAXS.saxs.OverwriteReferences" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="paws.core.operations.html#paws.core.operations.operation.Operation" title="paws.core.operations.operation.Operation"><code class="xref py py-class docutils literal"><span class="pre">paws.core.operations.operation.Operation</span></code></a></p>
+<p>Store previously generated metrics used for guessing diffraction pattern properties.</p>
+<p>USE WITH CAUTION as it will OVERWRITE any existing reference file.</p>
+<dl class="method">
+<dt id="paws.core.operations.PROCESSING.SAXS.saxs.OverwriteReferences.run">
+<code class="descname">run</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paws/core/operations/PROCESSING/SAXS/saxs.html#OverwriteReferences.run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#paws.core.operations.PROCESSING.SAXS.saxs.OverwriteReferences.run" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="paws.core.operations.PROCESSING.SAXS.saxs.arbitrary_order_solution">
+<code class="descclassname">paws.core.operations.PROCESSING.SAXS.saxs.</code><code class="descname">arbitrary_order_solution</code><span class="sig-paren">(</span><em>order</em>, <em>x</em>, <em>y</em>, <em>dy=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paws/core/operations/PROCESSING/SAXS/saxs.html#arbitrary_order_solution"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#paws.core.operations.PROCESSING.SAXS.saxs.arbitrary_order_solution" title="Permalink to this definition">¶</a></dt>
+<dd><p>Solves for a polynomial &#8220;fit&#8221; of arbitrary order.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="paws.core.operations.PROCESSING.SAXS.saxs.blur">
+<code class="descclassname">paws.core.operations.PROCESSING.SAXS.saxs.</code><code class="descname">blur</code><span class="sig-paren">(</span><em>x</em>, <em>factor</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paws/core/operations/PROCESSING/SAXS/saxs.html#blur"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#paws.core.operations.PROCESSING.SAXS.saxs.blur" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="paws.core.operations.PROCESSING.SAXS.saxs.chi_squared">
+<code class="descclassname">paws.core.operations.PROCESSING.SAXS.saxs.</code><code class="descname">chi_squared</code><span class="sig-paren">(</span><em>y1</em>, <em>y2</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paws/core/operations/PROCESSING/SAXS/saxs.html#chi_squared"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#paws.core.operations.PROCESSING.SAXS.saxs.chi_squared" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="paws.core.operations.PROCESSING.SAXS.saxs.choose_dips_and_shoulders">
+<code class="descclassname">paws.core.operations.PROCESSING.SAXS.saxs.</code><code class="descname">choose_dips_and_shoulders</code><span class="sig-paren">(</span><em>q</em>, <em>I</em>, <em>dI=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paws/core/operations/PROCESSING/SAXS/saxs.html#choose_dips_and_shoulders"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#paws.core.operations.PROCESSING.SAXS.saxs.choose_dips_and_shoulders" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find the location of dips (low points) and shoulders (high points).</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="paws.core.operations.PROCESSING.SAXS.saxs.clean_extrema">
+<code class="descclassname">paws.core.operations.PROCESSING.SAXS.saxs.</code><code class="descname">clean_extrema</code><span class="sig-paren">(</span><em>dips</em>, <em>shoulders</em>, <em>y</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paws/core/operations/PROCESSING/SAXS/saxs.html#clean_extrema"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#paws.core.operations.PROCESSING.SAXS.saxs.clean_extrema" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="paws.core.operations.PROCESSING.SAXS.saxs.downwards_weaksauce_identifier">
+<code class="descclassname">paws.core.operations.PROCESSING.SAXS.saxs.</code><code class="descname">downwards_weaksauce_identifier</code><span class="sig-paren">(</span><em>four_indices</em>, <em>y</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paws/core/operations/PROCESSING/SAXS/saxs.html#downwards_weaksauce_identifier"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#paws.core.operations.PROCESSING.SAXS.saxs.downwards_weaksauce_identifier" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="paws.core.operations.PROCESSING.SAXS.saxs.dummy">
+<code class="descclassname">paws.core.operations.PROCESSING.SAXS.saxs.</code><code class="descname">dummy</code><span class="sig-paren">(</span><em>array1d</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paws/core/operations/PROCESSING/SAXS/saxs.html#dummy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#paws.core.operations.PROCESSING.SAXS.saxs.dummy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Turn 1d array into dummy-index vector for 2d matrix computation.</p>
+<p>Sum over the dummy index by taking <em>object.sum(axis=0)</em>.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="paws.core.operations.PROCESSING.SAXS.saxs.dump_references">
+<code class="descclassname">paws.core.operations.PROCESSING.SAXS.saxs.</code><code class="descname">dump_references</code><span class="sig-paren">(</span><em>references</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paws/core/operations/PROCESSING/SAXS/saxs.html#dump_references"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#paws.core.operations.PROCESSING.SAXS.saxs.dump_references" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="paws.core.operations.PROCESSING.SAXS.saxs.factorStretched">
+<code class="descclassname">paws.core.operations.PROCESSING.SAXS.saxs.</code><code class="descname">factorStretched</code><span class="sig-paren">(</span><em>x</em>, <em>factor</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paws/core/operations/PROCESSING/SAXS/saxs.html#factorStretched"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#paws.core.operations.PROCESSING.SAXS.saxs.factorStretched" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="paws.core.operations.PROCESSING.SAXS.saxs.first_dip">
+<code class="descclassname">paws.core.operations.PROCESSING.SAXS.saxs.</code><code class="descname">first_dip</code><span class="sig-paren">(</span><em>q</em>, <em>I</em>, <em>dips</em>, <em>dI=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paws/core/operations/PROCESSING/SAXS/saxs.html#first_dip"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#paws.core.operations.PROCESSING.SAXS.saxs.first_dip" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="paws.core.operations.PROCESSING.SAXS.saxs.fullFunction">
+<code class="descclassname">paws.core.operations.PROCESSING.SAXS.saxs.</code><code class="descname">fullFunction</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paws/core/operations/PROCESSING/SAXS/saxs.html#fullFunction"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#paws.core.operations.PROCESSING.SAXS.saxs.fullFunction" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="paws.core.operations.PROCESSING.SAXS.saxs.gauss">
+<code class="descclassname">paws.core.operations.PROCESSING.SAXS.saxs.</code><code class="descname">gauss</code><span class="sig-paren">(</span><em>x</em>, <em>x0</em>, <em>sigma</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paws/core/operations/PROCESSING/SAXS/saxs.html#gauss"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#paws.core.operations.PROCESSING.SAXS.saxs.gauss" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="paws.core.operations.PROCESSING.SAXS.saxs.gauss_guess">
+<code class="descclassname">paws.core.operations.PROCESSING.SAXS.saxs.</code><code class="descname">gauss_guess</code><span class="sig-paren">(</span><em>signalMagnitude</em>, <em>signalCurvature</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paws/core/operations/PROCESSING/SAXS/saxs.html#gauss_guess"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#paws.core.operations.PROCESSING.SAXS.saxs.gauss_guess" title="Permalink to this definition">¶</a></dt>
+<dd><p>Guesses a gaussian intensity and width from signal magnitude and curvature.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>signalMagnitude</strong> &#8211; number-like with units of magnitude</li>
+<li><strong>signalCurvature</strong> &#8211; number-like with units of magnitude per distance squared</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">Return intensity, sigma:</th></tr>
+<tr class="field-even field"><td>&nbsp;</td><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+<p>The solution given is not fitted; it is a first estimate to be used in fitting.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="paws.core.operations.PROCESSING.SAXS.saxs.gen_q_vector">
+<code class="descclassname">paws.core.operations.PROCESSING.SAXS.saxs.</code><code class="descname">gen_q_vector</code><span class="sig-paren">(</span><em>qmin</em>, <em>qmax</em>, <em>qstep</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paws/core/operations/PROCESSING/SAXS/saxs.html#gen_q_vector"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#paws.core.operations.PROCESSING.SAXS.saxs.gen_q_vector" title="Permalink to this definition">¶</a></dt>
+<dd><p>An inclusive-range version of np.arange.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="paws.core.operations.PROCESSING.SAXS.saxs.generateRhoFactor">
+<code class="descclassname">paws.core.operations.PROCESSING.SAXS.saxs.</code><code class="descname">generateRhoFactor</code><span class="sig-paren">(</span><em>factor</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paws/core/operations/PROCESSING/SAXS/saxs.html#generateRhoFactor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#paws.core.operations.PROCESSING.SAXS.saxs.generateRhoFactor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate a guassian distribution of number densities (rho).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>factor</strong> &#8211; float</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+<p>factor should be 0.1 for a sigma 10% of size</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="paws.core.operations.PROCESSING.SAXS.saxs.generate_references">
+<code class="descclassname">paws.core.operations.PROCESSING.SAXS.saxs.</code><code class="descname">generate_references</code><span class="sig-paren">(</span><em>x</em>, <em>factorVals</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paws/core/operations/PROCESSING/SAXS/saxs.html#generate_references"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#paws.core.operations.PROCESSING.SAXS.saxs.generate_references" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="paws.core.operations.PROCESSING.SAXS.saxs.generate_spherical_diffraction">
+<code class="descclassname">paws.core.operations.PROCESSING.SAXS.saxs.</code><code class="descname">generate_spherical_diffraction</code><span class="sig-paren">(</span><em>q</em>, <em>i0</em>, <em>r0</em>, <em>poly</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paws/core/operations/PROCESSING/SAXS/saxs.html#generate_spherical_diffraction"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#paws.core.operations.PROCESSING.SAXS.saxs.generate_spherical_diffraction" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="paws.core.operations.PROCESSING.SAXS.saxs.guess_nearest_point_on_nonmonotonic_trace_normalized">
+<code class="descclassname">paws.core.operations.PROCESSING.SAXS.saxs.</code><code class="descname">guess_nearest_point_on_nonmonotonic_trace_normalized</code><span class="sig-paren">(</span><em>loclist</em>, <em>tracelist</em>, <em>coordinate</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paws/core/operations/PROCESSING/SAXS/saxs.html#guess_nearest_point_on_nonmonotonic_trace_normalized"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#paws.core.operations.PROCESSING.SAXS.saxs.guess_nearest_point_on_nonmonotonic_trace_normalized" title="Permalink to this definition">¶</a></dt>
+<dd><p>Finds the nearest point to location <em>loclist</em> on a trace <em>tracelist</em>.</p>
+<p>Uses normalized distances, i.e., the significance of each dimension is made equivalent.</p>
+<p><em>loclist</em> and <em>tracelist</em> are lists of the same length and type.
+Elements of <em>loclist</em> are floats; elements of <em>tracelist</em> are arrays of the same shape as <em>coordinate</em>.
+<em>coordinate</em> is the independent variable along which <em>tracelist</em> is varying.</p>
+<p><em>tracelist</em> must have decent sampling to start with or the algorithm will likely fail.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="paws.core.operations.PROCESSING.SAXS.saxs.guess_noise_floor">
+<code class="descclassname">paws.core.operations.PROCESSING.SAXS.saxs.</code><code class="descname">guess_noise_floor</code><span class="sig-paren">(</span><em>q</em>, <em>I</em>, <em>r0</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paws/core/operations/PROCESSING/SAXS/saxs.html#guess_noise_floor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#paws.core.operations.PROCESSING.SAXS.saxs.guess_noise_floor" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="paws.core.operations.PROCESSING.SAXS.saxs.guess_polydispersity">
+<code class="descclassname">paws.core.operations.PROCESSING.SAXS.saxs.</code><code class="descname">guess_polydispersity</code><span class="sig-paren">(</span><em>q</em>, <em>I</em>, <em>dI=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paws/core/operations/PROCESSING/SAXS/saxs.html#guess_polydispersity"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#paws.core.operations.PROCESSING.SAXS.saxs.guess_polydispersity" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="paws.core.operations.PROCESSING.SAXS.saxs.guess_size">
+<code class="descclassname">paws.core.operations.PROCESSING.SAXS.saxs.</code><code class="descname">guess_size</code><span class="sig-paren">(</span><em>fractional_variation</em>, <em>first_dip_q</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paws/core/operations/PROCESSING/SAXS/saxs.html#guess_size"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#paws.core.operations.PROCESSING.SAXS.saxs.guess_size" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="paws.core.operations.PROCESSING.SAXS.saxs.horizontal">
+<code class="descclassname">paws.core.operations.PROCESSING.SAXS.saxs.</code><code class="descname">horizontal</code><span class="sig-paren">(</span><em>array1d</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paws/core/operations/PROCESSING/SAXS/saxs.html#horizontal"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#paws.core.operations.PROCESSING.SAXS.saxs.horizontal" title="Permalink to this definition">¶</a></dt>
+<dd><p>Turn 1d array into 2d horizontal vector.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="paws.core.operations.PROCESSING.SAXS.saxs.load_references">
+<code class="descclassname">paws.core.operations.PROCESSING.SAXS.saxs.</code><code class="descname">load_references</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paws/core/operations/PROCESSING/SAXS/saxs.html#load_references"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#paws.core.operations.PROCESSING.SAXS.saxs.load_references" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="paws.core.operations.PROCESSING.SAXS.saxs.local_maxima_detector">
+<code class="descclassname">paws.core.operations.PROCESSING.SAXS.saxs.</code><code class="descname">local_maxima_detector</code><span class="sig-paren">(</span><em>y</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paws/core/operations/PROCESSING/SAXS/saxs.html#local_maxima_detector"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#paws.core.operations.PROCESSING.SAXS.saxs.local_maxima_detector" title="Permalink to this definition">¶</a></dt>
+<dd><p>Finds local maxima in ordered data y.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>y</strong> &#8211; 1d numpy float array</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return maxima:</th><td class="field-body">1d numpy bool array</td>
+</tr>
+</tbody>
+</table>
+<p><em>maxima</em> is <em>True</em> at a local maximum, <em>False</em> otherwise.</p>
+<p>This function makes no attempt to reject spurious maxima of various sorts.
+That task is left to other functions.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="paws.core.operations.PROCESSING.SAXS.saxs.local_minima_detector">
+<code class="descclassname">paws.core.operations.PROCESSING.SAXS.saxs.</code><code class="descname">local_minima_detector</code><span class="sig-paren">(</span><em>y</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paws/core/operations/PROCESSING/SAXS/saxs.html#local_minima_detector"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#paws.core.operations.PROCESSING.SAXS.saxs.local_minima_detector" title="Permalink to this definition">¶</a></dt>
+<dd><p>Finds local minima in ordered data <em>y</em>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>y</strong> &#8211; 1d numpy float array</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return minima:</th><td class="field-body">1d numpy bool array</td>
+</tr>
+</tbody>
+</table>
+<p><em>minima</em> is <em>True</em> at a local minimum, <em>False</em> otherwise.</p>
+<p>This function makes no attempt to reject spurious minima of various sorts.
+That task is left to other functions.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="paws.core.operations.PROCESSING.SAXS.saxs.make_poly_matrices">
+<code class="descclassname">paws.core.operations.PROCESSING.SAXS.saxs.</code><code class="descname">make_poly_matrices</code><span class="sig-paren">(</span><em>x</em>, <em>y</em>, <em>error</em>, <em>order</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paws/core/operations/PROCESSING/SAXS/saxs.html#make_poly_matrices"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#paws.core.operations.PROCESSING.SAXS.saxs.make_poly_matrices" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make the matrices necessary to solve a polynomial fit of order <em>order</em>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>x</strong> &#8211; 1d array representing independent variable</li>
+<li><strong>y</strong> &#8211; 1d array representing dependent variable</li>
+<li><strong>error</strong> &#8211; 1d array representing uncertainty in <em>y</em></li>
+<li><strong>order</strong> &#8211; integer order of polynomial fit</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">Return matrix, vector:</th></tr>
+<tr class="field-even field"><td>&nbsp;</td><td class="field-body"><p class="first last">MC=V, where M is <em>matrix</em>, V is <em>vector</em>,
+and C is the polynomial coefficients to be solved for.
+<em>matrix</em> is an array of shape (order+1, order+1).
+<em>vector</em> is an array of shape (order+1, 1).</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="paws.core.operations.PROCESSING.SAXS.saxs.polydispersity_metric_heightAtZero">
+<code class="descclassname">paws.core.operations.PROCESSING.SAXS.saxs.</code><code class="descname">polydispersity_metric_heightAtZero</code><span class="sig-paren">(</span><em>qFirstDip</em>, <em>q</em>, <em>I</em>, <em>dI=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paws/core/operations/PROCESSING/SAXS/saxs.html#polydispersity_metric_heightAtZero"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#paws.core.operations.PROCESSING.SAXS.saxs.polydispersity_metric_heightAtZero" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="paws.core.operations.PROCESSING.SAXS.saxs.polydispersity_metric_sigmaScaledFirstDip">
+<code class="descclassname">paws.core.operations.PROCESSING.SAXS.saxs.</code><code class="descname">polydispersity_metric_sigmaScaledFirstDip</code><span class="sig-paren">(</span><em>q</em>, <em>I</em>, <em>dips</em>, <em>shoulders</em>, <em>qFirstDip</em>, <em>heightFirstDip</em>, <em>dI=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paws/core/operations/PROCESSING/SAXS/saxs.html#polydispersity_metric_sigmaScaledFirstDip"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#paws.core.operations.PROCESSING.SAXS.saxs.polydispersity_metric_sigmaScaledFirstDip" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="paws.core.operations.PROCESSING.SAXS.saxs.polynomial_value">
+<code class="descclassname">paws.core.operations.PROCESSING.SAXS.saxs.</code><code class="descname">polynomial_value</code><span class="sig-paren">(</span><em>coefficients</em>, <em>x</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paws/core/operations/PROCESSING/SAXS/saxs.html#polynomial_value"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#paws.core.operations.PROCESSING.SAXS.saxs.polynomial_value" title="Permalink to this definition">¶</a></dt>
+<dd><p>Finds the value of a polynomial at a location.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="paws.core.operations.PROCESSING.SAXS.saxs.power_law_solution">
+<code class="descclassname">paws.core.operations.PROCESSING.SAXS.saxs.</code><code class="descname">power_law_solution</code><span class="sig-paren">(</span><em>x</em>, <em>y</em>, <em>dy=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paws/core/operations/PROCESSING/SAXS/saxs.html#power_law_solution"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#paws.core.operations.PROCESSING.SAXS.saxs.power_law_solution" title="Permalink to this definition">¶</a></dt>
+<dd><p>Solves for a power law by solving for a linear fit in log-log space.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="paws.core.operations.PROCESSING.SAXS.saxs.prep_for_pickle">
+<code class="descclassname">paws.core.operations.PROCESSING.SAXS.saxs.</code><code class="descname">prep_for_pickle</code><span class="sig-paren">(</span><em>factorVals</em>, <em>xFirstDip</em>, <em>sigmaScaledFirstDip</em>, <em>heightFirstDip</em>, <em>heightAtZero</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paws/core/operations/PROCESSING/SAXS/saxs.html#prep_for_pickle"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#paws.core.operations.PROCESSING.SAXS.saxs.prep_for_pickle" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="paws.core.operations.PROCESSING.SAXS.saxs.quadratic_extremum">
+<code class="descclassname">paws.core.operations.PROCESSING.SAXS.saxs.</code><code class="descname">quadratic_extremum</code><span class="sig-paren">(</span><em>coefficients</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paws/core/operations/PROCESSING/SAXS/saxs.html#quadratic_extremum"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#paws.core.operations.PROCESSING.SAXS.saxs.quadratic_extremum" title="Permalink to this definition">¶</a></dt>
+<dd><p>Finds the location in independent coordinate of the extremum of a quadratic equation.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="paws.core.operations.PROCESSING.SAXS.saxs.refine_guess">
+<code class="descclassname">paws.core.operations.PROCESSING.SAXS.saxs.</code><code class="descname">refine_guess</code><span class="sig-paren">(</span><em>q</em>, <em>I</em>, <em>I0</em>, <em>r0</em>, <em>frac</em>, <em>q1</em>, <em>I1</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paws/core/operations/PROCESSING/SAXS/saxs.html#refine_guess"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#paws.core.operations.PROCESSING.SAXS.saxs.refine_guess" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="paws.core.operations.PROCESSING.SAXS.saxs.take_polydispersity_metrics">
+<code class="descclassname">paws.core.operations.PROCESSING.SAXS.saxs.</code><code class="descname">take_polydispersity_metrics</code><span class="sig-paren">(</span><em>x</em>, <em>y</em>, <em>dy=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paws/core/operations/PROCESSING/SAXS/saxs.html#take_polydispersity_metrics"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#paws.core.operations.PROCESSING.SAXS.saxs.take_polydispersity_metrics" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="paws.core.operations.PROCESSING.SAXS.saxs.upwards_weaksauce_identifier">
+<code class="descclassname">paws.core.operations.PROCESSING.SAXS.saxs.</code><code class="descname">upwards_weaksauce_identifier</code><span class="sig-paren">(</span><em>four_indices</em>, <em>y</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paws/core/operations/PROCESSING/SAXS/saxs.html#upwards_weaksauce_identifier"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#paws.core.operations.PROCESSING.SAXS.saxs.upwards_weaksauce_identifier" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="paws.core.operations.PROCESSING.SAXS.saxs.vertical">
+<code class="descclassname">paws.core.operations.PROCESSING.SAXS.saxs.</code><code class="descname">vertical</code><span class="sig-paren">(</span><em>array1d</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paws/core/operations/PROCESSING/SAXS/saxs.html#vertical"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#paws.core.operations.PROCESSING.SAXS.saxs.vertical" title="Permalink to this definition">¶</a></dt>
+<dd><p>Turn 1d array into 2d vertical vector.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-paws.core.operations.PROCESSING.SAXS.saxs_features">
+<span id="paws-core-operations-processing-saxs-saxs-features-module"></span><h2>paws.core.operations.PROCESSING.SAXS.saxs_features module<a class="headerlink" href="#module-paws.core.operations.PROCESSING.SAXS.saxs_features" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="paws.core.operations.PROCESSING.SAXS.saxs_features.NanoparticleFeatures">
+<em class="property">class </em><code class="descclassname">paws.core.operations.PROCESSING.SAXS.saxs_features.</code><code class="descname">NanoparticleFeatures</code><a class="reference internal" href="../_modules/paws/core/operations/PROCESSING/SAXS/saxs_features.html#NanoparticleFeatures"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#paws.core.operations.PROCESSING.SAXS.saxs_features.NanoparticleFeatures" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="paws.core.operations.html#paws.core.operations.operation.Operation" title="paws.core.operations.operation.Operation"><code class="xref py py-class docutils literal"><span class="pre">paws.core.operations.operation.Operation</span></code></a></p>
+<p>Use a saxs spectrum (I(q) vs. q) to extract key features of a nanoparticle colloid:
+average size, standard deviation of sizes, and nanoparticle density.
+This module assumes spherical nanoparticles.</p>
+<dl class="staticmethod">
+<dt id="paws.core.operations.PROCESSING.SAXS.saxs_features.NanoparticleFeatures.monodisperse_saxs">
+<em class="property">static </em><code class="descname">monodisperse_saxs</code><span class="sig-paren">(</span><em>q</em>, <em>r</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paws/core/operations/PROCESSING/SAXS/saxs_features.html#NanoparticleFeatures.monodisperse_saxs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#paws.core.operations.PROCESSING.SAXS.saxs_features.NanoparticleFeatures.monodisperse_saxs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate spherical nanoparticle saxs spectrum
+for monodisperse particle radius r at scattering vectors q.</p>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="paws.core.operations.PROCESSING.SAXS.saxs_features.NanoparticleFeatures.polydisperse_saxs">
+<em class="property">static </em><code class="descname">polydisperse_saxs</code><span class="sig-paren">(</span><em>q</em>, <em>r0</em>, <em>p</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paws/core/operations/PROCESSING/SAXS/saxs_features.html#NanoparticleFeatures.polydisperse_saxs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#paws.core.operations.PROCESSING.SAXS.saxs_features.NanoparticleFeatures.polydisperse_saxs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate spherical nanoparticle saxs spectrum for mean particle radius r0,
+size polydispersity (sigma(r)/r0) p, and scattering vectors q.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="paws.core.operations.PROCESSING.SAXS.saxs_features.NanoparticleFeatures.run">
+<code class="descname">run</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paws/core/operations/PROCESSING/SAXS/saxs_features.html#NanoparticleFeatures.run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#paws.core.operations.PROCESSING.SAXS.saxs_features.NanoparticleFeatures.run" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-paws.core.operations.PROCESSING.SAXS">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-paws.core.operations.PROCESSING.SAXS" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">paws.core.operations.PROCESSING.SAXS package</a><ul>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-paws.core.operations.PROCESSING.SAXS.background_subtraction">paws.core.operations.PROCESSING.SAXS.background_subtraction module</a></li>
+<li><a class="reference internal" href="#module-paws.core.operations.PROCESSING.SAXS.saxs">paws.core.operations.PROCESSING.SAXS.saxs module</a></li>
+<li><a class="reference internal" href="#module-paws.core.operations.PROCESSING.SAXS.saxs_features">paws.core.operations.PROCESSING.SAXS.saxs_features module</a></li>
+<li><a class="reference internal" href="#module-paws.core.operations.PROCESSING.SAXS">Module contents</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="paws.core.operations.PROCESSING.html"
+                        title="previous chapter">paws.core.operations.PROCESSING package</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="paws.core.operations.TESTS.html"
+                        title="next chapter">paws.core.operations.TESTS package</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/moduledoc_files/paws.core.operations.PROCESSING.SAXS.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="paws.core.operations.TESTS.html" title="paws.core.operations.TESTS package"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="paws.core.operations.PROCESSING.html" title="paws.core.operations.PROCESSING package"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">paws 0.4.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../apidoc.html" >API Documentation</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="paws.html" >paws package</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="paws.core.html" >paws.core package</a> &#187;</li>
+          <li class="nav-item nav-item-4"><a href="paws.core.operations.html" >paws.core.operations package</a> &#187;</li>
+          <li class="nav-item nav-item-5"><a href="paws.core.operations.PROCESSING.html" >paws.core.operations.PROCESSING package</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2017, Lenson A. Pellouchoud.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.2.
+    </div>
+  </body>
+</html>

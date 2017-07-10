@@ -1,0 +1,257 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>paws.core.operations.optools &#8212; paws 0.4.0 documentation</title>
+    
+    <link rel="stylesheet" href="../../../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../../',
+        VERSION:     '0.4.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">paws 0.4.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../operations.html" accesskey="U">paws.core.operations</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for paws.core.operations.optools</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Operations config and processing routines</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">OrderedDict</span>
+
+<span class="kn">from</span> <span class="nn">PySide</span> <span class="k">import</span> <span class="n">QtCore</span>
+
+<span class="kn">import</span> <span class="nn">operation</span> 
+
+<span class="c1"># Declarations of valid sources and types for workflow and plugin inputs</span>
+<span class="c1">##### TODO: the following but gracefully</span>
+<span class="n">no_input</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="n">text_input</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">fs_input</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="n">wf_input</span> <span class="o">=</span> <span class="mi">3</span>
+<span class="n">plugin_input</span> <span class="o">=</span> <span class="mi">4</span>
+<span class="n">batch_input</span> <span class="o">=</span> <span class="mi">5</span> 
+<span class="n">valid_sources</span> <span class="o">=</span> <span class="p">[</span><span class="n">no_input</span><span class="p">,</span><span class="n">text_input</span><span class="p">,</span><span class="n">fs_input</span><span class="p">,</span><span class="n">wf_input</span><span class="p">,</span><span class="n">plugin_input</span><span class="p">,</span><span class="n">batch_input</span><span class="p">]</span>
+<span class="n">input_sources</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;None&#39;</span><span class="p">,</span><span class="s1">&#39;Text Input&#39;</span><span class="p">,</span><span class="s1">&#39;Filesystem&#39;</span><span class="p">,</span><span class="s1">&#39;Workflow&#39;</span><span class="p">,</span><span class="s1">&#39;Plugins&#39;</span><span class="p">,</span><span class="s1">&#39;Batch&#39;</span><span class="p">]</span> 
+
+<span class="n">none_type</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="n">str_type</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">int_type</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="n">float_type</span> <span class="o">=</span> <span class="mi">3</span>
+<span class="n">bool_type</span> <span class="o">=</span> <span class="mi">4</span>
+<span class="n">ref_type</span> <span class="o">=</span> <span class="mi">5</span>
+<span class="n">path_type</span> <span class="o">=</span> <span class="mi">6</span>
+<span class="n">auto_type</span> <span class="o">=</span> <span class="mi">7</span>
+<span class="n">valid_types</span> <span class="o">=</span> <span class="p">[</span><span class="n">none_type</span><span class="p">,</span><span class="n">str_type</span><span class="p">,</span><span class="n">int_type</span><span class="p">,</span><span class="n">float_type</span><span class="p">,</span><span class="n">bool_type</span><span class="p">,</span><span class="n">ref_type</span><span class="p">,</span><span class="n">path_type</span><span class="p">,</span><span class="n">auto_type</span><span class="p">]</span>
+<span class="n">input_types</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;none&#39;</span><span class="p">,</span><span class="s1">&#39;string&#39;</span><span class="p">,</span><span class="s1">&#39;integer&#39;</span><span class="p">,</span><span class="s1">&#39;float&#39;</span><span class="p">,</span><span class="s1">&#39;boolean&#39;</span><span class="p">,</span><span class="s1">&#39;reference&#39;</span><span class="p">,</span><span class="s1">&#39;path&#39;</span><span class="p">,</span><span class="s1">&#39;auto&#39;</span><span class="p">]</span>
+
+<span class="n">invalid_types</span> <span class="o">=</span> <span class="p">{}</span>                
+<span class="n">invalid_types</span><span class="p">[</span><span class="n">no_input</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">str_type</span><span class="p">,</span><span class="n">int_type</span><span class="p">,</span><span class="n">float_type</span><span class="p">,</span><span class="n">bool_type</span><span class="p">,</span><span class="n">ref_type</span><span class="p">,</span><span class="n">path_type</span><span class="p">,</span><span class="n">auto_type</span><span class="p">]</span>
+<span class="n">invalid_types</span><span class="p">[</span><span class="n">text_input</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">ref_type</span><span class="p">,</span><span class="n">path_type</span><span class="p">,</span><span class="n">auto_type</span><span class="p">]</span>
+<span class="n">invalid_types</span><span class="p">[</span><span class="n">fs_input</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">str_type</span><span class="p">,</span><span class="n">int_type</span><span class="p">,</span><span class="n">float_type</span><span class="p">,</span><span class="n">bool_type</span><span class="p">,</span><span class="n">ref_type</span><span class="p">,</span><span class="n">auto_type</span><span class="p">]</span>
+<span class="n">invalid_types</span><span class="p">[</span><span class="n">wf_input</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">str_type</span><span class="p">,</span><span class="n">int_type</span><span class="p">,</span><span class="n">float_type</span><span class="p">,</span><span class="n">bool_type</span><span class="p">,</span><span class="n">auto_type</span><span class="p">]</span>
+<span class="n">invalid_types</span><span class="p">[</span><span class="n">plugin_input</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">str_type</span><span class="p">,</span><span class="n">int_type</span><span class="p">,</span><span class="n">float_type</span><span class="p">,</span><span class="n">bool_type</span><span class="p">,</span><span class="n">auto_type</span><span class="p">]</span>
+<span class="n">invalid_types</span><span class="p">[</span><span class="n">batch_input</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">str_type</span><span class="p">,</span><span class="n">int_type</span><span class="p">,</span><span class="n">float_type</span><span class="p">,</span><span class="n">bool_type</span><span class="p">,</span><span class="n">ref_type</span><span class="p">,</span><span class="n">path_type</span><span class="p">]</span>
+
+<span class="c1"># tags for inputs and outputs TreeItems    </span>
+<span class="n">inputs_tag</span> <span class="o">=</span> <span class="s1">&#39;inputs&#39;</span>
+<span class="n">outputs_tag</span> <span class="o">=</span> <span class="s1">&#39;outputs&#39;</span>
+
+<div class="viewcode-block" id="cast_type_val"><a class="viewcode-back" href="../../../../moduledoc_files/paws.core.operations.html#paws.core.operations.optools.cast_type_val">[docs]</a><span class="k">def</span> <span class="nf">cast_type_val</span><span class="p">(</span><span class="n">tp</span><span class="p">,</span><span class="n">val</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Perform type casting for operation inputs.</span>
+<span class="sd">    This should be called only for source = text_input.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">tp</span> <span class="o">==</span> <span class="n">none_type</span><span class="p">:</span>
+        <span class="n">val</span> <span class="o">=</span> <span class="kc">None</span> 
+    <span class="k">elif</span> <span class="n">tp</span> <span class="o">==</span> <span class="n">int_type</span><span class="p">:</span>
+        <span class="n">val</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">tp</span> <span class="o">==</span> <span class="n">float_type</span><span class="p">:</span>
+        <span class="n">val</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">tp</span> <span class="o">==</span> <span class="n">str_type</span><span class="p">:</span>
+        <span class="n">val</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">tp</span> <span class="o">==</span> <span class="n">bool_type</span><span class="p">:</span>
+        <span class="n">val</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="nb">eval</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">val</span><span class="p">)))</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;type selection </span><span class="si">{}</span><span class="s1">, should be one of </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">tp</span><span class="p">,</span><span class="n">valid_types</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">val</span></div>
+
+<div class="viewcode-block" id="get_uri_from_dict"><a class="viewcode-back" href="../../../../moduledoc_files/paws.core.operations.html#paws.core.operations.optools.get_uri_from_dict">[docs]</a><span class="k">def</span> <span class="nf">get_uri_from_dict</span><span class="p">(</span><span class="n">uri</span><span class="p">,</span><span class="n">d</span><span class="p">):</span>
+    <span class="n">keys</span> <span class="o">=</span> <span class="n">uri</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)</span>
+    <span class="n">itm</span> <span class="o">=</span> <span class="n">d</span>
+    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">itm</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;did not find uri </span><span class="si">{}</span><span class="s1"> in dict&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">uri</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">itm</span> <span class="o">=</span> <span class="n">itm</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">itm</span></div>
+
+<div class="viewcode-block" id="dict_contains_uri"><a class="viewcode-back" href="../../../../moduledoc_files/paws.core.operations.html#paws.core.operations.optools.dict_contains_uri">[docs]</a><span class="k">def</span> <span class="nf">dict_contains_uri</span><span class="p">(</span><span class="n">uri</span><span class="p">,</span><span class="n">d</span><span class="p">):</span>
+    <span class="n">keys</span> <span class="o">=</span> <span class="n">uri</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)</span>
+    <span class="n">itm</span> <span class="o">=</span> <span class="n">d</span>
+    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">itm</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">itm</span> <span class="o">=</span> <span class="n">itm</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+    <span class="k">return</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="op_dict"><a class="viewcode-back" href="../../../../moduledoc_files/paws.core.operations.html#paws.core.operations.optools.op_dict">[docs]</a><span class="k">def</span> <span class="nf">op_dict</span><span class="p">(</span><span class="n">op</span><span class="p">):</span>
+    <span class="n">dct</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">()</span> 
+    <span class="n">dct</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="n">op</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span> 
+    <span class="n">dct</span><span class="p">[</span><span class="n">inputs_tag</span><span class="p">]</span> <span class="o">=</span> <span class="n">op_inputs_dict</span><span class="p">(</span><span class="n">op</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">dct</span></div>
+
+<div class="viewcode-block" id="op_inputs_dict"><a class="viewcode-back" href="../../../../moduledoc_files/paws.core.operations.html#paws.core.operations.optools.op_inputs_dict">[docs]</a><span class="k">def</span> <span class="nf">op_inputs_dict</span><span class="p">(</span><span class="n">op</span><span class="p">):</span>
+    <span class="n">dct</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">()</span> 
+    <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">op</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+        <span class="n">il</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">input_locator</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
+        <span class="n">dct</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;src&#39;</span><span class="p">:</span><span class="n">il</span><span class="o">.</span><span class="n">src</span><span class="p">,</span><span class="s1">&#39;tp&#39;</span><span class="p">:</span><span class="n">il</span><span class="o">.</span><span class="n">tp</span><span class="p">,</span><span class="s1">&#39;val&#39;</span><span class="p">:</span><span class="n">il</span><span class="o">.</span><span class="n">val</span><span class="p">}</span>
+    <span class="k">return</span> <span class="n">dct</span></div>
+
+<div class="viewcode-block" id="plugin_dict"><a class="viewcode-back" href="../../../../moduledoc_files/paws.core.operations.html#paws.core.operations.optools.plugin_dict">[docs]</a><span class="k">def</span> <span class="nf">plugin_dict</span><span class="p">(</span><span class="n">pgin</span><span class="p">):</span>
+    <span class="n">dct</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">()</span>
+    <span class="n">dct</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="n">pgin</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span>
+    <span class="n">dct</span><span class="p">[</span><span class="n">inputs_tag</span><span class="p">]</span> <span class="o">=</span> <span class="n">pgin</span><span class="o">.</span><span class="n">inputs</span> 
+    <span class="k">return</span> <span class="n">dct</span></div>
+
+<div class="viewcode-block" id="InputLocator"><a class="viewcode-back" href="../../../../moduledoc_files/paws.core.operations.html#paws.core.operations.optools.InputLocator">[docs]</a><span class="k">class</span> <span class="nc">InputLocator</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Objects of this class are used as containers for inputs to an Operation,</span>
+<span class="sd">    and should by design contain the information needed to find the relevant input data.</span>
+<span class="sd">    After the data is loaded, it should be stored in InputLocator.data.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">src</span><span class="o">=</span><span class="n">no_input</span><span class="p">,</span><span class="n">tp</span><span class="o">=</span><span class="n">none_type</span><span class="p">,</span><span class="n">val</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">src</span> <span class="o">=</span> <span class="n">src</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tp</span> <span class="o">=</span> <span class="n">tp</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">val</span> <span class="o">=</span> <span class="n">val</span> 
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="kc">None</span> </div>
+
+<div class="viewcode-block" id="parameter_doc"><a class="viewcode-back" href="../../../../moduledoc_files/paws.core.operations.html#paws.core.operations.optools.parameter_doc">[docs]</a><span class="k">def</span> <span class="nf">parameter_doc</span><span class="p">(</span><span class="n">name</span><span class="p">,</span><span class="n">value</span><span class="p">,</span><span class="n">doc</span><span class="p">):</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">InputLocator</span><span class="p">):</span>
+        <span class="n">src_str</span> <span class="o">=</span> <span class="n">input_sources</span><span class="p">[</span><span class="n">value</span><span class="o">.</span><span class="n">src</span><span class="p">]</span>
+        <span class="n">tp_str</span> <span class="o">=</span> <span class="n">input_types</span><span class="p">[</span><span class="n">value</span><span class="o">.</span><span class="n">tp</span><span class="p">]</span>
+        <span class="n">v_str</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">value</span><span class="o">.</span><span class="n">val</span><span class="p">)</span>
+        <span class="k">return</span> <span class="s2">&quot;- name: </span><span class="si">{}</span><span class="s2"> </span><span class="se">\n</span><span class="s2">- source: </span><span class="si">{}</span><span class="s2"> </span><span class="se">\n</span><span class="s2">- type: </span><span class="si">{}</span><span class="s2"> </span><span class="se">\n</span><span class="s2">- value: </span><span class="si">{}</span><span class="s2"> </span><span class="se">\n</span><span class="s2">- doc: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="p">,</span><span class="n">src_str</span><span class="p">,</span><span class="n">tp_str</span><span class="p">,</span><span class="n">v_str</span><span class="p">,</span><span class="n">doc</span><span class="p">)</span> 
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">tp_str</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span>
+        <span class="k">return</span> <span class="s2">&quot;- name: </span><span class="si">{}</span><span class="s2"> </span><span class="se">\n</span><span class="s2">- type: </span><span class="si">{}</span><span class="s2"> </span><span class="se">\n</span><span class="s2">- doc: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="p">,</span><span class="n">tp_str</span><span class="p">,</span><span class="n">doc</span><span class="p">)</span> </div>
+
+<div class="viewcode-block" id="stack_size"><a class="viewcode-back" href="../../../../moduledoc_files/paws.core.operations.html#paws.core.operations.optools.stack_size">[docs]</a><span class="k">def</span> <span class="nf">stack_size</span><span class="p">(</span><span class="n">stk</span><span class="p">):</span>
+    <span class="n">sz</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">lst</span> <span class="ow">in</span> <span class="n">stk</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">lst</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">,</span><span class="n">operation</span><span class="o">.</span><span class="n">Batch</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">lst</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">,</span><span class="n">operation</span><span class="o">.</span><span class="n">Realtime</span><span class="p">):</span>
+            <span class="n">sz</span> <span class="o">+=</span> <span class="n">stack_size</span><span class="p">(</span><span class="n">lst</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span><span class="o">+</span><span class="mi">1</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">sz</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="n">lst</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">sz</span></div>
+
+<div class="viewcode-block" id="stack_contains"><a class="viewcode-back" href="../../../../moduledoc_files/paws.core.operations.html#paws.core.operations.optools.stack_contains">[docs]</a><span class="k">def</span> <span class="nf">stack_contains</span><span class="p">(</span><span class="n">itm</span><span class="p">,</span><span class="n">stk</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">lst</span> <span class="ow">in</span> <span class="n">stk</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">lst</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">,</span><span class="n">operation</span><span class="o">.</span><span class="n">Batch</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">lst</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">,</span><span class="n">operation</span><span class="o">.</span><span class="n">Realtime</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">itm</span> <span class="o">==</span> <span class="n">lst</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">or</span> <span class="n">stack_contains</span><span class="p">(</span><span class="n">itm</span><span class="p">,</span><span class="n">lst</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
+                <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">itm</span> <span class="ow">in</span> <span class="n">lst</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">True</span>
+    <span class="k">return</span> <span class="kc">False</span></div>
+
+<div class="viewcode-block" id="print_stack"><a class="viewcode-back" href="../../../../moduledoc_files/paws.core.operations.html#paws.core.operations.optools.print_stack">[docs]</a><span class="k">def</span> <span class="nf">print_stack</span><span class="p">(</span><span class="n">stk</span><span class="p">):</span>
+    <span class="n">stktxt</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+    <span class="k">for</span> <span class="n">lst</span> <span class="ow">in</span> <span class="n">stk</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">lst</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">,</span><span class="n">operation</span><span class="o">.</span><span class="n">Batch</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">lst</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">,</span><span class="n">operation</span><span class="o">.</span><span class="n">Realtime</span><span class="p">):</span>
+            <span class="n">substk</span> <span class="o">=</span> <span class="n">lst</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">stktxt</span> <span class="o">+=</span> <span class="s1">&#39;[</span><span class="si">{}</span><span class="s1">:</span><span class="se">\n</span><span class="si">{}</span><span class="s1">]</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">lst</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">tag</span><span class="p">(),</span><span class="n">print_stack</span><span class="p">(</span><span class="n">lst</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+            <span class="c1">#[[itm.tag() for itm in sublst] for sublst in substk])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">stktxt</span> <span class="o">+=</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">([</span><span class="n">itm</span><span class="o">.</span><span class="n">tag</span><span class="p">()</span> <span class="k">for</span> <span class="n">itm</span> <span class="ow">in</span> <span class="n">lst</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">stktxt</span></div>
+
+<span class="c1">#def loader_extensions():</span>
+<span class="c1">#    return str(</span>
+<span class="c1">#    &quot;ALL (*.*);;&quot;</span>
+<span class="c1">#    + &quot;TIFF (*.tif *.tiff);;&quot;</span>
+<span class="c1">#    + &quot;RAW (*.raw);;&quot;</span>
+<span class="c1">#    + &quot;MAR (*.mar*)&quot;</span>
+<span class="c1">#    )</span>
+
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">paws 0.4.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../operations.html" >paws.core.operations</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2017, Lenson A. Pellouchoud.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.2.
+    </div>
+  </body>
+</html>

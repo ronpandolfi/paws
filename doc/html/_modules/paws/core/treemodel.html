@@ -1,0 +1,523 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>paws.core.treemodel &#8212; paws 0.4.0 documentation</title>
+    
+    <link rel="stylesheet" href="../../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '0.4.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">paws 0.4.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for paws.core.treemodel</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">string</span> 
+<span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">OrderedDict</span>
+
+<span class="kn">from</span> <span class="nn">PySide</span> <span class="k">import</span> <span class="n">QtCore</span>
+
+<span class="kn">from</span> <span class="nn">.treeitem</span> <span class="k">import</span> <span class="n">TreeItem</span>
+
+<div class="viewcode-block" id="TreeModel"><a class="viewcode-back" href="../../../moduledoc_files/paws.core.html#paws.core.treemodel.TreeModel">[docs]</a><span class="k">class</span> <span class="nc">TreeModel</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">QAbstractItemModel</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Class for tree management with a QAbstractItemModel.</span>
+<span class="sd">    Implements required virtual methods index(), parent(), rowCount().</span>
+<span class="sd">    Other required virtual methods are columnCount() and data():</span>
+<span class="sd">    these should be implemented by subclassing of TreeModel.</span>
+<span class="sd">    Resizeable TreeModels must implement: </span>
+<span class="sd">    insertRows(), removeRows(), insertColumns(), removeColumns().</span>
+<span class="sd">    If nicely labeled headers are desired, one should implement headerData().</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">TreeModel</span><span class="p">,</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="c1"># keep root items in a TreeItem list</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">root_items</span> <span class="o">=</span> <span class="p">[]</span>    
+
+<div class="viewcode-block" id="TreeModel.get_item"><a class="viewcode-back" href="../../../moduledoc_files/paws.core.html#paws.core.treemodel.TreeModel.get_item">[docs]</a>    <span class="k">def</span> <span class="nf">get_item</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">idx</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Just a prettier face in front of idx.internalPointer()&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">idx</span><span class="o">.</span><span class="n">internalPointer</span><span class="p">()</span> </div>
+
+<div class="viewcode-block" id="TreeModel.build_uri"><a class="viewcode-back" href="../../../moduledoc_files/paws.core.html#paws.core.treemodel.TreeModel.build_uri">[docs]</a>    <span class="k">def</span> <span class="nf">build_uri</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">idx</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Build a URI for the TreeItem at idx </span>
+<span class="sd">        by prepending its parent tags with &#39;.&#39; as a delimiter.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">item_ref</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_item</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span>
+        <span class="n">item_uri</span> <span class="o">=</span> <span class="n">item_ref</span><span class="o">.</span><span class="n">tag</span><span class="p">()</span>
+        <span class="k">while</span> <span class="n">item_ref</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">isValid</span><span class="p">():</span>
+            <span class="n">item_ref</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_item</span><span class="p">(</span><span class="n">item_ref</span><span class="o">.</span><span class="n">parent</span><span class="p">)</span>
+            <span class="n">item_uri</span> <span class="o">=</span> <span class="n">item_ref</span><span class="o">.</span><span class="n">tag</span><span class="p">()</span><span class="o">+</span><span class="s2">&quot;.&quot;</span><span class="o">+</span><span class="n">item_uri</span>
+        <span class="k">return</span> <span class="n">item_uri</span></div>
+
+<div class="viewcode-block" id="TreeModel.list_tags"><a class="viewcode-back" href="../../../moduledoc_files/paws.core.html#paws.core.treemodel.TreeModel.list_tags">[docs]</a>    <span class="k">def</span> <span class="nf">list_tags</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">parent</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get a list of tags for TreeItems under parent.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">parent</span><span class="o">.</span><span class="n">isValid</span><span class="p">():</span>
+            <span class="k">return</span> <span class="p">[</span><span class="n">item</span><span class="o">.</span><span class="n">tag</span><span class="p">()</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">root_items</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[</span><span class="n">item</span><span class="o">.</span><span class="n">tag</span><span class="p">()</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_item</span><span class="p">(</span><span class="n">parent</span><span class="p">)</span><span class="o">.</span><span class="n">children</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="TreeModel.auto_tag"><a class="viewcode-back" href="../../../moduledoc_files/paws.core.html#paws.core.treemodel.TreeModel.auto_tag">[docs]</a>    <span class="k">def</span> <span class="nf">auto_tag</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">prefix</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Generate the next unique tag from prefix by appending &#39;_x&#39; to it, </span>
+<span class="sd">        where x is a minimal nonnegative integer.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">indx</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">goodtag</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">while</span> <span class="ow">not</span> <span class="n">goodtag</span><span class="p">:</span>
+            <span class="n">testtag</span> <span class="o">=</span> <span class="n">prefix</span><span class="o">+</span><span class="s1">&#39;_</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">indx</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">testtag</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">list_tags</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">QModelIndex</span><span class="p">()):</span>
+                <span class="n">goodtag</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">indx</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">return</span> <span class="n">testtag</span></div>
+    
+    <span class="c1"># test uniqueness and good form of a tag</span>
+<div class="viewcode-block" id="TreeModel.is_good_tag"><a class="viewcode-back" href="../../../moduledoc_files/paws.core.html#paws.core.treemodel.TreeModel.is_good_tag">[docs]</a>    <span class="k">def</span> <span class="nf">is_good_tag</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">testtag</span><span class="p">,</span><span class="n">parent</span><span class="o">=</span><span class="n">QtCore</span><span class="o">.</span><span class="n">QModelIndex</span><span class="p">()):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Checks for usable tags, returns a (bool,string) tuple</span>
+<span class="sd">        where the bool indicates whether the tag is good, </span>
+<span class="sd">        and the string provides explanation if the tag is not good. </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">spec_chars</span> <span class="o">=</span> <span class="n">string</span><span class="o">.</span><span class="n">punctuation</span> 
+        <span class="n">spec_chars</span> <span class="o">=</span> <span class="n">spec_chars</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;_&#39;</span><span class="p">,</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="n">spec_chars</span> <span class="o">=</span> <span class="n">spec_chars</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">,</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">testtag</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="s1">&#39;Tag is blank&#39;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">testtag</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">list_tags</span><span class="p">(</span><span class="n">parent</span><span class="p">):</span>
+            <span class="k">return</span> <span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="s1">&#39;Tag not unique&#39;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">any</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">s</span><span class="p">:</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">testtag</span><span class="p">,[</span><span class="s1">&#39; &#39;</span><span class="p">,</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="p">,</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">])):</span>
+            <span class="k">return</span> <span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="s1">&#39;Tag contains whitespace&#39;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">any</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">s</span><span class="p">:</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">testtag</span><span class="p">,</span><span class="n">spec_chars</span><span class="p">)):</span>
+            <span class="k">return</span> <span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="s1">&#39;Tag contains special characters&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>    </div>
+
+    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="TreeModel.tag_error"><a class="viewcode-back" href="../../../moduledoc_files/paws.core.html#paws.core.treemodel.TreeModel.tag_error">[docs]</a>    <span class="k">def</span> <span class="nf">tag_error</span><span class="p">(</span><span class="n">tag</span><span class="p">,</span><span class="n">err_msg</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Provide a human-readable error message for bad tags.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="s1">&#39;Tag error for </span><span class="si">{}</span><span class="s1">: </span><span class="se">\n</span><span class="si">{}</span><span class="s1"> </span><span class="se">\n\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">tag</span><span class="p">,</span><span class="n">err_msg</span><span class="p">)</span>
+                <span class="o">+</span> <span class="s1">&#39;Enter a unique alphanumeric tag, &#39;</span>
+                <span class="o">+</span> <span class="s1">&#39;using only letters, numbers, -, and _. (no periods). &#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TreeModel.is_good_uri"><a class="viewcode-back" href="../../../moduledoc_files/paws.core.html#paws.core.treemodel.TreeModel.is_good_uri">[docs]</a>    <span class="k">def</span> <span class="nf">is_good_uri</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">uri</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns whether or not input uri points to an item in this tree.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">uri</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="n">uri</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)</span>
+        <span class="n">p_idx</span> <span class="o">=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">QModelIndex</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">itemuri</span> <span class="ow">in</span> <span class="n">path</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">row</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">list_tags</span><span class="p">(</span><span class="n">p_idx</span><span class="p">)</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">itemuri</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">False</span>
+            <span class="n">idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">row</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="n">p_idx</span><span class="p">)</span>
+            <span class="c1"># get TreeItem from QModelIndex</span>
+            <span class="c1">#item = self.get_item(idx)</span>
+            <span class="c1"># set new parent in case the path continues...</span>
+            <span class="n">p_idx</span> <span class="o">=</span> <span class="n">idx</span>
+        <span class="k">return</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="TreeModel.get_from_uri"><a class="viewcode-back" href="../../../moduledoc_files/paws.core.html#paws.core.treemodel.TreeModel.get_from_uri">[docs]</a>    <span class="k">def</span> <span class="nf">get_from_uri</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uri</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get from this tree the item at the given uri.&quot;&quot;&quot;</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="n">uri</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)</span>
+        <span class="n">p_idx</span> <span class="o">=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">QModelIndex</span><span class="p">()</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">itemuri</span> <span class="ow">in</span> <span class="n">path</span><span class="p">:</span>
+                <span class="c1"># get QModelIndex of item </span>
+                <span class="n">row</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">list_tags</span><span class="p">(</span><span class="n">p_idx</span><span class="p">)</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">itemuri</span><span class="p">)</span>
+                <span class="n">idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">row</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="n">p_idx</span><span class="p">)</span>
+                <span class="c1"># get TreeItem from QModelIndex</span>
+                <span class="n">itm</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_item</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span>
+                <span class="c1"># set new parent in case the path continues...</span>
+                <span class="n">p_idx</span> <span class="o">=</span> <span class="n">idx</span>
+            <span class="k">return</span> <span class="n">itm</span><span class="p">,</span> <span class="n">idx</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;-----</span><span class="se">\n</span><span class="s1">bad uri: </span><span class="si">{}</span><span class="se">\n</span><span class="s1">-----</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">uri</span><span class="p">)</span>
+            <span class="c1">#print msg</span>
+            <span class="n">ex</span><span class="o">.</span><span class="n">message</span> <span class="o">=</span> <span class="n">msg</span> <span class="o">+</span> <span class="n">ex</span><span class="o">.</span><span class="n">message</span>
+            <span class="k">raise</span> <span class="n">ex</span></div>
+
+    <span class="c1"># Subclass of QAbstractItemModel must implement index()</span>
+<div class="viewcode-block" id="TreeModel.index"><a class="viewcode-back" href="../../../moduledoc_files/paws.core.html#paws.core.treemodel.TreeModel.index">[docs]</a>    <span class="k">def</span> <span class="nf">index</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">row</span><span class="p">,</span><span class="n">col</span><span class="p">,</span><span class="n">parent</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns QModelIndex address of int row, int col, under QModelIndex parent.</span>
+<span class="sd">        If a row, column, parent combination points to an invalid index, </span>
+<span class="sd">        returns invalid QModelIndex().</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">parent</span><span class="o">.</span><span class="n">isValid</span><span class="p">():</span>
+            <span class="c1"># If parent is not a valid index, a top level item is being queried.</span>
+            <span class="k">if</span> <span class="n">row</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root_items</span><span class="p">)</span> <span class="ow">and</span> <span class="n">row</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="c1"># Return the index</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">createIndex</span><span class="p">(</span><span class="n">row</span><span class="p">,</span><span class="n">col</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">root_items</span><span class="p">[</span><span class="n">row</span><span class="p">])</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># Bad row: return invalid index</span>
+                <span class="k">return</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">QModelIndex</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Grab the parent from its QModelIndex...</span>
+            <span class="n">p_item</span> <span class="o">=</span> <span class="n">parent</span><span class="o">.</span><span class="n">internalPointer</span><span class="p">()</span>
+            <span class="c1"># Return the index of the child at row</span>
+            <span class="k">if</span> <span class="n">row</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">p_item</span><span class="o">.</span><span class="n">children</span><span class="p">)</span> <span class="ow">and</span> <span class="n">row</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">createIndex</span><span class="p">(</span><span class="n">row</span><span class="p">,</span><span class="n">col</span><span class="p">,</span><span class="n">p_item</span><span class="o">.</span><span class="n">children</span><span class="p">[</span><span class="n">row</span><span class="p">])</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># Bad row: return invalid index</span>
+                <span class="k">return</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">QModelIndex</span><span class="p">()</span></div>
+                
+    <span class="c1"># Subclass of QAbstractItemModel must implement parent()</span>
+<div class="viewcode-block" id="TreeModel.parent"><a class="viewcode-back" href="../../../moduledoc_files/paws.core.html#paws.core.treemodel.TreeModel.parent">[docs]</a>    <span class="k">def</span> <span class="nf">parent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">idx</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns QModelIndex of parent of item at QModelIndex index</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Grab this TreeItem from its QModelIndex</span>
+        <span class="n">itm</span> <span class="o">=</span> <span class="n">idx</span><span class="o">.</span><span class="n">internalPointer</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">itm</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">isValid</span><span class="p">():</span>
+            <span class="c1"># We have no parent, therefore a top level item</span>
+            <span class="k">return</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">QModelIndex</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">itm</span><span class="o">.</span><span class="n">parent</span></div>
+        
+    <span class="c1"># Subclass of QAbstractItemModel must implement rowCount()</span>
+<div class="viewcode-block" id="TreeModel.rowCount"><a class="viewcode-back" href="../../../moduledoc_files/paws.core.html#paws.core.treemodel.TreeModel.rowCount">[docs]</a>    <span class="k">def</span> <span class="nf">rowCount</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">parent</span><span class="o">=</span><span class="n">QtCore</span><span class="o">.</span><span class="n">QModelIndex</span><span class="p">()):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Either give the number of top-level items,</span>
+<span class="sd">        or count the children of parent</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">parent</span><span class="o">.</span><span class="n">isValid</span><span class="p">():</span>
+            <span class="c1"># top level parent: count root items</span>
+            <span class="c1">#print &#39;number of rows in root_items: {}&#39;.format(len(self.root_items))</span>
+            <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root_items</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># count children of parent item</span>
+            <span class="n">parent_item</span> <span class="o">=</span> <span class="n">parent</span><span class="o">.</span><span class="n">internalPointer</span><span class="p">()</span>
+            <span class="k">return</span> <span class="n">parent_item</span><span class="o">.</span><span class="n">n_children</span><span class="p">()</span></div>
+    
+    <span class="c1"># Subclass of QAbstractItemModel must implement columnCount()</span>
+<div class="viewcode-block" id="TreeModel.columnCount"><a class="viewcode-back" href="../../../moduledoc_files/paws.core.html#paws.core.treemodel.TreeModel.columnCount">[docs]</a>    <span class="k">def</span> <span class="nf">columnCount</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">parent</span><span class="o">=</span><span class="n">QtCore</span><span class="o">.</span><span class="n">QModelIndex</span><span class="p">()):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Let TreeModels by default have one column,</span>
+<span class="sd">        to display the local TreeItem&#39;s tag.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="mi">1</span></div>
+
+    <span class="c1"># QAbstractItemModel subclass must implement </span>
+    <span class="c1"># data(QModelIndex[,role=Qt.DisplayRole])</span>
+<div class="viewcode-block" id="TreeModel.data"><a class="viewcode-back" href="../../../moduledoc_files/paws.core.html#paws.core.treemodel.TreeModel.data">[docs]</a>    <span class="k">def</span> <span class="nf">data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">itm_idx</span><span class="p">,</span><span class="n">data_role</span><span class="p">):</span>
+        <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">itm_idx</span><span class="o">.</span><span class="n">isValid</span><span class="p">()):</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="n">item</span> <span class="o">=</span> <span class="n">itm_idx</span><span class="o">.</span><span class="n">internalPointer</span><span class="p">()</span>
+        <span class="k">if</span> <span class="p">((</span><span class="n">data_role</span> <span class="o">==</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">DisplayRole</span>
+        <span class="ow">or</span> <span class="n">data_role</span> <span class="o">==</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">ToolTipRole</span> 
+        <span class="ow">or</span> <span class="n">data_role</span> <span class="o">==</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">StatusTipRole</span>
+        <span class="ow">or</span> <span class="n">data_role</span> <span class="o">==</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">WhatsThisRole</span><span class="p">)</span>
+        <span class="ow">and</span> <span class="n">itm_idx</span><span class="o">.</span><span class="n">column</span><span class="p">()</span> <span class="o">==</span> <span class="mi">0</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">item</span><span class="o">.</span><span class="n">tag</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span></div>
+
+    <span class="c1"># Expandable QAbstractItemModel subclass should implement</span>
+    <span class="c1"># insertRows(row,count[,parent=QModelIndex()])</span>
+<div class="viewcode-block" id="TreeModel.insertRows"><a class="viewcode-back" href="../../../moduledoc_files/paws.core.html#paws.core.treemodel.TreeModel.insertRows">[docs]</a>    <span class="k">def</span> <span class="nf">insertRows</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">row</span><span class="p">,</span><span class="n">count</span><span class="p">,</span><span class="n">parent</span><span class="o">=</span><span class="n">QtCore</span><span class="o">.</span><span class="n">QModelIndex</span><span class="p">()):</span>
+        <span class="c1"># Signal listeners that rows are about to be born</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">beginInsertRows</span><span class="p">(</span><span class="n">parent</span><span class="p">,</span><span class="n">row</span><span class="p">,</span><span class="n">row</span><span class="o">+</span><span class="n">count</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">parent</span><span class="o">.</span><span class="n">isValid</span><span class="p">():</span>
+            <span class="c1"># Get the TreeItem referred to by QModelIndex parent:</span>
+            <span class="n">item</span> <span class="o">=</span> <span class="n">parent</span><span class="o">.</span><span class="n">internalPointer</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">row</span><span class="p">,</span><span class="n">row</span><span class="o">+</span><span class="n">count</span><span class="p">):</span>
+                <span class="n">item</span><span class="o">.</span><span class="n">children</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">j</span><span class="p">,</span><span class="kc">None</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Insert rows into self.root_items:</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">row</span><span class="p">,</span><span class="n">row</span><span class="o">+</span><span class="n">count</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">root_items</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">j</span><span class="p">,</span><span class="kc">None</span><span class="p">)</span>
+        <span class="c1"># Signal listeners that we are done inserting rows</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">endInsertRows</span><span class="p">()</span></div>
+
+    <span class="c1"># Shrinkable QAbstractItemModel subclass should implement</span>
+    <span class="c1"># removeRows(row,count[,parent=QModelIndex()])</span>
+<div class="viewcode-block" id="TreeModel.removeRows"><a class="viewcode-back" href="../../../moduledoc_files/paws.core.html#paws.core.treemodel.TreeModel.removeRows">[docs]</a>    <span class="k">def</span> <span class="nf">removeRows</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="n">count</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="n">QtCore</span><span class="o">.</span><span class="n">QModelIndex</span><span class="p">()):</span>
+        <span class="c1"># Signal listeners that rows are about to die</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">beginRemoveRows</span><span class="p">(</span><span class="n">parent</span><span class="p">,</span><span class="n">row</span><span class="p">,</span><span class="n">row</span><span class="o">+</span><span class="n">count</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">parent</span><span class="o">.</span><span class="n">isValid</span><span class="p">():</span>
+            <span class="c1"># Get the TreeItem referred to by QModelIndex parent:</span>
+            <span class="n">item</span> <span class="o">=</span> <span class="n">parent</span><span class="o">.</span><span class="n">internalPointer</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">row</span><span class="p">,</span><span class="n">row</span><span class="o">+</span><span class="n">count</span><span class="p">)[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
+                <span class="c1">#del item.children[j]</span>
+                <span class="n">item</span><span class="o">.</span><span class="n">children</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">j</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">row</span><span class="p">,</span><span class="n">row</span><span class="o">+</span><span class="n">count</span><span class="p">)[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
+                <span class="c1">#del self.root_items[j]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">root_items</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">j</span><span class="p">)</span>
+        <span class="c1"># Signal listeners that we are done removing rows</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">endRemoveRows</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="TreeModel.headerData"><a class="viewcode-back" href="../../../moduledoc_files/paws.core.html#paws.core.treemodel.TreeModel.headerData">[docs]</a>    <span class="k">def</span> <span class="nf">headerData</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">section</span><span class="p">,</span><span class="n">orientation</span><span class="p">,</span><span class="n">data_role</span><span class="p">):</span>
+        <span class="c1"># note: section indicates row or column number, depending on orientation</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">data_role</span> <span class="o">==</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">DisplayRole</span> <span class="ow">and</span> <span class="n">section</span> <span class="o">==</span> <span class="mi">0</span><span class="p">):</span>
+            <span class="k">return</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> item(s) open&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rowCount</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">QModelIndex</span><span class="p">()))</span>
+        <span class="c1">#elif (data_role == QtCore.Qt.DisplayRole and section == 1):</span>
+        <span class="c1">#    return &quot;info&quot;.format(self.rowCount(QtCore.QModelIndex()))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="TreeModel.iter_indexes"><a class="viewcode-back" href="../../../moduledoc_files/paws.core.html#paws.core.treemodel.TreeModel.iter_indexes">[docs]</a>    <span class="k">def</span> <span class="nf">iter_indexes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">parent</span><span class="o">=</span><span class="n">QtCore</span><span class="o">.</span><span class="n">QModelIndex</span><span class="p">()):</span>
+        <span class="sd">&quot;&quot;&quot;Provide a list of the QModelIndexes held in the tree&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">parent</span><span class="o">.</span><span class="n">isValid</span><span class="p">():</span>
+            <span class="n">ixs</span> <span class="o">=</span> <span class="p">[</span><span class="n">parent</span><span class="p">]</span>
+            <span class="c1"># Loop through children of parent</span>
+            <span class="n">items</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_item</span><span class="p">(</span><span class="n">parent</span><span class="p">)</span><span class="o">.</span><span class="n">children</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">ixs</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="c1"># Loop through root_items</span>
+            <span class="n">items</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">root_items</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">items</span><span class="p">)):</span>
+            <span class="n">item</span> <span class="o">=</span> <span class="n">items</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>
+            <span class="n">ix</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">j</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="n">parent</span><span class="p">)</span>
+            <span class="c1"># TODO: check for NoneType children here?</span>
+            <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">n_children</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">ixs</span> <span class="o">=</span> <span class="n">ixs</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">iter_indexes</span><span class="p">(</span><span class="n">ix</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">ixs</span></div>
+
+<div class="viewcode-block" id="TreeModel.print_tree"><a class="viewcode-back" href="../../../moduledoc_files/paws.core.html#paws.core.treemodel.TreeModel.print_tree">[docs]</a>    <span class="k">def</span> <span class="nf">print_tree</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">rowprefix</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span><span class="n">parent</span><span class="o">=</span><span class="n">QtCore</span><span class="o">.</span><span class="n">QModelIndex</span><span class="p">()):</span>
+        <span class="k">if</span> <span class="n">parent</span><span class="o">.</span><span class="n">isValid</span><span class="p">():</span>
+            <span class="n">item</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_item</span><span class="p">(</span><span class="n">parent</span><span class="p">)</span>
+            <span class="nb">print</span> <span class="n">rowprefix</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">n_children</span><span class="p">()):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">print_tree</span><span class="p">(</span><span class="n">rowprefix</span><span class="o">+</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">j</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="n">parent</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">jroot</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root_items</span><span class="p">)):</span>
+                <span class="n">item</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">root_items</span><span class="p">[</span><span class="n">jroot</span><span class="p">]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">print_tree</span><span class="p">(</span><span class="n">rowprefix</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">jroot</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="n">parent</span><span class="p">))</span></div>
+            
+<div class="viewcode-block" id="TreeModel.tree_dataChanged"><a class="viewcode-back" href="../../../moduledoc_files/paws.core.html#paws.core.treemodel.TreeModel.tree_dataChanged">[docs]</a>    <span class="k">def</span> <span class="nf">tree_dataChanged</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">idx</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dataChanged</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="n">idx</span><span class="p">,</span><span class="n">idx</span><span class="p">)</span>
+        <span class="n">itm</span> <span class="o">=</span> <span class="n">idx</span><span class="o">.</span><span class="n">internalPointer</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">c_row</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">itm</span><span class="o">.</span><span class="n">n_children</span><span class="p">()):</span>
+            <span class="n">c_idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">c_row</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="n">idx</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">tree_dataChanged</span><span class="p">(</span><span class="n">c_idx</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TreeModel.build_dict"><a class="viewcode-back" href="../../../moduledoc_files/paws.core.html#paws.core.treemodel.TreeModel.build_dict">[docs]</a>    <span class="k">def</span> <span class="nf">build_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">x</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Build a dict from structured data object x&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="nb">dict</span><span class="p">):</span>
+            <span class="n">d</span> <span class="o">=</span> <span class="n">x</span> 
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="nb">list</span><span class="p">):</span>
+            <span class="n">d</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">(</span><span class="nb">zip</span><span class="p">([</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">))],</span><span class="n">x</span><span class="p">))</span> 
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">d</span> <span class="o">=</span> <span class="p">{}</span> 
+        <span class="k">return</span> <span class="n">d</span></div>
+
+<div class="viewcode-block" id="TreeModel.tree_update"><a class="viewcode-back" href="../../../moduledoc_files/paws.core.html#paws.core.treemodel.TreeModel.tree_update">[docs]</a>    <span class="k">def</span> <span class="nf">tree_update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">idx</span><span class="p">,</span><span class="n">x_new</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Call this function to store x_new in the TreeItem at idx </span>
+<span class="sd">        and then build/update/prune the subtree rooted at that item.</span>
+<span class="sd">        Take measures to change as little as possible of the tree,</span>
+<span class="sd">        since this can be a big operation and is called frequently.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">itm</span> <span class="o">=</span> <span class="n">idx</span><span class="o">.</span><span class="n">internalPointer</span><span class="p">()</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">itm</span><span class="o">.</span><span class="n">data</span>
+        <span class="n">itm</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">x_new</span>
+        <span class="c1"># Build dict of the intended children </span>
+        <span class="n">x_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">build_dict</span><span class="p">(</span><span class="n">x_new</span><span class="p">)</span>
+        <span class="c1"># Remove obsolete children</span>
+        <span class="n">c_kill</span> <span class="o">=</span> <span class="p">[]</span> 
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">itm</span><span class="o">.</span><span class="n">n_children</span><span class="p">()):</span>
+            <span class="c1">#if not self.index(j,0,idx).internalPointer().tag() in x_dict.keys():</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">itm</span><span class="o">.</span><span class="n">children</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="o">.</span><span class="n">tag</span><span class="p">()</span> <span class="ow">in</span> <span class="n">x_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="n">c_kill</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="n">j</span> <span class="p">)</span>
+        <span class="n">c_kill</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">c_kill</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">beginRemoveRows</span><span class="p">(</span><span class="n">idx</span><span class="p">,</span><span class="n">j</span><span class="p">,</span><span class="n">j</span><span class="p">)</span>
+            <span class="n">itm</span><span class="o">.</span><span class="n">children</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">j</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">endRemoveRows</span><span class="p">()</span>
+        <span class="c1"># Add items for any new children </span>
+        <span class="n">c_keys</span> <span class="o">=</span> <span class="p">[</span><span class="n">itm</span><span class="o">.</span><span class="n">children</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="o">.</span><span class="n">tag</span><span class="p">()</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">itm</span><span class="o">.</span><span class="n">n_children</span><span class="p">())]</span>
+        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">x_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">c_keys</span><span class="p">:</span>
+                <span class="n">nc</span> <span class="o">=</span> <span class="n">itm</span><span class="o">.</span><span class="n">n_children</span><span class="p">()</span>
+                <span class="n">c_itm</span> <span class="o">=</span> <span class="n">TreeItem</span><span class="p">(</span><span class="n">nc</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="n">idx</span><span class="p">)</span>
+                <span class="n">c_itm</span><span class="o">.</span><span class="n">set_tag</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">beginInsertRows</span><span class="p">(</span><span class="n">idx</span><span class="p">,</span><span class="n">nc</span><span class="p">,</span><span class="n">nc</span><span class="p">)</span>
+                <span class="n">itm</span><span class="o">.</span><span class="n">children</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">nc</span><span class="p">,</span><span class="n">c_itm</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">endInsertRows</span><span class="p">()</span>
+        <span class="c1"># Recurse to update children</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">itm</span><span class="o">.</span><span class="n">n_children</span><span class="p">()):</span>
+            <span class="n">c_idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">j</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="n">idx</span><span class="p">)</span>
+            <span class="n">c_tag</span> <span class="o">=</span> <span class="n">c_idx</span><span class="o">.</span><span class="n">internalPointer</span><span class="p">()</span><span class="o">.</span><span class="n">tag</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">tree_update</span><span class="p">(</span><span class="n">c_idx</span><span class="p">,</span><span class="n">x_dict</span><span class="p">[</span><span class="n">c_tag</span><span class="p">])</span>
+        <span class="c1"># Finish by informing views that dataChanged().</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tree_dataChanged</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span> </div>
+
+<div class="viewcode-block" id="TreeModel.setData"><a class="viewcode-back" href="../../../moduledoc_files/paws.core.html#paws.core.treemodel.TreeModel.setData">[docs]</a>    <span class="k">def</span> <span class="nf">setData</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">idx</span><span class="p">,</span><span class="n">value</span><span class="p">,</span><span class="n">data_role</span><span class="p">):</span>
+        <span class="k">return</span> <span class="kc">False</span></div></div>
+
+
+<div class="viewcode-block" id="TreeSelectionModel"><a class="viewcode-back" href="../../../moduledoc_files/paws.core.html#paws.core.treemodel.TreeSelectionModel">[docs]</a><span class="k">class</span> <span class="nc">TreeSelectionModel</span><span class="p">(</span><span class="n">TreeModel</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">TreeSelectionModel</span><span class="p">,</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+
+<div class="viewcode-block" id="TreeSelectionModel.columnCount"><a class="viewcode-back" href="../../../moduledoc_files/paws.core.html#paws.core.treemodel.TreeSelectionModel.columnCount">[docs]</a>    <span class="k">def</span> <span class="nf">columnCount</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">parent</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Let TreeSelectionModel have two columns:</span>
+<span class="sd">        one for the TreeItem tag, one for selection status.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="mi">2</span></div>
+
+<div class="viewcode-block" id="TreeSelectionModel.headerData"><a class="viewcode-back" href="../../../moduledoc_files/paws.core.html#paws.core.treemodel.TreeSelectionModel.headerData">[docs]</a>    <span class="k">def</span> <span class="nf">headerData</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">section</span><span class="p">,</span><span class="n">orientation</span><span class="p">,</span><span class="n">data_role</span><span class="p">):</span>
+        <span class="c1"># note: section indicates row or column number, depending on orientation</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">data_role</span> <span class="o">==</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">DisplayRole</span> <span class="ow">and</span> <span class="n">section</span> <span class="o">==</span> <span class="mi">0</span><span class="p">):</span>
+            <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">TreeSelectionModel</span><span class="p">,</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">data</span><span class="p">(</span><span class="n">section</span><span class="p">,</span><span class="n">orientation</span><span class="p">,</span><span class="n">data_role</span><span class="p">)</span> 
+        <span class="k">elif</span> <span class="p">(</span><span class="n">data_role</span> <span class="o">==</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">DisplayRole</span> <span class="ow">and</span> <span class="n">section</span> <span class="o">==</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="k">return</span> <span class="s2">&quot;selection&quot;</span></div>
+
+    <span class="c1"># QAbstractItemModel subclass must implement </span>
+    <span class="c1"># data(QModelIndex[,role=Qt.DisplayRole])</span>
+<div class="viewcode-block" id="TreeSelectionModel.data"><a class="viewcode-back" href="../../../moduledoc_files/paws.core.html#paws.core.treemodel.TreeSelectionModel.data">[docs]</a>    <span class="k">def</span> <span class="nf">data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">itm_idx</span><span class="p">,</span><span class="n">data_role</span><span class="p">):</span>
+        <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">itm_idx</span><span class="o">.</span><span class="n">isValid</span><span class="p">()):</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="n">itm</span> <span class="o">=</span> <span class="n">itm_idx</span><span class="o">.</span><span class="n">internalPointer</span><span class="p">()</span>
+        <span class="k">if</span> <span class="p">((</span><span class="n">data_role</span> <span class="o">==</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">DisplayRole</span>
+        <span class="ow">or</span> <span class="n">data_role</span> <span class="o">==</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">ToolTipRole</span> 
+        <span class="ow">or</span> <span class="n">data_role</span> <span class="o">==</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">StatusTipRole</span>
+        <span class="ow">or</span> <span class="n">data_role</span> <span class="o">==</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">WhatsThisRole</span><span class="p">)</span>
+        <span class="ow">and</span> <span class="n">itm_idx</span><span class="o">.</span><span class="n">column</span><span class="p">()</span> <span class="o">==</span> <span class="mi">0</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">itm</span><span class="o">.</span><span class="n">tag</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="n">data_role</span> <span class="o">==</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">CheckStateRole</span> <span class="ow">and</span> <span class="n">itm_idx</span><span class="o">.</span><span class="n">column</span><span class="p">()</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">itm</span><span class="o">.</span><span class="n">is_checked</span><span class="p">():</span>
+                <span class="k">return</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">Checked</span>
+            <span class="k">elif</span> <span class="n">itm</span><span class="o">.</span><span class="n">children_checked</span><span class="p">():</span>
+                <span class="k">return</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">PartiallyChecked</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">Unchecked</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span></div>
+
+    <span class="c1"># Need flags to reflect checkability</span>
+<div class="viewcode-block" id="TreeSelectionModel.flags"><a class="viewcode-back" href="../../../moduledoc_files/paws.core.html#paws.core.treemodel.TreeSelectionModel.flags">[docs]</a>    <span class="k">def</span> <span class="nf">flags</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">idx</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">idx</span><span class="o">.</span><span class="n">isValid</span><span class="p">():</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">elif</span> <span class="n">idx</span><span class="o">.</span><span class="n">column</span><span class="p">()</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">TreeSelectionModel</span><span class="p">,</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">flags</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span> <span class="o">|</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">ItemIsUserCheckable</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">TreeModel</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">flags</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span></div>
+
+    <span class="c1"># Ui-editable QAbstractItemModel subclasses must implement setData(index,value[,role])</span>
+<div class="viewcode-block" id="TreeSelectionModel.setData"><a class="viewcode-back" href="../../../moduledoc_files/paws.core.html#paws.core.treemodel.TreeSelectionModel.setData">[docs]</a>    <span class="k">def</span> <span class="nf">setData</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">idx</span><span class="p">,</span><span class="n">value</span><span class="p">,</span><span class="n">data_role</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">idx</span><span class="o">.</span><span class="n">column</span><span class="p">()</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="c1">#if role == Qt.EditRole:</span>
+            <span class="c1">#    return False</span>
+            <span class="k">if</span> <span class="n">data_role</span> <span class="o">==</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">CheckStateRole</span><span class="p">:</span>
+                <span class="n">itm</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_item</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span>
+                <span class="n">itm</span><span class="o">.</span><span class="n">set_checked</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">dataChanged</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="n">idx</span><span class="p">,</span> <span class="n">idx</span><span class="p">)</span>
+                <span class="k">return</span> <span class="kc">True</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">TreeModel</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">setData</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">data_role</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">TreeModel</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">setData</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">data_role</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TreeSelectionModel.set_all_unselected"><a class="viewcode-back" href="../../../moduledoc_files/paws.core.html#paws.core.treemodel.TreeSelectionModel.set_all_unselected">[docs]</a>    <span class="k">def</span> <span class="nf">set_all_unselected</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">idx</span><span class="o">=</span><span class="n">QtCore</span><span class="o">.</span><span class="n">QModelIndex</span><span class="p">()):</span>
+        <span class="k">if</span> <span class="n">idx</span><span class="o">.</span><span class="n">isValid</span><span class="p">():</span>
+            <span class="n">itm</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_item</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span>
+            <span class="n">itm</span><span class="o">.</span><span class="n">set_checked</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">c_row</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">itm</span><span class="o">.</span><span class="n">n_children</span><span class="p">()):</span>
+                <span class="n">c_idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">c_row</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="n">idx</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">set_all_unselected</span><span class="p">(</span><span class="n">c_idx</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">r_row</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rowCount</span><span class="p">()):</span>
+                <span class="n">r_idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">r_row</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="n">idx</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">set_all_unselected</span><span class="p">(</span><span class="n">r_idx</span><span class="p">)</span></div>
+            
+<div class="viewcode-block" id="TreeSelectionModel.get_all_selected"><a class="viewcode-back" href="../../../moduledoc_files/paws.core.html#paws.core.treemodel.TreeSelectionModel.get_all_selected">[docs]</a>    <span class="k">def</span> <span class="nf">get_all_selected</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">idx</span><span class="o">=</span><span class="n">QtCore</span><span class="o">.</span><span class="n">QModelIndex</span><span class="p">()):</span>
+        <span class="n">sel_idxs</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="n">idx</span><span class="o">.</span><span class="n">isValid</span><span class="p">():</span>
+            <span class="n">itm</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_item</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">itm</span><span class="o">.</span><span class="n">is_checked</span><span class="p">():</span>
+                <span class="n">sel_idxs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">c_row</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">itm</span><span class="o">.</span><span class="n">n_children</span><span class="p">()):</span>
+                <span class="n">c_idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">c_row</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="n">idx</span><span class="p">)</span>
+                <span class="n">sel_idxs</span> <span class="o">=</span> <span class="n">sel_idxs</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_all_selected</span><span class="p">(</span><span class="n">c_idx</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">r_row</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rowCount</span><span class="p">()):</span>
+                <span class="n">r_idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">r_row</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="n">idx</span><span class="p">)</span>
+                <span class="n">sel_idxs</span> <span class="o">=</span> <span class="n">sel_idxs</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_all_selected</span><span class="p">(</span><span class="n">r_idx</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">sel_idxs</span></div></div>
+
+
+
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">paws 0.4.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2017, Lenson A. Pellouchoud.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.2.
+    </div>
+  </body>
+</html>

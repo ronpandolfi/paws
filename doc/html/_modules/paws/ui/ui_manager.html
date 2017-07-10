@@ -1,0 +1,303 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>paws.ui.ui_manager &#8212; paws 0.4.0 documentation</title>
+    
+    <link rel="stylesheet" href="../../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '0.4.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">paws 0.4.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../ui.html" accesskey="U">paws.ui</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for paws.ui.ui_manager</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">functools</span> <span class="k">import</span> <span class="n">partial</span>
+
+<span class="kn">from</span> <span class="nn">PySide</span> <span class="k">import</span> <span class="n">QtGui</span><span class="p">,</span> <span class="n">QtCore</span><span class="p">,</span> <span class="n">QtUiTools</span>
+
+<span class="kn">from</span> <span class="nn">.</span> <span class="k">import</span> <span class="n">uitools</span>
+<span class="kn">from</span> <span class="nn">.wfuiman</span> <span class="k">import</span> <span class="n">WfUiManager</span>
+<span class="kn">from</span> <span class="nn">.opuiman</span> <span class="k">import</span> <span class="n">OpUiManager</span>
+<span class="kn">from</span> <span class="nn">.pluguiman</span> <span class="k">import</span> <span class="n">PluginUiManager</span>
+<span class="kn">from</span> <span class="nn">..core.operations.operation</span> <span class="k">import</span> <span class="n">Operation</span>
+<span class="kn">from</span> <span class="nn">..core</span> <span class="k">import</span> <span class="n">pawstools</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="k">import</span> <span class="n">data_viewer</span>
+
+<span class="c1"># TODO: Make a metaclass that generates Operation subclasses.</span>
+<span class="c1"># TODO: Use the above to make an Op development interface. </span>
+<span class="c1"># TODO: Consider whether this should inherit from QtCore.QObject instaed of object?</span>
+
+<div class="viewcode-block" id="UiManager"><a class="viewcode-back" href="../../../moduledoc_files/paws.ui.html#paws.ui.ui_manager.UiManager">[docs]</a><span class="k">class</span> <span class="nc">UiManager</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Stores a reference to a QMainWindow,</span>
+<span class="sd">    performs operations on it</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># TODO: when the QImageView widget gets resized,</span>
+    <span class="c1"># it will call QWidget.resizeEvent().</span>
+    <span class="c1"># Try to use this to resize the images in the QImageView.</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">opman</span><span class="p">,</span><span class="n">wfman</span><span class="p">,</span><span class="n">plugman</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Make a UI from ui_file, save a reference to it&quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">UiManager</span><span class="p">,</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="c1"># Pick a UI definition, load it up</span>
+        <span class="n">ui_file</span> <span class="o">=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">QFile</span><span class="p">(</span><span class="n">pawstools</span><span class="o">.</span><span class="n">rootdir</span><span class="o">+</span><span class="s2">&quot;/ui/qtui/basic.ui&quot;</span><span class="p">)</span>
+        <span class="n">ui_file</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">QFile</span><span class="o">.</span><span class="n">ReadOnly</span><span class="p">)</span>
+        <span class="c1"># load() produces a QMainWindow(QWidget).</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ui</span> <span class="o">=</span> <span class="n">QtUiTools</span><span class="o">.</span><span class="n">QUiLoader</span><span class="p">()</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">ui_file</span><span class="p">)</span>
+        <span class="n">ui_file</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="c1"># Set up the self.ui widget to delete itself when closed</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">setAttribute</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">WA_DeleteOnClose</span><span class="p">)</span>
+        <span class="n">opman</span><span class="o">.</span><span class="n">logmethod</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">msg_board_log</span>
+        <span class="n">wfman</span><span class="o">.</span><span class="n">logmethod</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">msg_board_log</span>
+        <span class="n">plugman</span><span class="o">.</span><span class="n">logmethod</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">msg_board_log</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">opman</span> <span class="o">=</span> <span class="n">opman</span> 
+        <span class="bp">self</span><span class="o">.</span><span class="n">wfman</span> <span class="o">=</span> <span class="n">wfman</span> 
+        <span class="bp">self</span><span class="o">.</span><span class="n">plugman</span> <span class="o">=</span> <span class="n">plugman</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">make_title</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">connect_actions</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">final_setup</span><span class="p">()</span>
+
+<div class="viewcode-block" id="UiManager.edit_wf"><a class="viewcode-back" href="../../../moduledoc_files/paws.ui.html#paws.ui.ui_manager.UiManager.edit_wf">[docs]</a>    <span class="k">def</span> <span class="nf">edit_wf</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">trmod</span><span class="p">,</span><span class="n">itm_idx</span><span class="o">=</span><span class="n">QtCore</span><span class="o">.</span><span class="n">QModelIndex</span><span class="p">()):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Interact with user to edit the workflow.</span>
+<span class="sd">        Pass in a TreeModel and index to open the editor </span>
+<span class="sd">        with the item at that index loaded.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">itm_idx</span><span class="o">.</span><span class="n">isValid</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">trmod</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">wfman</span><span class="p">:</span>
+                <span class="k">while</span> <span class="n">itm_idx</span><span class="o">.</span><span class="n">parent</span><span class="p">()</span><span class="o">.</span><span class="n">isValid</span><span class="p">():</span>
+                    <span class="n">itm_idx</span> <span class="o">=</span> <span class="n">itm_idx</span><span class="o">.</span><span class="n">parent</span><span class="p">()</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="n">trmod</span><span class="o">.</span><span class="n">get_item</span><span class="p">(</span><span class="n">itm_idx</span><span class="p">)</span><span class="o">.</span><span class="n">data</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="n">itm_idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">wf_tree</span><span class="o">.</span><span class="n">currentIndex</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">itm_idx</span><span class="o">.</span><span class="n">isValid</span><span class="p">():</span>
+                <span class="k">while</span> <span class="n">itm_idx</span><span class="o">.</span><span class="n">parent</span><span class="p">()</span><span class="o">.</span><span class="n">isValid</span><span class="p">():</span>
+                    <span class="n">itm_idx</span> <span class="o">=</span> <span class="n">itm_idx</span><span class="o">.</span><span class="n">parent</span><span class="p">()</span>
+                <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">wfman</span><span class="o">.</span><span class="n">get_item</span><span class="p">(</span><span class="n">itm_idx</span><span class="p">)</span><span class="o">.</span><span class="n">data</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">itm_idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">op_tree</span><span class="o">.</span><span class="n">currentIndex</span><span class="p">()</span>
+                <span class="k">if</span> <span class="n">itm_idx</span><span class="o">.</span><span class="n">isValid</span><span class="p">():</span><span class="c1"># and self.opman.get_item(idx).data is not None:</span>
+                    <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">opman</span><span class="o">.</span><span class="n">get_item</span><span class="p">(</span><span class="n">itm_idx</span><span class="p">)</span><span class="o">.</span><span class="n">data</span>
+        <span class="n">existing_op_flag</span> <span class="o">=</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">Operation</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">new_op_flag</span> <span class="o">=</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">Operation</span><span class="p">)</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="n">new_op_flag</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="n">new_op_flag</span><span class="p">:</span> 
+            <span class="n">uiman</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_wf_editor</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">opman</span><span class="p">,</span><span class="n">itm_idx</span><span class="p">)</span>
+            <span class="n">uiman</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">op_selector</span><span class="o">.</span><span class="n">setCurrentIndex</span><span class="p">(</span><span class="n">itm_idx</span><span class="p">)</span>
+            <span class="n">uiman</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+            <span class="k">return</span>
+        <span class="k">elif</span> <span class="n">existing_op_flag</span><span class="p">:</span> 
+            <span class="n">uiman</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_wf_editor</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">wfman</span><span class="p">,</span><span class="n">itm_idx</span><span class="p">)</span>
+            <span class="n">uiman</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">wf_selector</span><span class="o">.</span><span class="n">setCurrentIndex</span><span class="p">(</span><span class="n">itm_idx</span><span class="p">)</span>
+            <span class="n">uiman</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+            <span class="k">return</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># if we are here, there was either an invalid index selected,</span>
+            <span class="c1"># or the selection did not point to a valid Operation</span>
+            <span class="n">uiman</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_wf_editor</span><span class="p">()</span>
+            <span class="n">uiman</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="UiManager.edit_ops"><a class="viewcode-back" href="../../../moduledoc_files/paws.ui.html#paws.ui.ui_manager.UiManager.edit_ops">[docs]</a>    <span class="k">def</span> <span class="nf">edit_ops</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">item_indx</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        interact with user to enable existing Operations</span>
+<span class="sd">        and edit or develop new Operations </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">uiman</span> <span class="o">=</span> <span class="n">OpUiManager</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">opman</span><span class="p">)</span>
+        <span class="n">uiman</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">setParent</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="p">,</span><span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">Window</span><span class="p">)</span>
+        <span class="n">uiman</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="UiManager.start_wf_editor"><a class="viewcode-back" href="../../../moduledoc_files/paws.ui.html#paws.ui.ui_manager.UiManager.start_wf_editor">[docs]</a>    <span class="k">def</span> <span class="nf">start_wf_editor</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">trmod</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">indx</span><span class="o">=</span><span class="n">QtCore</span><span class="o">.</span><span class="n">QModelIndex</span><span class="p">()):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create a WfUiManager (QMainWindow), return it </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">uiman</span> <span class="o">=</span> <span class="n">WfUiManager</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">wfman</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">opman</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">plugman</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">trmod</span> <span class="ow">and</span> <span class="n">indx</span><span class="o">.</span><span class="n">isValid</span><span class="p">():</span>
+            <span class="n">uiman</span><span class="o">.</span><span class="n">get_op</span><span class="p">(</span><span class="n">trmod</span><span class="p">,</span><span class="n">indx</span><span class="p">)</span>
+        <span class="n">uiman</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">setParent</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="p">,</span><span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">Window</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">uiman</span></div>
+
+<div class="viewcode-block" id="UiManager.display_item"><a class="viewcode-back" href="../../../moduledoc_files/paws.ui.html#paws.ui.ui_manager.UiManager.display_item">[docs]</a>    <span class="k">def</span> <span class="nf">display_item</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">idx</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Display selected item from the workflow tree in image_viewer </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">idx</span><span class="o">.</span><span class="n">isValid</span><span class="p">():</span> 
+            <span class="n">itm_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">wfman</span><span class="o">.</span><span class="n">get_item</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span><span class="o">.</span><span class="n">data</span>
+            <span class="n">uri</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">wfman</span><span class="o">.</span><span class="n">build_uri</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span>
+            <span class="n">data_viewer</span><span class="o">.</span><span class="n">display_item</span><span class="p">(</span><span class="n">itm_data</span><span class="p">,</span><span class="n">uri</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">image_viewer</span><span class="p">,</span><span class="kc">None</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="UiManager.final_setup"><a class="viewcode-back" href="../../../moduledoc_files/paws.ui.html#paws.ui.ui_manager.UiManager.final_setup">[docs]</a>    <span class="k">def</span> <span class="nf">final_setup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">message_board</span><span class="o">.</span><span class="n">setReadOnly</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">message_board</span><span class="o">.</span><span class="n">insertPlainText</span><span class="p">(</span><span class="s1">&#39;--- MESSAGE BOARD ---</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span> 
+        <span class="bp">self</span><span class="o">.</span><span class="n">msg_board_log</span><span class="p">(</span><span class="s1">&#39;paws is ready&#39;</span><span class="p">,</span><span class="n">timestamp</span><span class="o">=</span><span class="n">pawstools</span><span class="o">.</span><span class="n">dtstr</span><span class="p">)</span> 
+        <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">wf_tree</span><span class="o">.</span><span class="n">hideColumn</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">op_tree</span><span class="o">.</span><span class="n">hideColumn</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">plugin_tree</span><span class="o">.</span><span class="n">hideColumn</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">hsplitter</span><span class="o">.</span><span class="n">setStretchFactor</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span>    
+        <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">vsplitter</span><span class="o">.</span><span class="n">setStretchFactor</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>    </div>
+
+<div class="viewcode-block" id="UiManager.toggle_run_wf"><a class="viewcode-back" href="../../../moduledoc_files/paws.ui.html#paws.ui.ui_manager.UiManager.toggle_run_wf">[docs]</a>    <span class="k">def</span> <span class="nf">toggle_run_wf</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">wfman</span><span class="o">.</span><span class="n">is_running</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">wfman</span><span class="o">.</span><span class="n">stop_wf</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">run_wf_button</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="s2">&quot;&amp;Run&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">run_wf_button</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="s2">&quot;S&amp;top&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">wfman</span><span class="o">.</span><span class="n">run_wf</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="UiManager.start_load_ui"><a class="viewcode-back" href="../../../moduledoc_files/paws.ui.html#paws.ui.ui_manager.UiManager.start_load_ui">[docs]</a>    <span class="k">def</span> <span class="nf">start_load_ui</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">uitools</span><span class="o">.</span><span class="n">start_load_ui</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="UiManager.start_save_ui"><a class="viewcode-back" href="../../../moduledoc_files/paws.ui.html#paws.ui.ui_manager.UiManager.start_save_ui">[docs]</a>    <span class="k">def</span> <span class="nf">start_save_ui</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">uitools</span><span class="o">.</span><span class="n">start_save_ui</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="UiManager.start_plugins_ui"><a class="viewcode-back" href="../../../moduledoc_files/paws.ui.html#paws.ui.ui_manager.UiManager.start_plugins_ui">[docs]</a>    <span class="k">def</span> <span class="nf">start_plugins_ui</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">uiman</span> <span class="o">=</span> <span class="n">PluginUiManager</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">plugman</span><span class="p">)</span>
+        <span class="n">uiman</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">setParent</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="p">,</span><span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">Window</span><span class="p">)</span>
+        <span class="n">uiman</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="UiManager.connect_actions"><a class="viewcode-back" href="../../../moduledoc_files/paws.ui.html#paws.ui.ui_manager.UiManager.connect_actions">[docs]</a>    <span class="k">def</span> <span class="nf">connect_actions</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Set up the works for buttons and menu items&quot;&quot;&quot;</span>
+        <span class="c1">#self.ui.add_op_button.setText(&quot;Add to Workflow&quot;)</span>
+        <span class="c1">#self.ui.add_op_button.clicked.connect( partial(self.edit_wf,self.opman) )</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">edit_ops_button</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="s2">&quot;Edit &amp;operations&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">edit_ops_button</span><span class="o">.</span><span class="n">clicked</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">edit_ops</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">load_wf_button</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="s2">&quot;&amp;Load&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">load_wf_button</span><span class="o">.</span><span class="n">clicked</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">start_load_ui</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">edit_wf_button</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="s2">&quot;Edit &amp;workflow&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">edit_wf_button</span><span class="o">.</span><span class="n">clicked</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span> <span class="n">partial</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">edit_wf</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">wfman</span><span class="p">)</span> <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">run_wf_button</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="s2">&quot;&amp;Run&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">run_wf_button</span><span class="o">.</span><span class="n">clicked</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">toggle_run_wf</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">save_wf_button</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="s2">&quot;&amp;Save&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">save_wf_button</span><span class="o">.</span><span class="n">clicked</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">start_save_ui</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">edit_plugins_button</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="s2">&quot;Edit &amp;plugins&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">edit_plugins_button</span><span class="o">.</span><span class="n">clicked</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">start_plugins_ui</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">plugin_tree</span><span class="o">.</span><span class="n">setModel</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">plugman</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">wf_tree</span><span class="o">.</span><span class="n">setModel</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">wfman</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">op_tree</span><span class="o">.</span><span class="n">setModel</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">opman</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">op_tree</span><span class="o">.</span><span class="n">hideColumn</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">wfman</span><span class="o">.</span><span class="n">wfdone</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">toggle_run_wf</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">op_tree</span><span class="o">.</span><span class="n">clicked</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span> <span class="n">partial</span><span class="p">(</span><span class="n">uitools</span><span class="o">.</span><span class="n">toggle_expand</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">op_tree</span><span class="p">)</span> <span class="p">)</span> 
+        <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">wf_tree</span><span class="o">.</span><span class="n">clicked</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span> <span class="n">partial</span><span class="p">(</span><span class="n">uitools</span><span class="o">.</span><span class="n">toggle_expand</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">wf_tree</span><span class="p">)</span> <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">wf_tree</span><span class="o">.</span><span class="n">clicked</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">display_item</span> <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">op_tree</span><span class="o">.</span><span class="n">doubleClicked</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span> <span class="n">partial</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">edit_wf</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">opman</span><span class="p">)</span> <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">wf_tree</span><span class="o">.</span><span class="n">doubleClicked</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span> <span class="n">partial</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">edit_wf</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">wfman</span><span class="p">)</span> <span class="p">)</span></div>
+        <span class="c1"># TODO: Figure out how to get the display to follow</span>
+        <span class="c1"># when I scroll through the tree with my arrow keys.</span>
+        <span class="c1">#self.ui.wf_tree.activated.connect(self.display_item)</span>
+        <span class="c1">#self.ui.wf_tree.selectionModel().selectionChanged.connect( self.ui.wf_tree.selectionChanged )</span>
+
+<div class="viewcode-block" id="UiManager.make_title"><a class="viewcode-back" href="../../../moduledoc_files/paws.ui.html#paws.ui.ui_manager.UiManager.make_title">[docs]</a>    <span class="k">def</span> <span class="nf">make_title</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Display the paws logo in the image viewer&quot;&quot;&quot;</span>
+        <span class="c1"># Load the graphic  </span>
+        <span class="n">img_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">pawstools</span><span class="o">.</span><span class="n">rootdir</span><span class="p">,</span> <span class="s2">&quot;ui/graphics/paws_icon_white.png&quot;</span><span class="p">)</span>
+        <span class="c1"># Make a QtGui.QPixmap from this file</span>
+        <span class="n">pixmap</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QPixmap</span><span class="p">(</span><span class="n">img_file</span><span class="p">)</span>
+        <span class="c1"># Make a QtGui.QGraphicsPixmapItem from this QPixmap</span>
+        <span class="n">pixmap_item</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QGraphicsPixmapItem</span><span class="p">(</span><span class="n">pixmap</span><span class="p">)</span>
+        <span class="c1"># Add this QtGui.QGraphicsPixmapItem to a QtGui.QGraphicsScene </span>
+        <span class="n">scene</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QGraphicsScene</span><span class="p">()</span>
+        <span class="n">scene</span><span class="o">.</span><span class="n">addItem</span><span class="p">(</span><span class="n">pixmap_item</span><span class="p">)</span>
+        <span class="n">qwhite</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QColor</span><span class="p">(</span><span class="mi">255</span><span class="p">,</span><span class="mi">255</span><span class="p">,</span><span class="mi">255</span><span class="p">,</span><span class="mi">255</span><span class="p">)</span>
+        <span class="n">textitem</span> <span class="o">=</span> <span class="n">scene</span><span class="o">.</span><span class="n">addText</span><span class="p">(</span><span class="s2">&quot;v</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">pawstools</span><span class="o">.</span><span class="n">version</span><span class="p">))</span>
+        <span class="n">textitem</span><span class="o">.</span><span class="n">setPos</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span><span class="mi">35</span><span class="p">)</span>
+        <span class="n">textitem</span><span class="o">.</span><span class="n">setDefaultTextColor</span><span class="p">(</span><span class="n">qwhite</span><span class="p">)</span>
+        <span class="c1"># Add the QGraphicsScene to self.ui.image_viewer layout </span>
+        <span class="n">logo_view</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QGraphicsView</span><span class="p">()</span>
+        <span class="n">logo_view</span><span class="o">.</span><span class="n">setScene</span><span class="p">(</span><span class="n">scene</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">image_viewer</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">logo_view</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">setWindowTitle</span><span class="p">(</span><span class="s2">&quot;paws v</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">pawstools</span><span class="o">.</span><span class="n">version</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">setWindowIcon</span><span class="p">(</span><span class="n">pixmap</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="UiManager.msg_board_log"><a class="viewcode-back" href="../../../moduledoc_files/paws.ui.html#paws.ui.ui_manager.UiManager.msg_board_log">[docs]</a>    <span class="k">def</span> <span class="nf">msg_board_log</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">msg</span><span class="p">,</span><span class="n">timestamp</span><span class="o">=</span><span class="n">pawstools</span><span class="o">.</span><span class="n">timestr</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Print timestamped message to msg board&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">message_board</span><span class="o">.</span><span class="n">insertPlainText</span><span class="p">(</span>
+        <span class="s1">&#39;- &#39;</span> <span class="o">+</span> <span class="n">timestamp</span><span class="p">()</span> <span class="o">+</span> <span class="s1">&#39;: &#39;</span> <span class="o">+</span> <span class="n">msg</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span> 
+        <span class="c1"># TODO: Figure out how to get the message board to stay put if the scrollbar is under user control</span>
+        <span class="c1">#if not self.ui.message_board.isActive():</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">message_board</span><span class="o">.</span><span class="n">verticalScrollBar</span><span class="p">()</span><span class="o">.</span><span class="n">setValue</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">message_board</span><span class="o">.</span><span class="n">verticalScrollBar</span><span class="p">()</span><span class="o">.</span><span class="n">maximum</span><span class="p">())</span></div></div>
+      
+
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">paws 0.4.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../ui.html" >paws.ui</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2017, Lenson A. Pellouchoud.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.2.
+    </div>
+  </body>
+</html>

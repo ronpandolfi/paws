@@ -1,0 +1,314 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>paws.core.operations.PROCESSING.calib_and_reduce &#8212; paws 0.4.0 documentation</title>
+    
+    <link rel="stylesheet" href="../../../../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../../../',
+        VERSION:     '0.4.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../search.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../../index.html">paws 0.4.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../operations.html" accesskey="U">paws.core.operations</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for paws.core.operations.PROCESSING.calib_and_reduce</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Operations for remeshing and and reducing an image</span>
+
+<span class="sd">author: Fang Ren, Apurva Mehta, Ron Pandolfi</span>
+<span class="sd">For details, please refer to the recent paper submitted to ACS Combinatorial Science</span>
+<span class="sd">F. Ren implemented the remeshing on scripting level, contributed by R. Pandolfi from LBL. F. Ren originally contributed</span>
+<span class="sd">it to slacx</span>
+
+<span class="sd">Please add yours too, Amanda, Lenson.</span>
+
+<span class="sd">contributors: fangren, apf, lensonp</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">os</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pyFAI</span>
+
+<span class="kn">from</span> <span class="nn">..operation</span> <span class="k">import</span> <span class="n">Operation</span>
+<span class="kn">from</span> <span class="nn">..</span> <span class="k">import</span> <span class="n">optools</span>
+
+<div class="viewcode-block" id="ReduceByWXDDict"><a class="viewcode-back" href="../../../../../moduledoc_files/paws.core.operations.PROCESSING.html#paws.core.operations.PROCESSING.calib_and_reduce.ReduceByWXDDict">[docs]</a><span class="k">class</span> <span class="nc">ReduceByWXDDict</span><span class="p">(</span><span class="n">Operation</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Input image data (ndarray) and a dict of calibration parameters from a WxDiff .calib file </span>
+<span class="sd">    Return q, I(q) </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">input_names</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;image_data&#39;</span><span class="p">,</span><span class="s1">&#39;wxd_dict&#39;</span><span class="p">,</span><span class="s1">&#39;pixel_size&#39;</span><span class="p">,</span><span class="s1">&#39;fpolz&#39;</span><span class="p">]</span>
+        <span class="n">output_names</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;q&#39;</span><span class="p">,</span><span class="s1">&#39;I_of_q&#39;</span><span class="p">]</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">ReduceByWXDDict</span><span class="p">,</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">input_names</span><span class="p">,</span><span class="n">output_names</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_doc</span><span class="p">[</span><span class="s1">&#39;image_data&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;2d array representing intensity for each pixel&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_doc</span><span class="p">[</span><span class="s1">&#39;wxd_dict&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span> <span class="s1">&#39;dict of calibration parameters read in from a .calib file,&#39;</span>
+        <span class="o">+</span> <span class="s1">&#39; with keys d_pixel, rotation_rad, tilt_rad, lambda, x0_pixel, y0_pixel,&#39;</span>
+        <span class="o">+</span> <span class="s1">&#39; PP (polarization factor), pixel_size, and d_pixel&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_doc</span><span class="p">[</span><span class="s1">&#39;pixel_size&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;pixel size in microns&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_doc</span><span class="p">[</span><span class="s1">&#39;fpolz&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;polarization factor&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_src</span><span class="p">[</span><span class="s1">&#39;image_data&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">optools</span><span class="o">.</span><span class="n">wf_input</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_src</span><span class="p">[</span><span class="s1">&#39;wxd_dict&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">optools</span><span class="o">.</span><span class="n">wf_input</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_src</span><span class="p">[</span><span class="s1">&#39;pixel_size&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">optools</span><span class="o">.</span><span class="n">text_input</span> 
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_src</span><span class="p">[</span><span class="s1">&#39;fpolz&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">optools</span><span class="o">.</span><span class="n">text_input</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_type</span><span class="p">[</span><span class="s1">&#39;image_data&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">optools</span><span class="o">.</span><span class="n">ref_type</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_type</span><span class="p">[</span><span class="s1">&#39;wxd_dict&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">optools</span><span class="o">.</span><span class="n">ref_type</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_type</span><span class="p">[</span><span class="s1">&#39;pixel_size&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">optools</span><span class="o">.</span><span class="n">float_type</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_type</span><span class="p">[</span><span class="s1">&#39;fpolz&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">optools</span><span class="o">.</span><span class="n">float_type</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="p">[</span><span class="s1">&#39;pixel_size&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">79</span> 
+        <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="p">[</span><span class="s1">&#39;fpolz&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.95</span> 
+        <span class="bp">self</span><span class="o">.</span><span class="n">output_doc</span><span class="p">[</span><span class="s1">&#39;q&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;Scattering vector magnitude q&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">output_doc</span><span class="p">[</span><span class="s1">&#39;I_of_q&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;Integrated intensity at q&#39;</span>
+
+<div class="viewcode-block" id="ReduceByWXDDict.run"><a class="viewcode-back" href="../../../../../moduledoc_files/paws.core.operations.PROCESSING.html#paws.core.operations.PROCESSING.calib_and_reduce.ReduceByWXDDict.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">img</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="p">[</span><span class="s1">&#39;image_data&#39;</span><span class="p">]</span>
+        <span class="n">pxsz</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="p">[</span><span class="s1">&#39;pixel_size&#39;</span><span class="p">]</span>
+        <span class="n">fpolz</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="p">[</span><span class="s1">&#39;fpolz&#39;</span><span class="p">]</span>
+        <span class="n">l</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="p">[</span><span class="s1">&#39;wxd_dict&#39;</span><span class="p">][</span><span class="s1">&#39;lambda&#39;</span><span class="p">]</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="p">[</span><span class="s1">&#39;wxd_dict&#39;</span><span class="p">][</span><span class="s1">&#39;d_pixel&#39;</span><span class="p">]</span><span class="o">*</span><span class="n">pxsz</span><span class="o">*</span><span class="mf">0.001</span>
+        <span class="n">rot</span> <span class="o">=</span> <span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="p">[</span><span class="s1">&#39;wxd_dict&#39;</span><span class="p">][</span><span class="s1">&#39;rotation_rad&#39;</span><span class="p">])</span><span class="o">/</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span><span class="o">*</span><span class="mi">360</span>
+        <span class="n">tilt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="p">[</span><span class="s1">&#39;wxd_dict&#39;</span><span class="p">][</span><span class="s1">&#39;tilt_rad&#39;</span><span class="p">]</span><span class="o">/</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span><span class="o">*</span><span class="mi">360</span>
+        <span class="c1"># initialization parameters, change into Fit2D format</span>
+        <span class="n">x0</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="p">[</span><span class="s1">&#39;wxd_dict&#39;</span><span class="p">][</span><span class="s1">&#39;x0_pixel&#39;</span><span class="p">]</span>
+        <span class="n">y0</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="p">[</span><span class="s1">&#39;wxd_dict&#39;</span><span class="p">][</span><span class="s1">&#39;y0_pixel&#39;</span><span class="p">]</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">img</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">p</span> <span class="o">=</span> <span class="n">pyFAI</span><span class="o">.</span><span class="n">AzimuthalIntegrator</span><span class="p">(</span><span class="n">wavelength</span><span class="o">=</span><span class="n">l</span><span class="p">)</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">setFit2D</span><span class="p">(</span><span class="n">d</span><span class="p">,</span><span class="n">x0</span><span class="p">,</span><span class="n">y0</span><span class="p">,</span><span class="n">tilt</span><span class="p">,</span><span class="n">rot</span><span class="p">,</span><span class="n">pxsz</span><span class="p">,</span><span class="n">pxsz</span><span class="p">)</span>
+        <span class="c1"># define detector mask, to screen bad pixels</span>
+        <span class="c1"># should eventually be read in from dezinger output or something</span>
+        <span class="c1"># for now just screen negative pixels</span>
+        <span class="c1"># 1 for masked pixels, and 0 for valid pixels</span>
+        <span class="n">detector_mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="n">s</span><span class="p">,</span><span class="n">s</span><span class="p">))</span><span class="o">*</span><span class="p">(</span><span class="n">img</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">q</span><span class="p">,</span> <span class="n">I_of_q</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">integrate1d</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="mi">1000</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="n">detector_mask</span><span class="p">,</span> <span class="n">polarization_factor</span><span class="o">=</span><span class="n">fpolz</span><span class="p">)</span>
+        <span class="n">q</span> <span class="o">=</span> <span class="n">q</span> <span class="o">*</span> <span class="mf">1E9</span>
+        <span class="c1"># save results to self.outputs</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">outputs</span><span class="p">[</span><span class="s1">&#39;q&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">q</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">outputs</span><span class="p">[</span><span class="s1">&#39;I_of_q&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">I_of_q</span> </div></div>
+
+
+<div class="viewcode-block" id="ReduceByWXDDict_mask_error"><a class="viewcode-back" href="../../../../../moduledoc_files/paws.core.operations.PROCESSING.html#paws.core.operations.PROCESSING.calib_and_reduce.ReduceByWXDDict_mask_error">[docs]</a><span class="k">class</span> <span class="nc">ReduceByWXDDict_mask_error</span><span class="p">(</span><span class="n">Operation</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Input image data (ndarray) and a dict of calibration parameters from a WxDiff .calib file</span>
+<span class="sd">    Return q, I(q)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">input_names</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;image_data&#39;</span><span class="p">,</span><span class="s1">&#39;wxd_dict&#39;</span><span class="p">,</span><span class="s1">&#39;pixel_size&#39;</span><span class="p">,</span><span class="s1">&#39;fpolz&#39;</span><span class="p">,</span><span class="s1">&#39;calculate_noise&#39;</span><span class="p">,</span><span class="s1">&#39;inverse_gain&#39;</span><span class="p">,</span><span class="s1">&#39;readnoise&#39;</span><span class="p">,</span><span class="s1">&#39;mask&#39;</span><span class="p">]</span>
+        <span class="n">output_names</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;q&#39;</span><span class="p">,</span><span class="s1">&#39;I_of_q&#39;</span><span class="p">,</span><span class="s1">&#39;dI_of_q&#39;</span><span class="p">]</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">ReduceByWXDDict_mask_error</span><span class="p">,</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">input_names</span><span class="p">,</span><span class="n">output_names</span><span class="p">)</span>
+        <span class="c1"># docs</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_doc</span><span class="p">[</span><span class="s1">&#39;image_data&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;2d array representing intensity for each pixel&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_doc</span><span class="p">[</span><span class="s1">&#39;wxd_dict&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span> <span class="s1">&#39;dict of calibration parameters read in from a .calib file,&#39;</span>
+        <span class="o">+</span> <span class="s1">&#39; with keys d_pixel, rotation_rad, tilt_rad, lambda, x0_pixel, y0_pixel,&#39;</span>
+        <span class="o">+</span> <span class="s1">&#39; PP (polarization factor), pixel_size, and d_pixel&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_doc</span><span class="p">[</span><span class="s1">&#39;pixel_size&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;pixel size in microns&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_doc</span><span class="p">[</span><span class="s1">&#39;fpolz&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;polarization factor&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_doc</span><span class="p">[</span><span class="s1">&#39;calculate_noise&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;Calculate error estimate?&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_doc</span><span class="p">[</span><span class="s1">&#39;inverse_gain&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="s1">&#39;inverse gain, i.e. electrons on chip per digital count;&#39;</span>
+        <span class="o">+</span> <span class="s1">&#39; applies primarily to CCDs&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_doc</span><span class="p">[</span><span class="s1">&#39;readnoise&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;detector readnoise in electrons; applies primarily to CCDs&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_doc</span><span class="p">[</span><span class="s1">&#39;mask&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="s1">&#39;Bad pixel locations, if known (e.g., inactive detector regions, dead pixels,&#39;</span>
+        <span class="o">+</span> <span class="s1">&#39; zingers/cosmic rays).  Boolean array of same shape as image, True indicating&#39;</span>
+        <span class="o">+</span> <span class="s1">&#39; bad data and False indicating good, or None for default behavior.&#39;</span>
+        <span class="o">+</span> <span class="s1">&#39; Default masking behavior is to mask all non-positive pixels.&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">output_doc</span><span class="p">[</span><span class="s1">&#39;q&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;Scattering vector magnitude q&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">output_doc</span><span class="p">[</span><span class="s1">&#39;I_of_q&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;Integrated intensity at q&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">output_doc</span><span class="p">[</span><span class="s1">&#39;dI_of_q&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;Error estimate of integrated intensity at q&#39;</span>
+        <span class="c1"># src &amp; type</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_src</span><span class="p">[</span><span class="s1">&#39;image_data&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">optools</span><span class="o">.</span><span class="n">wf_input</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_src</span><span class="p">[</span><span class="s1">&#39;wxd_dict&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">optools</span><span class="o">.</span><span class="n">wf_input</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_src</span><span class="p">[</span><span class="s1">&#39;pixel_size&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">optools</span><span class="o">.</span><span class="n">text_input</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_src</span><span class="p">[</span><span class="s1">&#39;fpolz&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">optools</span><span class="o">.</span><span class="n">text_input</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_src</span><span class="p">[</span><span class="s1">&#39;calculate_noise&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">optools</span><span class="o">.</span><span class="n">text_input</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_src</span><span class="p">[</span><span class="s1">&#39;inverse_gain&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">optools</span><span class="o">.</span><span class="n">text_input</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_src</span><span class="p">[</span><span class="s1">&#39;readnoise&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">optools</span><span class="o">.</span><span class="n">text_input</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_src</span><span class="p">[</span><span class="s1">&#39;mask&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">optools</span><span class="o">.</span><span class="n">text_input</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_type</span><span class="p">[</span><span class="s1">&#39;pixel_size&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">optools</span><span class="o">.</span><span class="n">float_type</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_type</span><span class="p">[</span><span class="s1">&#39;fpolz&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">optools</span><span class="o">.</span><span class="n">float_type</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_type</span><span class="p">[</span><span class="s1">&#39;calculate_noise&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">optools</span><span class="o">.</span><span class="n">bool_type</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_type</span><span class="p">[</span><span class="s1">&#39;inverse_gain&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">optools</span><span class="o">.</span><span class="n">float_type</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_type</span><span class="p">[</span><span class="s1">&#39;readnoise&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">optools</span><span class="o">.</span><span class="n">float_type</span>
+        <span class="c1"># defaults</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="p">[</span><span class="s1">&#39;pixel_size&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">79.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="p">[</span><span class="s1">&#39;fpolz&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.95</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="p">[</span><span class="s1">&#39;calculate_noise&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="c1">#self.inputs[&#39;inverse_gain&#39;] = 21.97 # 1 for no gain, sort of</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="p">[</span><span class="s1">&#39;inverse_gain&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">49.44</span> <span class="c1"># 1 for no gain, sort of</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="p">[</span><span class="s1">&#39;readnoise&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">9.0</span> <span class="c1"># 0 for no readnoise</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="p">[</span><span class="s1">&#39;mask&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+
+<div class="viewcode-block" id="ReduceByWXDDict_mask_error.run"><a class="viewcode-back" href="../../../../../moduledoc_files/paws.core.operations.PROCESSING.html#paws.core.operations.PROCESSING.calib_and_reduce.ReduceByWXDDict_mask_error.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">img</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="p">[</span><span class="s1">&#39;image_data&#39;</span><span class="p">]</span>
+        <span class="c1"># initialization parameters, change into Fit2D format</span>
+        <span class="n">pxsz</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="p">[</span><span class="s1">&#39;pixel_size&#39;</span><span class="p">]</span> <span class="c1"># in microns</span>
+        <span class="n">fpolz</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="p">[</span><span class="s1">&#39;fpolz&#39;</span><span class="p">]</span>
+        <span class="n">l</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="p">[</span><span class="s1">&#39;wxd_dict&#39;</span><span class="p">][</span><span class="s1">&#39;lambda&#39;</span><span class="p">]</span> <span class="c1"># wavelength (in what units??? need to check)</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="p">[</span><span class="s1">&#39;wxd_dict&#39;</span><span class="p">][</span><span class="s1">&#39;d_pixel&#39;</span><span class="p">]</span><span class="o">*</span><span class="n">pxsz</span><span class="o">*</span><span class="mf">0.001</span> <span class="c1"># converting distance from pixel-widths to millimeters</span>
+        <span class="n">rot</span> <span class="o">=</span> <span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="p">[</span><span class="s1">&#39;wxd_dict&#39;</span><span class="p">][</span><span class="s1">&#39;rotation_rad&#39;</span><span class="p">])</span><span class="o">/</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span><span class="o">*</span><span class="mi">360</span>
+        <span class="n">tilt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="p">[</span><span class="s1">&#39;wxd_dict&#39;</span><span class="p">][</span><span class="s1">&#39;tilt_rad&#39;</span><span class="p">]</span><span class="o">/</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span><span class="o">*</span><span class="mi">360</span>
+        <span class="n">x0</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="p">[</span><span class="s1">&#39;wxd_dict&#39;</span><span class="p">][</span><span class="s1">&#39;x0_pixel&#39;</span><span class="p">]</span>
+        <span class="n">y0</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="p">[</span><span class="s1">&#39;wxd_dict&#39;</span><span class="p">][</span><span class="s1">&#39;y0_pixel&#39;</span><span class="p">]</span>
+        <span class="c1"># PyFAI magic go!</span>
+        <span class="n">p</span> <span class="o">=</span> <span class="n">pyFAI</span><span class="o">.</span><span class="n">AzimuthalIntegrator</span><span class="p">(</span><span class="n">wavelength</span><span class="o">=</span><span class="n">l</span><span class="p">)</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">setFit2D</span><span class="p">(</span><span class="n">d</span><span class="p">,</span><span class="n">x0</span><span class="p">,</span><span class="n">y0</span><span class="p">,</span><span class="n">tilt</span><span class="p">,</span><span class="n">rot</span><span class="p">,</span><span class="n">pxsz</span><span class="p">,</span><span class="n">pxsz</span><span class="p">)</span>
+        <span class="c1"># define detector mask, to screen bad pixels</span>
+        <span class="c1"># 1 for masked pixels, and 0 for valid pixels</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="p">[</span><span class="s1">&#39;mask&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">detector_mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">img</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">img</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">detector_mask</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="p">[</span><span class="s1">&#39;mask&#39;</span><span class="p">]</span>
+        <span class="n">q</span><span class="p">,</span> <span class="n">I_of_q</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">integrate1d</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="mi">1000</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="n">detector_mask</span><span class="p">,</span> <span class="n">polarization_factor</span><span class="o">=</span><span class="n">fpolz</span><span class="p">)</span> <span class="c1"># 2nd arg number of bins</span>
+        <span class="n">q</span> <span class="o">=</span> <span class="n">q</span> <span class="o">*</span> <span class="mf">1E9</span> 
+        <span class="c1"># noise model</span>
+        <span class="k">if</span> <span class="nb">bool</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="p">[</span><span class="s1">&#39;calculate_noise&#39;</span><span class="p">]):</span>
+            <span class="n">inverse_gain</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="p">[</span><span class="s1">&#39;inverse_gain&#39;</span><span class="p">]</span>
+            <span class="n">readnoise</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="p">[</span><span class="s1">&#39;readnoise&#39;</span><span class="p">]</span>
+            <span class="n">noise_model_squared</span> <span class="o">=</span> <span class="n">inverse_gain</span><span class="o">**-</span><span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="n">inverse_gain</span> <span class="o">*</span> <span class="n">img</span> <span class="o">+</span> <span class="n">readnoise</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+            <span class="n">_</span><span class="p">,</span> <span class="n">dI_squared</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">integrate1d</span><span class="p">(</span><span class="n">noise_model_squared</span><span class="p">,</span> <span class="mi">1000</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="n">detector_mask</span><span class="p">,</span> <span class="n">polarization_factor</span><span class="o">=</span><span class="n">fpolz</span><span class="p">)</span>
+            <span class="n">dI_of_q</span> <span class="o">=</span> <span class="n">dI_squared</span><span class="o">**</span><span class="mf">0.5</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">dI_of_q</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="c1"># output</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">outputs</span><span class="p">[</span><span class="s1">&#39;q&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">q</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">outputs</span><span class="p">[</span><span class="s1">&#39;I_of_q&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">I_of_q</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">outputs</span><span class="p">[</span><span class="s1">&#39;dI_of_q&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dI_of_q</span></div></div>
+
+
+<div class="viewcode-block" id="CalByWXDDict"><a class="viewcode-back" href="../../../../../moduledoc_files/paws.core.operations.PROCESSING.html#paws.core.operations.PROCESSING.calib_and_reduce.CalByWXDDict">[docs]</a><span class="k">class</span> <span class="nc">CalByWXDDict</span><span class="p">(</span><span class="n">Operation</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Input image data (ndarray) and a dict of calibration parameters from a WxDiff .calib file </span>
+<span class="sd">    Return q, chi, I(q,chi) </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">input_names</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;image_data&#39;</span><span class="p">,</span><span class="s1">&#39;wxd_dict&#39;</span><span class="p">,</span><span class="s1">&#39;pixel_size&#39;</span><span class="p">,</span><span class="s1">&#39;fpolz&#39;</span><span class="p">]</span>
+        <span class="n">output_names</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;q&#39;</span><span class="p">,</span><span class="s1">&#39;chi&#39;</span><span class="p">,</span><span class="s1">&#39;I_q_chi&#39;</span><span class="p">,</span><span class="s1">&#39;I_q&#39;</span><span class="p">]</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">CalByWXDDict</span><span class="p">,</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">input_names</span><span class="p">,</span><span class="n">output_names</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_doc</span><span class="p">[</span><span class="s1">&#39;image_data&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;2d array representing intensity for each pixel&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_doc</span><span class="p">[</span><span class="s1">&#39;wxd_dict&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span> <span class="s1">&#39;dict of calibration parameters read in from a .calib file,&#39;</span>
+        <span class="o">+</span> <span class="s1">&#39; with keys d_pixel, rotation_rad, tilt_rad, lambda, x0_pixel, y0_pixel,&#39;</span>
+        <span class="o">+</span> <span class="s1">&#39; PP (polarization factor), pixel_size, and d_pixel&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_doc</span><span class="p">[</span><span class="s1">&#39;pixel_size&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;pixel size in microns&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_doc</span><span class="p">[</span><span class="s1">&#39;fpolz&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;polarization factor&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_src</span><span class="p">[</span><span class="s1">&#39;image_data&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">optools</span><span class="o">.</span><span class="n">wf_input</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_src</span><span class="p">[</span><span class="s1">&#39;wxd_dict&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">optools</span><span class="o">.</span><span class="n">wf_input</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_src</span><span class="p">[</span><span class="s1">&#39;pixel_size&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">optools</span><span class="o">.</span><span class="n">text_input</span> 
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_src</span><span class="p">[</span><span class="s1">&#39;fpolz&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">optools</span><span class="o">.</span><span class="n">text_input</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_type</span><span class="p">[</span><span class="s1">&#39;image_data&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">optools</span><span class="o">.</span><span class="n">ref_type</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_type</span><span class="p">[</span><span class="s1">&#39;wxd_dict&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">optools</span><span class="o">.</span><span class="n">ref_type</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_type</span><span class="p">[</span><span class="s1">&#39;pixel_size&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">optools</span><span class="o">.</span><span class="n">float_type</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_type</span><span class="p">[</span><span class="s1">&#39;fpolz&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">optools</span><span class="o">.</span><span class="n">float_type</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="p">[</span><span class="s1">&#39;pixel_size&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">79</span> 
+        <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="p">[</span><span class="s1">&#39;fpolz&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.95</span> 
+        <span class="bp">self</span><span class="o">.</span><span class="n">output_doc</span><span class="p">[</span><span class="s1">&#39;q&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;Scattering vector magnitude&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">output_doc</span><span class="p">[</span><span class="s1">&#39;chi&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;Azimuthal angle in degrees&#39;</span>     
+        <span class="bp">self</span><span class="o">.</span><span class="n">output_doc</span><span class="p">[</span><span class="s1">&#39;I_q_chi&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;Integrated intensity at q, chi&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">output_doc</span><span class="p">[</span><span class="s1">&#39;I_q&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;Integrated intensity at q&#39;</span>
+
+<div class="viewcode-block" id="CalByWXDDict.run"><a class="viewcode-back" href="../../../../../moduledoc_files/paws.core.operations.PROCESSING.html#paws.core.operations.PROCESSING.calib_and_reduce.CalByWXDDict.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">img</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="p">[</span><span class="s1">&#39;image_data&#39;</span><span class="p">]</span>
+        <span class="n">pxsz</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="p">[</span><span class="s1">&#39;pixel_size&#39;</span><span class="p">]</span>
+        <span class="n">fpolz</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="p">[</span><span class="s1">&#39;fpolz&#39;</span><span class="p">]</span>
+        <span class="n">l</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="p">[</span><span class="s1">&#39;wxd_dict&#39;</span><span class="p">][</span><span class="s1">&#39;lambda&#39;</span><span class="p">]</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="p">[</span><span class="s1">&#39;wxd_dict&#39;</span><span class="p">][</span><span class="s1">&#39;d_pixel&#39;</span><span class="p">]</span><span class="o">*</span><span class="n">pxsz</span><span class="o">*</span><span class="mf">0.001</span>
+        <span class="n">rot</span> <span class="o">=</span> <span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="p">[</span><span class="s1">&#39;wxd_dict&#39;</span><span class="p">][</span><span class="s1">&#39;rotation_rad&#39;</span><span class="p">])</span><span class="o">/</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span><span class="o">*</span><span class="mi">360</span>
+        <span class="n">tilt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="p">[</span><span class="s1">&#39;wxd_dict&#39;</span><span class="p">][</span><span class="s1">&#39;tilt_rad&#39;</span><span class="p">]</span><span class="o">/</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span><span class="o">*</span><span class="mi">360</span>
+        <span class="c1"># initialization parameters, change into Fit2D format</span>
+        <span class="n">x0</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="p">[</span><span class="s1">&#39;wxd_dict&#39;</span><span class="p">][</span><span class="s1">&#39;x0_pixel&#39;</span><span class="p">]</span>
+        <span class="n">y0</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="p">[</span><span class="s1">&#39;wxd_dict&#39;</span><span class="p">][</span><span class="s1">&#39;y0_pixel&#39;</span><span class="p">]</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">img</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">p</span> <span class="o">=</span> <span class="n">pyFAI</span><span class="o">.</span><span class="n">AzimuthalIntegrator</span><span class="p">(</span><span class="n">wavelength</span><span class="o">=</span><span class="n">l</span><span class="p">)</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">setFit2D</span><span class="p">(</span><span class="n">d</span><span class="p">,</span><span class="n">x0</span><span class="p">,</span><span class="n">y0</span><span class="p">,</span><span class="n">tilt</span><span class="p">,</span><span class="n">rot</span><span class="p">,</span><span class="n">pxsz</span><span class="p">,</span><span class="n">pxsz</span><span class="p">)</span>
+        <span class="c1"># define detector mask, to screen bad pixels</span>
+        <span class="c1"># should eventually be read in from dezinger output or something</span>
+        <span class="c1"># for now just screen negative pixels</span>
+        <span class="c1"># 1 for masked pixels, and 0 for valid pixels</span>
+        <span class="n">detector_mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="n">s</span><span class="p">,</span><span class="n">s</span><span class="p">))</span><span class="o">*</span><span class="p">(</span><span class="n">img</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">I_q_chi</span><span class="p">,</span> <span class="n">q</span><span class="p">,</span> <span class="n">chi</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">integrate2d</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="mi">1000</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="n">detector_mask</span><span class="p">,</span> <span class="n">polarization_factor</span><span class="o">=</span><span class="n">fpolz</span><span class="p">)</span>
+        <span class="n">q1d</span><span class="p">,</span> <span class="n">I_q</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">integrate1d</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="mi">1000</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="n">detector_mask</span><span class="p">,</span> <span class="n">polarization_factor</span><span class="o">=</span><span class="n">fpolz</span><span class="p">)</span>
+        <span class="n">q</span> <span class="o">=</span> <span class="n">q</span> <span class="o">*</span> <span class="mf">1E9</span>
+        <span class="c1"># save results to self.outputs</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">outputs</span><span class="p">[</span><span class="s1">&#39;q&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">q</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">outputs</span><span class="p">[</span><span class="s1">&#39;chi&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">chi</span> 
+        <span class="bp">self</span><span class="o">.</span><span class="n">outputs</span><span class="p">[</span><span class="s1">&#39;I_q_chi&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">I_q_chi</span> 
+        <span class="bp">self</span><span class="o">.</span><span class="n">outputs</span><span class="p">[</span><span class="s1">&#39;I_q&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">I_q</span> </div></div>
+
+
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../../index.html">paws 0.4.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../operations.html" >paws.core.operations</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2017, Lenson A. Pellouchoud.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.2.
+    </div>
+  </body>
+</html>

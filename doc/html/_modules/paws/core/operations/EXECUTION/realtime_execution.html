@@ -1,0 +1,173 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>paws.core.operations.EXECUTION.realtime_execution &#8212; paws 0.4.0 documentation</title>
+    
+    <link rel="stylesheet" href="../../../../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../../../',
+        VERSION:     '0.4.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../search.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../../index.html">paws 0.4.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../operations.html" accesskey="U">paws.core.operations</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for paws.core.operations.EXECUTION.realtime_execution</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">OrderedDict</span>
+<span class="kn">import</span> <span class="nn">glob</span>
+
+<span class="kn">from</span> <span class="nn">..operation</span> <span class="k">import</span> <span class="n">Realtime</span> 
+<span class="kn">from</span> <span class="nn">..</span> <span class="k">import</span> <span class="n">optools</span>
+<span class="kn">from</span> <span class="nn">...pawstools</span> <span class="k">import</span> <span class="n">FileSystemIterator</span> 
+
+<div class="viewcode-block" id="RealtimeFromFiles"><a class="viewcode-back" href="../../../../../moduledoc_files/paws.core.operations.EXECUTION.html#paws.core.operations.EXECUTION.realtime_execution.RealtimeFromFiles">[docs]</a><span class="k">class</span> <span class="nc">RealtimeFromFiles</span><span class="p">(</span><span class="n">Realtime</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Provides inputs to be used in repeated execution of a workflow</span>
+<span class="sd">    from files with names matching a regex, as they arrive in a specified directory.</span>
+<span class="sd">    Collects the outputs produced for each of the inputs.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">input_names</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;dir_path&#39;</span><span class="p">,</span><span class="s1">&#39;regex&#39;</span><span class="p">,</span><span class="s1">&#39;input_route&#39;</span><span class="p">,</span><span class="s1">&#39;realtime_ops&#39;</span><span class="p">,</span><span class="s1">&#39;saved_items&#39;</span><span class="p">]</span>
+        <span class="n">output_names</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;realtime_inputs&#39;</span><span class="p">,</span><span class="s1">&#39;realtime_outputs&#39;</span><span class="p">]</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">RealtimeFromFiles</span><span class="p">,</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">input_names</span><span class="p">,</span><span class="n">output_names</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_doc</span><span class="p">[</span><span class="s1">&#39;dir_path&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;path to directory where files will be written and then used as input&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_doc</span><span class="p">[</span><span class="s1">&#39;regex&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;string with * wildcards used to filter or locate input files&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_doc</span><span class="p">[</span><span class="s1">&#39;input_route&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;inputs constructed by the realtime executor are directed to this uri&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_doc</span><span class="p">[</span><span class="s1">&#39;realtime_ops&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="s1">&#39;list of ops to be included in the realtime execution- &#39;</span>
+        <span class="o">+</span> <span class="s1">&#39;the order of operations in realtime_ops is unimportant, as the proper execution stack is resolved at runtime&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_doc</span><span class="p">[</span><span class="s1">&#39;saved_items&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;list of ops to be saved in the realtime_outputs&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">output_doc</span><span class="p">[</span><span class="s1">&#39;realtime_inputs&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="s1">&#39;iterator over dicts of [input_route:input_value] &#39;</span>
+        <span class="o">+</span> <span class="s1">&#39;generated in real time from the local filesystem&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">output_doc</span><span class="p">[</span><span class="s1">&#39;realtime_outputs&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;list of dicts of [output_route:output_value]&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_src</span><span class="p">[</span><span class="s1">&#39;dir_path&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">optools</span><span class="o">.</span><span class="n">fs_input</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_src</span><span class="p">[</span><span class="s1">&#39;regex&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">optools</span><span class="o">.</span><span class="n">text_input</span> 
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_src</span><span class="p">[</span><span class="s1">&#39;input_route&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">optools</span><span class="o">.</span><span class="n">wf_input</span> 
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_src</span><span class="p">[</span><span class="s1">&#39;realtime_ops&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">optools</span><span class="o">.</span><span class="n">wf_input</span> 
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_src</span><span class="p">[</span><span class="s1">&#39;saved_items&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">optools</span><span class="o">.</span><span class="n">wf_input</span> 
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_type</span><span class="p">[</span><span class="s1">&#39;dir_path&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">optools</span><span class="o">.</span><span class="n">path_type</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_type</span><span class="p">[</span><span class="s1">&#39;regex&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">optools</span><span class="o">.</span><span class="n">str_type</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_type</span><span class="p">[</span><span class="s1">&#39;input_route&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">optools</span><span class="o">.</span><span class="n">path_type</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_type</span><span class="p">[</span><span class="s1">&#39;realtime_ops&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">optools</span><span class="o">.</span><span class="n">path_type</span> 
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_type</span><span class="p">[</span><span class="s1">&#39;saved_items&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">optools</span><span class="o">.</span><span class="n">path_type</span> 
+        <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="p">[</span><span class="s1">&#39;regex&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;*.tif&#39;</span> 
+        <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="p">[</span><span class="s1">&#39;realtime_ops&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="p">[</span><span class="s1">&#39;saved_items&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        
+<div class="viewcode-block" id="RealtimeFromFiles.run"><a class="viewcode-back" href="../../../../../moduledoc_files/paws.core.operations.EXECUTION.html#paws.core.operations.EXECUTION.realtime_execution.RealtimeFromFiles.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This should create an iterator </span>
+<span class="sd">        whose next() gives a {uri:value} dict </span>
+<span class="sd">        built from the latest-arrived file </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">dirpath</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="p">[</span><span class="s1">&#39;dir_path&#39;</span><span class="p">]</span>
+        <span class="n">rx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="p">[</span><span class="s1">&#39;regex&#39;</span><span class="p">]</span>
+        <span class="n">inproute</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="p">[</span><span class="s1">&#39;input_route&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">outputs</span><span class="p">[</span><span class="s1">&#39;realtime_inputs&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">FileSystemIterator</span><span class="p">(</span><span class="n">dirpath</span><span class="p">,</span><span class="n">rx</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">outputs</span><span class="p">[</span><span class="s1">&#39;realtime_outputs&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span> </div>
+
+<div class="viewcode-block" id="RealtimeFromFiles.input_iter"><a class="viewcode-back" href="../../../../../moduledoc_files/paws.core.operations.EXECUTION.html#paws.core.operations.EXECUTION.realtime_execution.RealtimeFromFiles.input_iter">[docs]</a>    <span class="k">def</span> <span class="nf">input_iter</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">outputs</span><span class="p">[</span><span class="s1">&#39;realtime_inputs&#39;</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="RealtimeFromFiles.output_list"><a class="viewcode-back" href="../../../../../moduledoc_files/paws.core.operations.EXECUTION.html#paws.core.operations.EXECUTION.realtime_execution.RealtimeFromFiles.output_list">[docs]</a>    <span class="k">def</span> <span class="nf">output_list</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">outputs</span><span class="p">[</span><span class="s1">&#39;realtime_outputs&#39;</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="RealtimeFromFiles.input_routes"><a class="viewcode-back" href="../../../../../moduledoc_files/paws.core.operations.EXECUTION.html#paws.core.operations.EXECUTION.realtime_execution.RealtimeFromFiles.input_routes">[docs]</a>    <span class="k">def</span> <span class="nf">input_routes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Use the Realtime.input_locators to list uri&#39;s of all input routes- must return list.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">input_locator</span><span class="p">[</span><span class="s1">&#39;input_route&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">val</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="RealtimeFromFiles.realtime_ops"><a class="viewcode-back" href="../../../../../moduledoc_files/paws.core.operations.EXECUTION.html#paws.core.operations.EXECUTION.realtime_execution.RealtimeFromFiles.realtime_ops">[docs]</a>    <span class="k">def</span> <span class="nf">realtime_ops</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Use the Realtime.input_locator to list uri&#39;s of ops to be saved/stored after execution&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">input_locator</span><span class="p">[</span><span class="s1">&#39;realtime_ops&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">val</span></div>
+
+<div class="viewcode-block" id="RealtimeFromFiles.saved_items"><a class="viewcode-back" href="../../../../../moduledoc_files/paws.core.operations.EXECUTION.html#paws.core.operations.EXECUTION.realtime_execution.RealtimeFromFiles.saved_items">[docs]</a>    <span class="k">def</span> <span class="nf">saved_items</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Use the Realtime.input_locator to list uri&#39;s of ops to be included in realtime execution&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">input_locator</span><span class="p">[</span><span class="s1">&#39;saved_items&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">val</span></div>
+
+    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="RealtimeFromFiles.delay"><a class="viewcode-back" href="../../../../../moduledoc_files/paws.core.operations.EXECUTION.html#paws.core.operations.EXECUTION.realtime_execution.RealtimeFromFiles.delay">[docs]</a>    <span class="k">def</span> <span class="nf">delay</span><span class="p">():</span>
+        <span class="sd">&quot;&quot;&quot;Amount of time to wait between execution attempts, in milliseconds&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="mi">1000</span></div></div>
+
+
+
+
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../../index.html">paws 0.4.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../operations.html" >paws.core.operations</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2017, Lenson A. Pellouchoud.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.2.
+    </div>
+  </body>
+</html>

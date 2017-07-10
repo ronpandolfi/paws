@@ -1,0 +1,201 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>paws.core.plugins.plugin_manager &#8212; paws 0.4.0 documentation</title>
+    
+    <link rel="stylesheet" href="../../../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../../',
+        VERSION:     '0.4.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">paws 0.4.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../plugins.html" accesskey="U">paws.core.plugins</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for paws.core.plugins.plugin_manager</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">importlib</span>
+
+<span class="kn">from</span> <span class="nn">PySide</span> <span class="k">import</span> <span class="n">QtCore</span>
+
+<span class="kn">from</span> <span class="nn">..operations</span> <span class="k">import</span> <span class="n">optools</span>
+<span class="kn">from</span> <span class="nn">..treemodel</span> <span class="k">import</span> <span class="n">TreeModel</span><span class="p">,</span><span class="n">TreeSelectionModel</span>
+<span class="kn">from</span> <span class="nn">..treeitem</span> <span class="k">import</span> <span class="n">TreeItem</span>
+<span class="kn">from</span> <span class="nn">..</span> <span class="k">import</span> <span class="n">plugins</span> <span class="k">as</span> <span class="n">pgns</span>
+<span class="kn">from</span> <span class="nn">..plugins.plugin</span> <span class="k">import</span> <span class="n">PawsPlugin</span>
+
+<div class="viewcode-block" id="PluginManager"><a class="viewcode-back" href="../../../../moduledoc_files/paws.core.plugins.html#paws.core.plugins.plugin_manager.PluginManager">[docs]</a><span class="k">class</span> <span class="nc">PluginManager</span><span class="p">(</span><span class="n">TreeSelectionModel</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Tree structure for managing paws plugins.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">PluginManager</span><span class="p">,</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logmethod</span> <span class="o">=</span> <span class="kc">None</span>
+
+<div class="viewcode-block" id="PluginManager.load_from_dict"><a class="viewcode-back" href="../../../../moduledoc_files/paws.core.plugins.html#paws.core.plugins.plugin_manager.PluginManager.load_from_dict">[docs]</a>    <span class="k">def</span> <span class="nf">load_from_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">pgin_dict</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Load plugins from a dict that specifies their setup parameters.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">root_items</span><span class="p">:</span>
+            <span class="n">idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rowCount</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">QModelIndex</span><span class="p">())</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="n">QtCore</span><span class="o">.</span><span class="n">QModelIndex</span><span class="p">())</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">remove_plugin</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">uri</span><span class="p">,</span> <span class="n">pgin_spec</span> <span class="ow">in</span> <span class="n">pgin_dict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">pgin_name</span> <span class="o">=</span> <span class="n">pgin_spec</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]</span>
+            <span class="n">pgin</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_plugin_byname</span><span class="p">(</span><span class="n">pgin_name</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">pgin</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">pgin</span><span class="p">,</span><span class="n">PawsPlugin</span><span class="p">):</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">write_log</span><span class="p">(</span><span class="s1">&#39;Did not find Plugin </span><span class="si">{}</span><span class="s1"> - skipping.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">pgin_name</span><span class="p">))</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">pgin</span> <span class="o">=</span> <span class="n">pgin</span><span class="p">()</span>
+                    <span class="n">pgin</span><span class="o">.</span><span class="n">inputs</span> <span class="o">=</span> <span class="n">pgin_spec</span><span class="p">[</span><span class="n">optools</span><span class="o">.</span><span class="n">inputs_tag</span><span class="p">]</span>
+                    <span class="n">pgin</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">add_plugin</span><span class="p">(</span><span class="n">uri</span><span class="p">,</span><span class="n">pgin</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">write_log</span><span class="p">(</span><span class="s1">&#39;Did not find Plugin </span><span class="si">{}</span><span class="s1"> - skipping.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">pgin_name</span><span class="p">))</span></div>
+                
+
+<div class="viewcode-block" id="PluginManager.get_plugin_byname"><a class="viewcode-back" href="../../../../moduledoc_files/paws.core.plugins.html#paws.core.plugins.plugin_manager.PluginManager.get_plugin_byname">[docs]</a>    <span class="k">def</span> <span class="nf">get_plugin_byname</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">pgin_name</span><span class="p">):</span>    
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">mod</span> <span class="o">=</span> <span class="n">importlib</span><span class="o">.</span><span class="n">import_module</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="o">+</span><span class="n">pgin_name</span><span class="p">,</span><span class="n">pgns</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">pgin_name</span> <span class="ow">in</span> <span class="n">mod</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="k">return</span> <span class="n">mod</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">[</span><span class="n">pgin_name</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">write_log</span><span class="p">(</span><span class="s1">&#39;Did not find plugin </span><span class="si">{}</span><span class="s1"> in module </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">pgin_name</span><span class="p">,</span><span class="n">mod</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span> <span class="o">+</span> <span class="n">ex</span><span class="o">.</span><span class="n">message</span><span class="p">)</span>
+                <span class="k">return</span> <span class="kc">None</span> 
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">write_log</span><span class="p">(</span><span class="s1">&#39;Trouble loading module for plugin </span><span class="si">{}</span><span class="s1">. Error message: &#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">pgin_name</span><span class="p">)</span> <span class="o">+</span> <span class="n">ex</span><span class="o">.</span><span class="n">message</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="PluginManager.write_log"><a class="viewcode-back" href="../../../../moduledoc_files/paws.core.plugins.html#paws.core.plugins.plugin_manager.PluginManager.write_log">[docs]</a>    <span class="k">def</span> <span class="nf">write_log</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">msg</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">logmethod</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logmethod</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="PluginManager.add_plugin"><a class="viewcode-back" href="../../../../moduledoc_files/paws.core.plugins.html#paws.core.plugins.plugin_manager.PluginManager.add_plugin">[docs]</a>    <span class="k">def</span> <span class="nf">add_plugin</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">pgin_tag</span><span class="p">,</span><span class="n">pgin</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Add a Plugin to the tree as a new top-level TreeItem.&quot;&quot;&quot;</span>
+        <span class="n">ins_row</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rowCount</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">QModelIndex</span><span class="p">())</span>
+        <span class="n">itm</span> <span class="o">=</span> <span class="n">TreeItem</span><span class="p">(</span><span class="n">ins_row</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="n">QtCore</span><span class="o">.</span><span class="n">QModelIndex</span><span class="p">())</span>
+        <span class="n">itm</span><span class="o">.</span><span class="n">set_tag</span><span class="p">(</span> <span class="n">pgin_tag</span> <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">beginInsertRows</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">QModelIndex</span><span class="p">(),</span><span class="n">ins_row</span><span class="p">,</span><span class="n">ins_row</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">root_items</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">ins_row</span><span class="p">,</span><span class="n">itm</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">endInsertRows</span><span class="p">()</span>
+        <span class="n">idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">ins_row</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="n">QtCore</span><span class="o">.</span><span class="n">QModelIndex</span><span class="p">())</span> 
+        <span class="bp">self</span><span class="o">.</span><span class="n">tree_update</span><span class="p">(</span><span class="n">idx</span><span class="p">,</span><span class="n">pgin</span><span class="p">)</span></div>
+        <span class="c1">#self.tree_dataChanged(idx)</span>
+
+<div class="viewcode-block" id="PluginManager.build_dict"><a class="viewcode-back" href="../../../../moduledoc_files/paws.core.plugins.html#paws.core.plugins.plugin_manager.PluginManager.build_dict">[docs]</a>    <span class="k">def</span> <span class="nf">build_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">x</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Overloaded build_dict to handle Plugins&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">PawsPlugin</span><span class="p">):</span>
+            <span class="n">d</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">content</span><span class="p">()</span> 
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">d</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">PluginManager</span><span class="p">,</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">build_dict</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">d</span></div>
+
+<div class="viewcode-block" id="PluginManager.remove_plugin"><a class="viewcode-back" href="../../../../moduledoc_files/paws.core.plugins.html#paws.core.plugins.plugin_manager.PluginManager.remove_plugin">[docs]</a>    <span class="k">def</span> <span class="nf">remove_plugin</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">rm_idx</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Remove a Plugin from the tree&quot;&quot;&quot;</span>
+        <span class="n">rm_row</span> <span class="o">=</span> <span class="n">rm_idx</span><span class="o">.</span><span class="n">row</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">beginRemoveRows</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">QModelIndex</span><span class="p">(),</span><span class="n">rm_row</span><span class="p">,</span><span class="n">rm_row</span><span class="p">)</span>
+        <span class="n">item_removed</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">root_items</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">rm_row</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">endRemoveRows</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tree_dataChanged</span><span class="p">(</span><span class="n">rm_idx</span><span class="p">)</span></div>
+
+    <span class="c1"># Overloaded data() for PluginManager</span>
+    <span class="c1">#def data(self,itm_idx,data_role):</span>
+    <span class="c1">#    return super(PluginManager,self).data(itm_idx,data_role)</span>
+    <span class="c1">#    #if (not itm_idx.isValid()):</span>
+    <span class="c1">#    #    return None</span>
+    <span class="c1">#    #itm = itm_idx.internalPointer()</span>
+    <span class="c1">#    #if data_role == QtCore.Qt.DisplayRole:</span>
+    <span class="c1">#    #    return itm.tag()</span>
+    <span class="c1">#    #else:</span>
+    <span class="c1">#    #    return None</span>
+
+    <span class="c1"># Overloaded headerData() for PluginManager </span>
+<div class="viewcode-block" id="PluginManager.headerData"><a class="viewcode-back" href="../../../../moduledoc_files/paws.core.plugins.html#paws.core.plugins.plugin_manager.PluginManager.headerData">[docs]</a>    <span class="k">def</span> <span class="nf">headerData</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">section</span><span class="p">,</span><span class="n">orientation</span><span class="p">,</span><span class="n">data_role</span><span class="p">):</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">data_role</span> <span class="o">==</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">DisplayRole</span> <span class="ow">and</span> <span class="n">section</span> <span class="o">==</span> <span class="mi">0</span><span class="p">):</span>
+            <span class="k">return</span> <span class="s2">&quot;Plugins: </span><span class="si">{}</span><span class="s2"> active&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root_items</span><span class="p">))</span>
+        <span class="k">elif</span> <span class="p">(</span><span class="n">data_role</span> <span class="o">==</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">DisplayRole</span> <span class="ow">and</span> <span class="n">section</span> <span class="o">==</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">PluginManager</span><span class="p">,</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">headerData</span><span class="p">(</span><span class="n">section</span><span class="p">,</span><span class="n">orientation</span><span class="p">,</span><span class="n">data_role</span><span class="p">)</span>    
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span></div></div>
+
+
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">paws 0.4.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../plugins.html" >paws.core.plugins</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2017, Lenson A. Pellouchoud.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.2.
+    </div>
+  </body>
+</html>

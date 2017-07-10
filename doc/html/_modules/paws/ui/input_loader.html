@@ -1,0 +1,201 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>paws.ui.input_loader &#8212; paws 0.4.0 documentation</title>
+    
+    <link rel="stylesheet" href="../../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '0.4.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">paws 0.4.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../ui.html" accesskey="U">paws.ui</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for paws.ui.input_loader</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">PySide</span> <span class="k">import</span> <span class="n">QtCore</span><span class="p">,</span> <span class="n">QtGui</span><span class="p">,</span> <span class="n">QtUiTools</span>
+
+<span class="kn">from</span> <span class="nn">..core.operations</span> <span class="k">import</span> <span class="n">optools</span>
+<span class="kn">from</span> <span class="nn">..core</span> <span class="k">import</span> <span class="n">pawstools</span>
+<span class="kn">from</span> <span class="nn">..core.listmodel</span> <span class="k">import</span> <span class="n">ListModel</span>
+
+<div class="viewcode-block" id="InputLoader"><a class="viewcode-back" href="../../../moduledoc_files/paws.ui.html#paws.ui.input_loader.InputLoader">[docs]</a><span class="k">class</span> <span class="nc">InputLoader</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;This class controls the input_loader.ui to select inputs from various sources.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">name</span><span class="p">,</span><span class="n">src</span><span class="p">,</span><span class="n">trmod</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">InputLoader</span><span class="p">,</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">src</span> <span class="o">=</span> <span class="n">src</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">trmod</span> <span class="o">=</span> <span class="n">trmod</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setup_ui</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">parent</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">setParent</span><span class="p">(</span><span class="n">parent</span><span class="p">,</span><span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">Window</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+<div class="viewcode-block" id="InputLoader.setup_ui"><a class="viewcode-back" href="../../../moduledoc_files/paws.ui.html#paws.ui.input_loader.InputLoader.setup_ui">[docs]</a>    <span class="k">def</span> <span class="nf">setup_ui</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">src</span> <span class="o">==</span> <span class="n">optools</span><span class="o">.</span><span class="n">text_input</span><span class="p">:</span>
+            <span class="n">ui_file</span> <span class="o">=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">QFile</span><span class="p">(</span><span class="n">pawstools</span><span class="o">.</span><span class="n">rootdir</span><span class="o">+</span><span class="s2">&quot;/ui/qtui/text_input_loader.ui&quot;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">src</span> <span class="ow">in</span> <span class="p">[</span><span class="n">optools</span><span class="o">.</span><span class="n">wf_input</span><span class="p">,</span><span class="n">optools</span><span class="o">.</span><span class="n">plugin_input</span><span class="p">,</span><span class="n">optools</span><span class="o">.</span><span class="n">fs_input</span><span class="p">]:</span>
+            <span class="n">ui_file</span> <span class="o">=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">QFile</span><span class="p">(</span><span class="n">pawstools</span><span class="o">.</span><span class="n">rootdir</span><span class="o">+</span><span class="s2">&quot;/ui/qtui/tree_input_loader.ui&quot;</span><span class="p">)</span>
+        <span class="n">ui_file</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">QFile</span><span class="o">.</span><span class="n">ReadOnly</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ui</span> <span class="o">=</span> <span class="n">QtUiTools</span><span class="o">.</span><span class="n">QUiLoader</span><span class="p">()</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">ui_file</span><span class="p">)</span>
+        <span class="n">ui_file</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">setWindowTitle</span><span class="p">(</span><span class="s2">&quot;input loader&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">src</span> <span class="ow">in</span> <span class="p">[</span><span class="n">optools</span><span class="o">.</span><span class="n">wf_input</span><span class="p">,</span><span class="n">optools</span><span class="o">.</span><span class="n">plugin_input</span><span class="p">,</span><span class="n">optools</span><span class="o">.</span><span class="n">fs_input</span><span class="p">]:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">source_treeview</span><span class="o">.</span><span class="n">setModel</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">trmod</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">src</span> <span class="o">==</span> <span class="n">optools</span><span class="o">.</span><span class="n">fs_input</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">trmod</span><span class="o">.</span><span class="n">setRootPath</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">QDir</span><span class="o">.</span><span class="n">currentPath</span><span class="p">())</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">source_treeview</span><span class="o">.</span><span class="n">hideColumn</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">source_treeview</span><span class="o">.</span><span class="n">hideColumn</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">source_treeview</span><span class="o">.</span><span class="n">setColumnWidth</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">400</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">src</span> <span class="ow">in</span> <span class="p">[</span><span class="n">optools</span><span class="o">.</span><span class="n">wf_input</span><span class="p">,</span><span class="n">optools</span><span class="o">.</span><span class="n">plugin_input</span><span class="p">]:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">source_treeview</span><span class="o">.</span><span class="n">setColumnWidth</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">300</span><span class="p">)</span>
+            <span class="c1"># Reset all selections</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">trmod</span><span class="o">.</span><span class="n">set_all_unselected</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">src</span> <span class="o">==</span> <span class="n">optools</span><span class="o">.</span><span class="n">text_input</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">add_button</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="s2">&quot;&amp;Add entries&quot;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">src</span> <span class="ow">in</span> <span class="p">[</span><span class="n">optools</span><span class="o">.</span><span class="n">wf_input</span><span class="p">,</span><span class="n">optools</span><span class="o">.</span><span class="n">plugin_input</span><span class="p">]:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">add_button</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="s2">&quot;&amp;Add selections&quot;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">src</span> <span class="o">==</span> <span class="n">optools</span><span class="o">.</span><span class="n">fs_input</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">add_button</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="s2">&quot;&amp;Add selection&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">values_model</span> <span class="o">=</span> <span class="n">ListModel</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">values_list</span><span class="o">.</span><span class="n">setModel</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">values_model</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">finish_button</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="s2">&quot;&amp;Finish&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">remove_button</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="s2">&quot;&amp;Remove selections&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">list_toggle</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="s2">&quot;Package as &amp;list&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">add_button</span><span class="o">.</span><span class="n">clicked</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">add_items</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">remove_button</span><span class="o">.</span><span class="n">clicked</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rm_selection</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="InputLoader.add_items"><a class="viewcode-back" href="../../../moduledoc_files/paws.ui.html#paws.ui.input_loader.InputLoader.add_items">[docs]</a>    <span class="k">def</span> <span class="nf">add_items</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">src</span> <span class="o">==</span> <span class="n">optools</span><span class="o">.</span><span class="n">text_input</span><span class="p">:</span>
+            <span class="n">lines</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">source_textedit</span><span class="o">.</span><span class="n">toPlainText</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">add_value</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">l</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">src</span> <span class="ow">in</span> <span class="p">[</span><span class="n">optools</span><span class="o">.</span><span class="n">wf_input</span><span class="p">,</span><span class="n">optools</span><span class="o">.</span><span class="n">plugin_input</span><span class="p">]:</span>
+            <span class="c1"># Get all items currently selected</span>
+            <span class="n">idxs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">trmod</span><span class="o">.</span><span class="n">get_all_selected</span><span class="p">()</span>
+            <span class="k">if</span> <span class="nb">all</span><span class="p">([</span><span class="n">_idx</span><span class="o">.</span><span class="n">isValid</span><span class="p">()</span> <span class="k">for</span> <span class="n">_idx</span> <span class="ow">in</span> <span class="n">idxs</span><span class="p">]):</span>
+                <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="n">idxs</span><span class="p">:</span>
+                    <span class="n">val</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">trmod</span><span class="o">.</span><span class="n">build_uri</span><span class="p">(</span><span class="n">idx</span><span class="p">))</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">add_value</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># if user did not use selection model, take current index</span>
+                <span class="n">idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">source_treeview</span><span class="o">.</span><span class="n">currentIndex</span><span class="p">()</span>
+                <span class="n">val</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">trmod</span><span class="o">.</span><span class="n">build_uri</span><span class="p">(</span><span class="n">idx</span><span class="p">))</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">add_value</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
+            <span class="c1"># Reset all selections</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">trmod</span><span class="o">.</span><span class="n">set_all_unselected</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">src</span> <span class="o">==</span> <span class="n">optools</span><span class="o">.</span><span class="n">fs_input</span><span class="p">:</span>
+            <span class="n">idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">source_treeview</span><span class="o">.</span><span class="n">currentIndex</span><span class="p">()</span>
+            <span class="n">val</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">source_treeview</span><span class="o">.</span><span class="n">model</span><span class="p">()</span><span class="o">.</span><span class="n">filePath</span><span class="p">(</span><span class="n">idx</span><span class="p">))</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">add_value</span><span class="p">(</span><span class="n">val</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="InputLoader.add_value"><a class="viewcode-back" href="../../../moduledoc_files/paws.ui.html#paws.ui.input_loader.InputLoader.add_value">[docs]</a>    <span class="k">def</span> <span class="nf">add_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">val</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">values_list</span><span class="o">.</span><span class="n">model</span><span class="p">()</span><span class="o">.</span><span class="n">append_item</span><span class="p">(</span><span class="n">val</span><span class="p">)</span> 
+        <span class="c1"># if we end with more than one selection, set and lock self.ui.list_toggle</span>
+        <span class="n">nvals</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">values_list</span><span class="o">.</span><span class="n">model</span><span class="p">()</span><span class="o">.</span><span class="n">rowCount</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">nvals</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">set_list_toggle</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">lock_list_toggle</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="InputLoader.rm_selection"><a class="viewcode-back" href="../../../moduledoc_files/paws.ui.html#paws.ui.input_loader.InputLoader.rm_selection">[docs]</a>    <span class="k">def</span> <span class="nf">rm_selection</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># get selected index(es) in self.ui.values_list</span>
+        <span class="n">idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">values_list</span><span class="o">.</span><span class="n">currentIndex</span><span class="p">()</span>
+        <span class="c1"># remove them cleanly</span>
+        <span class="k">if</span> <span class="n">idx</span><span class="o">.</span><span class="n">isValid</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">values_list</span><span class="o">.</span><span class="n">model</span><span class="p">()</span><span class="o">.</span><span class="n">remove_item</span><span class="p">(</span><span class="n">idx</span><span class="o">.</span><span class="n">row</span><span class="p">())</span>
+        <span class="c1"># if we end with one or less value, unset and unlock self.ui.list_toggle</span>
+        <span class="n">nvals</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">values_list</span><span class="o">.</span><span class="n">model</span><span class="p">()</span><span class="o">.</span><span class="n">rowCount</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">nvals</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">unset_list_toggle</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">unlock_list_toggle</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="InputLoader.unset_list_toggle"><a class="viewcode-back" href="../../../moduledoc_files/paws.ui.html#paws.ui.input_loader.InputLoader.unset_list_toggle">[docs]</a>    <span class="k">def</span> <span class="nf">unset_list_toggle</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">list_toggle</span><span class="o">.</span><span class="n">setCheckState</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">Unchecked</span><span class="p">)</span></div>
+        
+<div class="viewcode-block" id="InputLoader.set_list_toggle"><a class="viewcode-back" href="../../../moduledoc_files/paws.ui.html#paws.ui.input_loader.InputLoader.set_list_toggle">[docs]</a>    <span class="k">def</span> <span class="nf">set_list_toggle</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">list_toggle</span><span class="o">.</span><span class="n">setCheckState</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">Checked</span><span class="p">)</span></div>
+        
+<div class="viewcode-block" id="InputLoader.lock_list_toggle"><a class="viewcode-back" href="../../../moduledoc_files/paws.ui.html#paws.ui.input_loader.InputLoader.lock_list_toggle">[docs]</a>    <span class="k">def</span> <span class="nf">lock_list_toggle</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">list_toggle</span><span class="o">.</span><span class="n">setEnabled</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="InputLoader.unlock_list_toggle"><a class="viewcode-back" href="../../../moduledoc_files/paws.ui.html#paws.ui.input_loader.InputLoader.unlock_list_toggle">[docs]</a>    <span class="k">def</span> <span class="nf">unlock_list_toggle</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">list_toggle</span><span class="o">.</span><span class="n">setEnabled</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span></div></div>
+
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">paws 0.4.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../ui.html" >paws.ui</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2017, Lenson A. Pellouchoud.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.2.
+    </div>
+  </body>
+</html>

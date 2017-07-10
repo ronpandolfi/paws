@@ -1,0 +1,187 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>paws.core.operations.OUTPUT.write_csv &#8212; paws 0.4.0 documentation</title>
+    
+    <link rel="stylesheet" href="../../../../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../../../',
+        VERSION:     '0.4.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../search.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../../index.html">paws 0.4.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../operations.html" accesskey="U">paws.core.operations</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for paws.core.operations.OUTPUT.write_csv</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">os.path</span> <span class="k">import</span> <span class="n">splitext</span>
+<span class="kn">from</span> <span class="nn">os</span> <span class="k">import</span> <span class="n">linesep</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">..operation</span> <span class="k">import</span> <span class="n">Operation</span>
+<span class="kn">from</span> <span class="nn">..import</span> <span class="n">optools</span>
+
+<div class="viewcode-block" id="WriteArrayCSV"><a class="viewcode-back" href="../../../../../moduledoc_files/paws.core.operations.OUTPUT.html#paws.core.operations.OUTPUT.write_csv.WriteArrayCSV">[docs]</a><span class="k">class</span> <span class="nc">WriteArrayCSV</span><span class="p">(</span><span class="n">Operation</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Write a 2d array to a csv file&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">input_names</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;array&#39;</span><span class="p">,</span><span class="s1">&#39;headers&#39;</span><span class="p">,</span><span class="s1">&#39;filepath&#39;</span><span class="p">,</span><span class="s1">&#39;filename&#39;</span><span class="p">,</span><span class="s1">&#39;filetag&#39;</span><span class="p">]</span>
+        <span class="n">output_names</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;csv_path&#39;</span><span class="p">]</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">WriteArrayCSV</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">input_names</span><span class="p">,</span> <span class="n">output_names</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_doc</span><span class="p">[</span><span class="s1">&#39;array&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;any 2d array&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_doc</span><span class="p">[</span><span class="s1">&#39;headers&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;list of headers- should be one for each column of array&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_doc</span><span class="p">[</span><span class="s1">&#39;filepath&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;the path to the destination directory&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_doc</span><span class="p">[</span><span class="s1">&#39;filename&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;the name of the file to be saved- the .csv extension will be added/replaced if not provided&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">output_doc</span><span class="p">[</span><span class="s1">&#39;csv_path&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;the path to the finished csv file&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_src</span><span class="p">[</span><span class="s1">&#39;array&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">optools</span><span class="o">.</span><span class="n">wf_input</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_src</span><span class="p">[</span><span class="s1">&#39;headers&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">optools</span><span class="o">.</span><span class="n">text_input</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_src</span><span class="p">[</span><span class="s1">&#39;filepath&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">optools</span><span class="o">.</span><span class="n">fs_input</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_src</span><span class="p">[</span><span class="s1">&#39;filename&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">optools</span><span class="o">.</span><span class="n">text_input</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_type</span><span class="p">[</span><span class="s1">&#39;array&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">optools</span><span class="o">.</span><span class="n">ref_type</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_type</span><span class="p">[</span><span class="s1">&#39;headers&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">optools</span><span class="o">.</span><span class="n">str_type</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_type</span><span class="p">[</span><span class="s1">&#39;filepath&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">optools</span><span class="o">.</span><span class="n">str_type</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_type</span><span class="p">[</span><span class="s1">&#39;filename&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">optools</span><span class="o">.</span><span class="n">str_type</span>
+
+<div class="viewcode-block" id="WriteArrayCSV.run"><a class="viewcode-back" href="../../../../../moduledoc_files/paws.core.operations.OUTPUT.html#paws.core.operations.OUTPUT.write_csv.WriteArrayCSV.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">h</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="p">[</span><span class="s1">&#39;headers&#39;</span><span class="p">]</span>
+        <span class="n">a</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="p">[</span><span class="s1">&#39;array&#39;</span><span class="p">]</span>
+        <span class="n">csv_path</span> <span class="o">=</span> <span class="n">splitext</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="p">[</span><span class="s1">&#39;filepath&#39;</span><span class="p">]</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="p">[</span><span class="s1">&#39;filename&#39;</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="s1">&#39;.csv&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">outputs</span><span class="p">[</span><span class="s1">&#39;csv_path&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">csv_path</span>
+        <span class="n">h_str</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">h</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+            <span class="n">h_str</span> <span class="o">+=</span> <span class="n">h</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39;, &#39;</span>
+        <span class="n">h_str</span> <span class="o">=</span> <span class="n">h_str</span><span class="o">+</span><span class="n">h</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">savetxt</span><span class="p">(</span><span class="n">csv_path</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s1">&#39;,&#39;</span><span class="p">,</span> <span class="n">newline</span><span class="o">=</span><span class="n">linesep</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="n">h_str</span><span class="p">)</span></div></div>
+
+<div class="viewcode-block" id="WriteCSV_q_I_dI"><a class="viewcode-back" href="../../../../../moduledoc_files/paws.core.operations.OUTPUT.html#paws.core.operations.OUTPUT.write_csv.WriteCSV_q_I_dI">[docs]</a><span class="k">class</span> <span class="nc">WriteCSV_q_I_dI</span><span class="p">(</span><span class="n">Operation</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Write q, I, and (if available) dI to a csv-formatted file.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">input_names</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;q&#39;</span><span class="p">,</span><span class="s1">&#39;I&#39;</span><span class="p">,</span><span class="s1">&#39;dI&#39;</span><span class="p">,</span><span class="s1">&#39;image_location&#39;</span><span class="p">]</span>
+        <span class="n">output_names</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;csv_location&#39;</span><span class="p">]</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">WriteCSV_q_I_dI</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">input_names</span><span class="p">,</span> <span class="n">output_names</span><span class="p">)</span>
+        <span class="c1"># docstrings</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_doc</span><span class="p">[</span><span class="s1">&#39;q&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;1d ndarray; independent variable&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_doc</span><span class="p">[</span><span class="s1">&#39;I&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;1d ndarray; dependent variable; same shape as *q*&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_doc</span><span class="p">[</span><span class="s1">&#39;dI&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;1d ndarray; error estimate of *I*; same shape as *I*; if unavailable, use *None*&quot;</span>
+        <span class="c1"># source &amp; type</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_src</span><span class="p">[</span><span class="s1">&#39;q&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">optools</span><span class="o">.</span><span class="n">wf_input</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_src</span><span class="p">[</span><span class="s1">&#39;I&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">optools</span><span class="o">.</span><span class="n">wf_input</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_src</span><span class="p">[</span><span class="s1">&#39;dI&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">optools</span><span class="o">.</span><span class="n">wf_input</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_src</span><span class="p">[</span><span class="s1">&#39;image_location&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">optools</span><span class="o">.</span><span class="n">wf_input</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">categories</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;OUTPUT.CSV&#39;</span><span class="p">]</span>
+
+<div class="viewcode-block" id="WriteCSV_q_I_dI.run"><a class="viewcode-back" href="../../../../../moduledoc_files/paws.core.operations.OUTPUT.html#paws.core.operations.OUTPUT.write_csv.WriteCSV_q_I_dI.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">csv_location</span> <span class="o">=</span> <span class="n">replace_extension</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="p">[</span><span class="s1">&#39;image_location&#39;</span><span class="p">],</span> <span class="s1">&#39;.csv&#39;</span><span class="p">)</span>
+        <span class="n">write_csv_q_I_maybe_dI</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="p">[</span><span class="s1">&#39;q&#39;</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="p">[</span><span class="s1">&#39;I&#39;</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="p">[</span><span class="s1">&#39;dI&#39;</span><span class="p">],</span> <span class="n">csv_location</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">outputs</span><span class="p">[</span><span class="s1">&#39;csv_location&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">csv_location</span></div></div>
+
+
+<div class="viewcode-block" id="write_csv_q_I_maybe_dI"><a class="viewcode-back" href="../../../../../moduledoc_files/paws.core.operations.OUTPUT.html#paws.core.operations.OUTPUT.write_csv.write_csv_q_I_maybe_dI">[docs]</a><span class="k">def</span> <span class="nf">write_csv_q_I_maybe_dI</span><span class="p">(</span><span class="n">q</span><span class="p">,</span> <span class="n">I</span><span class="p">,</span> <span class="n">dI</span><span class="p">,</span> <span class="n">nameloc</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">dI</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">datablock</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">q</span><span class="o">.</span><span class="n">size</span><span class="p">,</span><span class="mi">2</span><span class="p">),</span><span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+        <span class="n">top_line</span> <span class="o">=</span> <span class="s1">&#39;q, I&#39;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">datablock</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">q</span><span class="o">.</span><span class="n">size</span><span class="p">,</span><span class="mi">3</span><span class="p">),</span><span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+        <span class="n">datablock</span><span class="p">[:,</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">dI</span>
+        <span class="n">top_line</span> <span class="o">=</span> <span class="s1">&#39;q, I, dI&#39;</span>
+    <span class="n">datablock</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">q</span>
+    <span class="n">datablock</span><span class="p">[:,</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">I</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">savetxt</span><span class="p">(</span><span class="n">nameloc</span><span class="p">,</span> <span class="n">datablock</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s1">&#39;,&#39;</span><span class="p">,</span> <span class="n">newline</span><span class="o">=</span><span class="n">linesep</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="n">top_line</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="replace_extension"><a class="viewcode-back" href="../../../../../moduledoc_files/paws.core.operations.OUTPUT.html#paws.core.operations.OUTPUT.write_csv.replace_extension">[docs]</a><span class="k">def</span> <span class="nf">replace_extension</span><span class="p">(</span><span class="n">old_name</span><span class="p">,</span> <span class="n">new_extension</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Return a file name that is identical except for extension.</span>
+
+<span class="sd">    :param old_name: string path or file name</span>
+<span class="sd">    :param new_extension: string extension, e.g. &quot;.txt&quot;</span>
+<span class="sd">    :return:</span>
+
+<span class="sd">    Accepts extensions with or without an initial &quot;.&quot;.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="c1"># os.splitext gives the extension with &#39;.&#39; in front.</span>
+    <span class="c1"># Rather than require the user to know this, I take care of it here.</span>
+    <span class="k">if</span> <span class="n">new_extension</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="s1">&#39;.&#39;</span><span class="p">:</span>
+        <span class="n">new_extension</span> <span class="o">=</span> <span class="s1">&#39;.&#39;</span> <span class="o">+</span> <span class="n">new_extension</span>
+    <span class="n">root</span> <span class="o">=</span> <span class="n">splitext</span><span class="p">(</span><span class="n">old_name</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">new_name</span> <span class="o">=</span> <span class="n">root</span> <span class="o">+</span> <span class="n">new_extension</span>
+    <span class="k">return</span> <span class="n">new_name</span></div>
+
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../../index.html">paws 0.4.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../operations.html" >paws.core.operations</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2017, Lenson A. Pellouchoud.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.2.
+    </div>
+  </body>
+</html>
