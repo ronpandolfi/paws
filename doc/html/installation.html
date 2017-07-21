@@ -1,20 +1,17 @@
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
-    <title>Installation &#8212; paws 0.4.0 documentation</title>
-    
-    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
+    <title>Quick Start &#8212; paws 0.7.1 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.4.0',
+        VERSION:     '0.7.1',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -24,61 +21,40 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="API Documentation" href="apidoc.html" />
-    <link rel="prev" title="Quick Start" href="quickstart.html" /> 
+    <link rel="next" title="API Documentation" href="moduledoc.html" />
+    <link rel="prev" title="Introduction" href="intro.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
   </head>
-  <body role="document">
-    <div class="related" role="navigation" aria-label="related navigation">
-      <h3>Navigation</h3>
-      <ul>
-        <li class="right" style="margin-right: 10px">
-          <a href="genindex.html" title="General Index"
-             accesskey="I">index</a></li>
-        <li class="right" >
-          <a href="py-modindex.html" title="Python Module Index"
-             >modules</a> |</li>
-        <li class="right" >
-          <a href="apidoc.html" title="API Documentation"
-             accesskey="N">next</a> |</li>
-        <li class="right" >
-          <a href="quickstart.html" title="Quick Start"
-             accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">paws 0.4.0 documentation</a> &#187;</li> 
-      </ul>
-    </div>  
+  <body>
+  
 
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="installation">
-<span id="ch-installation"></span><h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
-<p>Here are instructions for installing <code class="docutils literal"><span class="pre">paws</span></code> from PyPI,
-or downloading and testing the <code class="docutils literal"><span class="pre">paws</span></code> source code.</p>
-<div class="section" id="installing-with-pip">
-<span id="sec-pip-installation"></span><h2>Installing with pip<a class="headerlink" href="#installing-with-pip" title="Permalink to this headline">¶</a></h2>
-<p>Instructions will go here for installing <code class="docutils literal"><span class="pre">paws</span></code> using
-the Python package installer <code class="docutils literal"><span class="pre">pip</span></code> (currently not implemented).</p>
-</div>
-<div class="section" id="downloading-source">
-<span id="sec-src-installation"></span><h2>Downloading Source<a class="headerlink" href="#downloading-source" title="Permalink to this headline">¶</a></h2>
-<p>The source code for <code class="docutils literal"><span class="pre">paws</span></code> is hosted on github.
-Clone the repository from <code class="docutils literal"><span class="pre">https://github.com/slaclab/paws.git</span></code>.
-You should then be able to run <code class="docutils literal"><span class="pre">paws</span></code> by invoking
-<code class="docutils literal"><span class="pre">python</span> <span class="pre">main.py</span></code> from the root directory.</p>
-</div>
-<div class="section" id="testing">
-<span id="sec-testing"></span><h2>Testing<a class="headerlink" href="#testing" title="Permalink to this headline">¶</a></h2>
-<p><code class="docutils literal"><span class="pre">paws</span></code> comes with a tests that can be used
-to ensure the platform runs as expected.
-After <a class="reference internal" href="#sec-src-installation"><span class="std std-ref">downloading the source</span></a>,
-invoke <code class="docutils literal"><span class="pre">python</span> <span class="pre">-m</span> <span class="pre">unittest</span> <span class="pre">discover</span></code>
-from the root directory.</p>
-</div>
+  <div class="section" id="quick-start">
+<span id="sec-quickstart"></span><h1>Quick Start<a class="headerlink" href="#quick-start" title="Permalink to this headline">¶</a></h1>
+<p>Minimal and usually-effective installation instructions.</p>
+<p>Here is a reference to the <a class="reference internal" href="intro.html#ch-introduction"><span class="std std-ref">brief introduction</span></a>.</p>
+<p><a class="reference internal" href="#sec-quickstart"><span class="std std-ref">This chapter</span></a> is for setting up PAWS quickly
+in an environment that is prepared to install Python packages with pip.
+To install PAWS, enter <code class="docutils literal"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">pypaws</span></code> at the command line
+from within your Python environment.</p>
+<p>The only dependency of PAWS is pyyaml,
+used for serializing and de-serializing workflow data.
+pip should automatically install this along with PAWS.</p>
+<p>The PAWS GUI modules are not explicitly supported by the package dependencies.
+To use PAWS GUI modules, install PySide into your Python environment with
+<code class="docutils literal"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">PySide</span></code></p>
 </div>
 
 
@@ -87,29 +63,31 @@ from the root directory.</p>
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
-  <h3><a href="index.html">Table Of Contents</a></h3>
-  <ul>
-<li><a class="reference internal" href="#">Installation</a><ul>
-<li><a class="reference internal" href="#installing-with-pip">Installing with pip</a></li>
-<li><a class="reference internal" href="#downloading-source">Downloading Source</a></li>
-<li><a class="reference internal" href="#testing">Testing</a></li>
-</ul>
-</li>
+<h1 class="logo"><a href="index.html">paws</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Quick Start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moduledoc.html">API Documentation</a></li>
 </ul>
 
-  <h4>Previous topic</h4>
-  <p class="topless"><a href="quickstart.html"
-                        title="previous chapter">Quick Start</a></p>
-  <h4>Next topic</h4>
-  <p class="topless"><a href="apidoc.html"
-                        title="next chapter">API Documentation</a></p>
-  <div role="note" aria-label="source link">
-    <h3>This Page</h3>
-    <ul class="this-page-menu">
-      <li><a href="_sources/installation.rst.txt"
-            rel="nofollow">Show Source</a></li>
-    </ul>
-   </div>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="intro.html" title="previous chapter">Introduction</a></li>
+      <li>Next: <a href="moduledoc.html" title="next chapter">API Documentation</a></li>
+  </ul></li>
+</ul>
+</div>
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
     <form class="search" action="search.html" method="get">
@@ -124,27 +102,20 @@ from the root directory.</p>
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="related" role="navigation" aria-label="related navigation">
-      <h3>Navigation</h3>
-      <ul>
-        <li class="right" style="margin-right: 10px">
-          <a href="genindex.html" title="General Index"
-             >index</a></li>
-        <li class="right" >
-          <a href="py-modindex.html" title="Python Module Index"
-             >modules</a> |</li>
-        <li class="right" >
-          <a href="apidoc.html" title="API Documentation"
-             >next</a> |</li>
-        <li class="right" >
-          <a href="quickstart.html" title="Quick Start"
-             >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">paws 0.4.0 documentation</a> &#187;</li> 
-      </ul>
+    <div class="footer">
+      &copy;2017, Lenson A. Pellouchoud.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="_sources/installation.rst.txt"
+          rel="nofollow">Page source</a>
     </div>
-    <div class="footer" role="contentinfo">
-        &#169; Copyright 2017, Lenson A. Pellouchoud.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.2.
-    </div>
+
+    
+
+    
   </body>
 </html>

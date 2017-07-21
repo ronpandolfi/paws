@@ -1,20 +1,17 @@
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
-    <title>Introduction &#8212; paws 0.4.0 documentation</title>
-    
-    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
+    <title>Introduction &#8212; paws 0.7.1 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.4.0',
+        VERSION:     '0.7.1',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -24,31 +21,20 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Quick Start" href="quickstart.html" />
-    <link rel="prev" title="Welcome to the documentation for paws!" href="index.html" /> 
+    <link rel="next" title="Quick Start" href="installation.html" />
+    <link rel="prev" title="paws: the Platform for Automated Workflows by SSRL" href="index.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
   </head>
-  <body role="document">
-    <div class="related" role="navigation" aria-label="related navigation">
-      <h3>Navigation</h3>
-      <ul>
-        <li class="right" style="margin-right: 10px">
-          <a href="genindex.html" title="General Index"
-             accesskey="I">index</a></li>
-        <li class="right" >
-          <a href="py-modindex.html" title="Python Module Index"
-             >modules</a> |</li>
-        <li class="right" >
-          <a href="quickstart.html" title="Quick Start"
-             accesskey="N">next</a> |</li>
-        <li class="right" >
-          <a href="index.html" title="Welcome to the documentation for paws!"
-             accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">paws 0.4.0 documentation</a> &#187;</li> 
-      </ul>
-    </div>  
+  <body>
+  
 
     <div class="document">
       <div class="documentwrapper">
@@ -57,34 +43,36 @@
             
   <div class="section" id="introduction">
 <span id="ch-introduction"></span><h1>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h1>
-<p>The <code class="docutils literal"><span class="pre">paws</span></code> package aims to provide
+<p>The PAWS package aims to provide
 a fast and lean platform for building and executing workflows for data processing.
 It was originally developed to perform analysis of diffraction images
 for research purposes at SLAC/SSRL.
-At the core of <code class="docutils literal"><span class="pre">paws</span></code> is a workflow engine
-that uses a library of operations
-to crunch through data and expose select results
-while attempting to minimize resource consumption.</p>
-<p><code class="docutils literal"><span class="pre">paws</span></code> is currently written in Python,
-based on Qt via the PySide bindings.
-Internally, <code class="docutils literal"><span class="pre">paws</span></code> keeps track of data in Qt-based tree models,
-which can be controlled either directly (through the paws api)
-or through a gui (employing the Qt model-view framework).</p>
-<p><code class="docutils literal"><span class="pre">paws</span></code> also provides an interface to <code class="docutils literal"><span class="pre">xi-cam</span></code>,
-a synchrotron x-ray diffraction data analysis package
-written by the CAMERA Institute and
-Pandolfi, et al at the Lawrence Berkeley National Lab.</p>
-<p>Some the core goals of <code class="docutils literal"><span class="pre">paws</span></code>:</p>
+At the core of PAWS is a library of operations,
+which are essentially wrappers around useful pieces of Python code.</p>
+<p>PAWS itself is a pure Python package.
+The PAWS API is meant to provide the functionality of PAWS
+such that it can be used in data processing scripts
+or employed in the back end of applications.
+Limited graphical interfaces are under development
+to support specific processing workflows.
+Some of these interfaces are included in the PAWS package,
+but are not used unless explicitly called upon.
+To keep the package dependencies low,
+the PAWS GUI modules are not supported by the package dependencies.
+The PAWS GUI modules are based on Qt, written by way of the PySide bindings.
+Installing PySide (by <code class="docutils literal"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">PySide</span></code>, for example)
+should provide support for the PAWS GUI.
+In future releases, the GUI modules may be distributed in a separate package.</p>
+<p>Some of the core goals of PAWS:</p>
 <ul class="simple">
-<li>Eliminate redundant development efforts</li>
-<li>Streamline and standardize routine data analysis</li>
-<li>Simplify data storage and provide large-scale analysis</li>
-<li>Perform data analysis in real time for results-driven feedback</li>
+<li>Providing turnkey workflows for routine data analysis</li>
+<li>Scaling up of workflows to analyze batches of data</li>
+<li>Portable infrastructure for moving workflows from machine to machine</li>
+<li>Coupling data analysis to instrumentation for real-time results-driven feedback</li>
 </ul>
-<p>The <code class="docutils literal"><span class="pre">paws</span></code> developers would love to hear from you
+<p>The PAWS developers would love to hear from you
 if you have wisdom, thoughts, haikus, bugs, artwork, or suggestions.
-Limericks are also welcome.
-Get in touch with us at <code class="docutils literal"><span class="pre">paws-developers&#64;slac.stanford.edu</span></code>.</p>
+Get in touch with us at <em>paws-developers&#64;slac.stanford.edu</em>.</p>
 </div>
 
 
@@ -93,19 +81,31 @@ Get in touch with us at <code class="docutils literal"><span class="pre">paws-de
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
-  <h4>Previous topic</h4>
-  <p class="topless"><a href="index.html"
-                        title="previous chapter">Welcome to the documentation for paws!</a></p>
-  <h4>Next topic</h4>
-  <p class="topless"><a href="quickstart.html"
-                        title="next chapter">Quick Start</a></p>
-  <div role="note" aria-label="source link">
-    <h3>This Page</h3>
-    <ul class="this-page-menu">
-      <li><a href="_sources/intro.rst.txt"
-            rel="nofollow">Show Source</a></li>
-    </ul>
-   </div>
+<h1 class="logo"><a href="index.html">paws</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Quick Start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moduledoc.html">API Documentation</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="index.html" title="previous chapter">paws: the Platform for Automated Workflows by SSRL</a></li>
+      <li>Next: <a href="installation.html" title="next chapter">Quick Start</a></li>
+  </ul></li>
+</ul>
+</div>
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
     <form class="search" action="search.html" method="get">
@@ -120,27 +120,20 @@ Get in touch with us at <code class="docutils literal"><span class="pre">paws-de
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="related" role="navigation" aria-label="related navigation">
-      <h3>Navigation</h3>
-      <ul>
-        <li class="right" style="margin-right: 10px">
-          <a href="genindex.html" title="General Index"
-             >index</a></li>
-        <li class="right" >
-          <a href="py-modindex.html" title="Python Module Index"
-             >modules</a> |</li>
-        <li class="right" >
-          <a href="quickstart.html" title="Quick Start"
-             >next</a> |</li>
-        <li class="right" >
-          <a href="index.html" title="Welcome to the documentation for paws!"
-             >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">paws 0.4.0 documentation</a> &#187;</li> 
-      </ul>
+    <div class="footer">
+      &copy;2017, Lenson A. Pellouchoud.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="_sources/intro.rst.txt"
+          rel="nofollow">Page source</a>
     </div>
-    <div class="footer" role="contentinfo">
-        &#169; Copyright 2017, Lenson A. Pellouchoud.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.2.
-    </div>
+
+    
+
+    
   </body>
 </html>

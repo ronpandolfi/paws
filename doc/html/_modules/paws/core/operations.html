@@ -1,20 +1,17 @@
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
-    <title>paws.core.operations &#8212; paws 0.4.0 documentation</title>
-    
-    <link rel="stylesheet" href="../../../_static/classic.css" type="text/css" />
+    <title>paws.core.operations &#8212; paws 0.7.1 documentation</title>
+    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
-    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../../',
-        VERSION:     '0.4.0',
+        VERSION:     '0.7.1',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -24,24 +21,18 @@
     <script type="text/javascript" src="../../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../../_static/doctools.js"></script>
-    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
-    <link rel="search" title="Search" href="../../../search.html" /> 
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
   </head>
-  <body role="document">
-    <div class="related" role="navigation" aria-label="related navigation">
-      <h3>Navigation</h3>
-      <ul>
-        <li class="right" style="margin-right: 10px">
-          <a href="../../../genindex.html" title="General Index"
-             accesskey="I">index</a></li>
-        <li class="right" >
-          <a href="../../../py-modindex.html" title="Python Module Index"
-             >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">paws 0.4.0 documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li> 
-      </ul>
-    </div>  
+  <body>
+  
 
     <div class="document">
       <div class="documentwrapper">
@@ -49,121 +40,156 @@
           <div class="body" role="main">
             
   <h1>Source code for paws.core.operations</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">os</span>
+<span></span><span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">print_function</span>
+<span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">pkgutil</span>
 <span class="kn">import</span> <span class="nn">importlib</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">OrderedDict</span>
 
 <span class="kn">import</span> <span class="nn">yaml</span>
 
-<span class="kn">from</span> <span class="nn">operation</span> <span class="k">import</span> <span class="n">Operation</span>
 <span class="kn">from</span> <span class="nn">..</span> <span class="k">import</span> <span class="n">pawstools</span>
 
-<div class="viewcode-block" id="save_cfg"><a class="viewcode-back" href="../../../moduledoc_files/paws.core.operations.html#paws.core.operations.save_cfg">[docs]</a><span class="k">def</span> <span class="nf">save_cfg</span><span class="p">(</span><span class="n">cfg_data</span><span class="p">,</span><span class="n">cfg_file</span><span class="p">):</span>
-    <span class="n">cfg</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">cfg_file</span><span class="p">,</span><span class="s1">&#39;w&#39;</span><span class="p">)</span>
-    <span class="n">yaml</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">cfg_data</span><span class="p">,</span><span class="n">cfg</span><span class="p">)</span>
-    <span class="n">cfg</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
-
-<div class="viewcode-block" id="load_cfg"><a class="viewcode-back" href="../../../moduledoc_files/paws.core.operations.html#paws.core.operations.load_cfg">[docs]</a><span class="k">def</span> <span class="nf">load_cfg</span><span class="p">(</span><span class="n">cfg_file</span><span class="p">):</span>
-    <span class="n">cfg</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">cfg_file</span><span class="p">,</span><span class="s1">&#39;r&#39;</span><span class="p">)</span>
-    <span class="n">cfg_data</span> <span class="o">=</span> <span class="n">yaml</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">cfg</span><span class="p">)</span>
-    <span class="n">cfg</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">cfg_data</span><span class="p">:</span>
-        <span class="n">cfg_data</span> <span class="o">=</span> <span class="p">{}</span>
-    <span class="k">return</span> <span class="n">cfg_data</span></div>
-
-<span class="c1"># check for an ops.cfg file</span>
-<span class="n">cfg_file</span> <span class="o">=</span> <span class="n">pawstools</span><span class="o">.</span><span class="n">rootdir</span><span class="o">+</span><span class="s1">&#39;/core/operations/ops.cfg&#39;</span>
+<span class="c1"># check for an ops.cfg (yaml) file</span>
+<span class="n">cfg_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">pawstools</span><span class="o">.</span><span class="n">paws_cfg_dir</span><span class="p">,</span><span class="s1">&#39;ops.cfg&#39;</span><span class="p">)</span>
 <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">cfg_file</span><span class="p">):</span>
-    <span class="n">op_load_flags</span> <span class="o">=</span> <span class="n">load_cfg</span><span class="p">(</span><span class="n">cfg_file</span><span class="p">)</span>
+    <span class="n">load_flags</span> <span class="o">=</span> <span class="n">pawstools</span><span class="o">.</span><span class="n">load_cfg</span><span class="p">(</span><span class="n">cfg_file</span><span class="p">)</span>
 <span class="k">else</span><span class="p">:</span>
-    <span class="n">op_load_flags</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">load_flags</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">()</span> 
+    
+<div class="viewcode-block" id="save_config"><a class="viewcode-back" href="../../../moduledoc_files/paws.core.operations.html#paws.core.operations.save_config">[docs]</a><span class="k">def</span> <span class="nf">save_config</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Call save_config() before closing </span>
+<span class="sd">    to save the state of which ops are enabled/disabled.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Order the load flags using load_keys...</span>
+    <span class="n">od_load_flags</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">load_keys</span><span class="p">:</span>
+        <span class="n">od_load_flags</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">load_flags</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+    <span class="n">pawstools</span><span class="o">.</span><span class="n">save_cfg</span><span class="p">(</span><span class="n">od_load_flags</span><span class="p">,</span><span class="n">cfg_file</span><span class="p">)</span></div>
 
-<span class="c1"># list to keep track of keys that get loaded in this run</span>
-<span class="c1"># these keys are later used to maintain a lean, sane cfg file</span>
-<span class="n">op_load_keys</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="c1"># Keep track of keys that get loaded in this run.</span>
+<span class="c1"># These keys are used to remove load_flags automatically</span>
+<span class="c1"># in case Operations or categories have been renamed or removed.</span>
+<span class="n">load_keys</span> <span class="o">=</span> <span class="p">[]</span>
 
-<div class="viewcode-block" id="load_ops_from_path"><a class="viewcode-back" href="../../../moduledoc_files/paws.core.operations.html#paws.core.operations.load_ops_from_path">[docs]</a><span class="k">def</span> <span class="nf">load_ops_from_path</span><span class="p">(</span><span class="n">path_</span><span class="p">,</span><span class="n">pkg</span><span class="p">,</span><span class="n">cat_root</span><span class="o">=</span><span class="s1">&#39;MISC&#39;</span><span class="p">):</span>
+<div class="viewcode-block" id="update_load_flags"><a class="viewcode-back" href="../../../moduledoc_files/paws.core.operations.html#paws.core.operations.update_load_flags">[docs]</a><span class="k">def</span> <span class="nf">update_load_flags</span><span class="p">():</span>
+    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">load_flags</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">load_keys</span><span class="p">:</span>
+            <span class="n">load_flags</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">k</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="load_ops_from_path"><a class="viewcode-back" href="../../../moduledoc_files/paws.core.operations.html#paws.core.operations.load_ops_from_path">[docs]</a><span class="k">def</span> <span class="nf">load_ops_from_path</span><span class="p">(</span><span class="n">path_</span><span class="p">,</span><span class="n">pkg</span><span class="p">,</span><span class="n">cat_root</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">):</span>
     <span class="n">ops</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="n">cats</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="c1"># pkgutil.iter_modules returns module_loader, module_name, ispkg forall modules in path</span>
     <span class="n">mods</span> <span class="o">=</span> <span class="n">pkgutil</span><span class="o">.</span><span class="n">iter_modules</span><span class="p">(</span><span class="n">path_</span><span class="p">)</span>
-    <span class="n">mods</span> <span class="o">=</span> <span class="p">[</span><span class="n">mod</span> <span class="k">for</span> <span class="n">mod</span> <span class="ow">in</span> <span class="n">mods</span> <span class="k">if</span> <span class="n">mod</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;__init__&#39;</span><span class="p">,</span><span class="s1">&#39;operation&#39;</span><span class="p">,</span><span class="s1">&#39;op_manager&#39;</span><span class="p">,</span><span class="s1">&#39;optools&#39;</span><span class="p">,</span><span class="s1">&#39;DMZ&#39;</span><span class="p">]]</span>
+    <span class="n">mods</span> <span class="o">=</span> <span class="p">[</span><span class="n">mod</span> <span class="k">for</span> <span class="n">mod</span> <span class="ow">in</span> <span class="n">mods</span> <span class="k">if</span> <span class="n">mod</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;__init__&#39;</span><span class="p">,</span><span class="s1">&#39;Operation&#39;</span><span class="p">,</span><span class="s1">&#39;OpManager&#39;</span><span class="p">,</span><span class="s1">&#39;optools&#39;</span><span class="p">,</span><span class="s1">&#39;DMZ&#39;</span><span class="p">]]</span>
     <span class="k">for</span> <span class="n">modloader</span><span class="p">,</span> <span class="n">modname</span><span class="p">,</span> <span class="n">ispkg</span> <span class="ow">in</span> <span class="n">mods</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">modname</span> <span class="ow">in</span> <span class="n">op_load_flags</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-            <span class="k">if</span> <span class="n">op_load_flags</span><span class="p">[</span><span class="n">modname</span><span class="p">]:</span>
-                <span class="n">load_mod</span> <span class="o">=</span> <span class="kc">True</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">load_mod</span> <span class="o">=</span> <span class="kc">False</span> 
+        <span class="k">if</span> <span class="n">cat_root</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
+            <span class="n">mod_root</span> <span class="o">=</span> <span class="n">modname</span> 
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">load_mod</span> <span class="o">=</span> <span class="kc">True</span>
-        <span class="c1"># if load_mod, load it</span>
-        <span class="k">if</span> <span class="n">load_mod</span><span class="p">:</span>
-            <span class="n">mod</span> <span class="o">=</span> <span class="n">importlib</span><span class="o">.</span><span class="n">import_module</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="o">+</span><span class="n">modname</span><span class="p">,</span><span class="n">pkg</span><span class="p">)</span>
+            <span class="n">mod_root</span> <span class="o">=</span> <span class="n">cat_root</span><span class="o">+</span><span class="s1">&#39;.&#39;</span><span class="o">+</span><span class="n">modname</span>
+        <span class="n">load_keys</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">mod_root</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">mod_root</span> <span class="ow">in</span> <span class="n">load_flags</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="n">load_mod</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">load_flags</span><span class="p">[</span><span class="n">mod_root</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># NOTE: This line determines whether or not </span>
+            <span class="c1"># newly arrived modules should be loaded by default.</span>
+            <span class="n">load_mod</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="c1">#</span>
+        <span class="c1">#load_mod = True</span>
+        <span class="c1">#</span>
+        <span class="n">load_flags</span><span class="p">[</span><span class="n">mod_root</span><span class="p">]</span> <span class="o">=</span> <span class="n">load_mod</span>
         <span class="c1"># if it is a package, recurse</span>
-        <span class="k">if</span> <span class="n">load_mod</span> <span class="ow">and</span> <span class="n">ispkg</span><span class="p">:</span>
-            <span class="n">pkg_path</span> <span class="o">=</span> <span class="p">[</span><span class="n">path_</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="s1">&#39;/&#39;</span><span class="o">+</span><span class="n">modname</span><span class="p">]</span>
-            <span class="k">if</span> <span class="n">cat_root</span> <span class="o">==</span> <span class="s1">&#39;MISC&#39;</span><span class="p">:</span>
-                <span class="n">pkg_cat_root</span> <span class="o">=</span> <span class="n">modname</span> 
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">pkg_cat_root</span> <span class="o">=</span> <span class="n">cat_root</span><span class="o">+</span><span class="s1">&#39;.&#39;</span><span class="o">+</span><span class="n">modname</span>
-            <span class="n">pkg_ops</span><span class="p">,</span> <span class="n">pkg_cats</span> <span class="o">=</span> <span class="n">load_ops_from_path</span><span class="p">(</span><span class="n">pkg_path</span><span class="p">,</span><span class="n">pkg</span><span class="o">+</span><span class="s1">&#39;.&#39;</span><span class="o">+</span><span class="n">modname</span><span class="p">,</span><span class="n">pkg_cat_root</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">ispkg</span><span class="p">:</span>
+            <span class="n">pkg_path</span> <span class="o">=</span> <span class="p">[</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path_</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">modname</span><span class="p">)]</span>
+            <span class="n">pkg_ops</span><span class="p">,</span> <span class="n">pkg_cats</span> <span class="o">=</span> <span class="n">load_ops_from_path</span><span class="p">(</span><span class="n">pkg_path</span><span class="p">,</span><span class="n">pkg</span><span class="o">+</span><span class="s1">&#39;.&#39;</span><span class="o">+</span><span class="n">modname</span><span class="p">,</span><span class="n">mod_root</span><span class="p">)</span>
             <span class="n">pkg_ops</span> <span class="o">=</span> <span class="p">[</span><span class="n">op</span> <span class="k">for</span> <span class="n">op</span> <span class="ow">in</span> <span class="n">pkg_ops</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">op</span> <span class="ow">in</span> <span class="n">ops</span><span class="p">]</span>
             <span class="n">pkg_cats</span> <span class="o">=</span> <span class="p">[</span><span class="n">cat</span> <span class="k">for</span> <span class="n">cat</span> <span class="ow">in</span> <span class="n">pkg_cats</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">cat</span> <span class="ow">in</span> <span class="n">cats</span><span class="p">]</span>
             <span class="n">ops</span> <span class="o">=</span> <span class="n">ops</span> <span class="o">+</span> <span class="n">pkg_ops</span>
             <span class="n">cats</span> <span class="o">=</span> <span class="n">cats</span> <span class="o">+</span> <span class="n">pkg_cats</span>
-        <span class="k">elif</span> <span class="n">load_mod</span><span class="p">:</span>
-            <span class="n">new_ops</span><span class="p">,</span> <span class="n">new_cats</span> <span class="o">=</span> <span class="n">load_ops_from_module</span><span class="p">(</span><span class="n">mod</span><span class="p">,</span><span class="n">cat_root</span><span class="p">)</span>
-            <span class="n">new_ops</span> <span class="o">=</span> <span class="p">[</span><span class="n">op</span> <span class="k">for</span> <span class="n">op</span> <span class="ow">in</span> <span class="n">new_ops</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">op</span> <span class="ow">in</span> <span class="n">ops</span><span class="p">]</span>
-            <span class="n">new_cats</span> <span class="o">=</span> <span class="p">[</span><span class="n">cat</span> <span class="k">for</span> <span class="n">cat</span> <span class="ow">in</span> <span class="n">new_cats</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">cat</span> <span class="ow">in</span> <span class="n">cats</span><span class="p">]</span>
-            <span class="n">ops</span> <span class="o">=</span> <span class="n">ops</span> <span class="o">+</span> <span class="n">new_ops</span>
-            <span class="n">cats</span> <span class="o">=</span> <span class="n">cats</span> <span class="o">+</span> <span class="n">new_cats</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># assume that there is an Operation in this module</span>
+            <span class="c1"># whose class name is the same as the module name.</span>
+            <span class="n">ops</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="p">(</span><span class="n">cat_root</span><span class="p">,</span><span class="n">modname</span><span class="p">)</span> <span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">cat_root</span> <span class="ow">in</span> <span class="n">cats</span><span class="p">:</span>
+                <span class="n">cats</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cat_root</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">ops</span><span class="p">,</span> <span class="n">cats</span></div>
+        <span class="c1">#if load_mod:</span>
+        <span class="c1">#    # Assume Operation name is same as module name.</span>
+        <span class="c1">#    # Get the operation from the module.</span>
+        <span class="c1">#    # TODO: Handle any ImportErrors or AttributeErrors.</span>
+        <span class="c1">#    mod = importlib.import_module(&#39;.&#39;+modname,pkg)</span>
+        <span class="c1">#    op = getattr(mod,modname)</span>
+            <span class="c1">#try:</span>
+            <span class="c1">#    ops.append( (cat_root,op) )</span>
+            <span class="c1">#    if not cat_root in cats:</span>
+            <span class="c1">#        cats.append(cat_root)</span>
+            <span class="c1">#except AttributeError as ex:</span>
+            <span class="c1">#    pass</span>
+            <span class="c1">#    msg = str(&#39;Failed to load Operation subclass {} &#39;.format(modname)</span>
+            <span class="c1">#    + &#39;from module of the same name. Error message: &#39;+ ex.message</span>
+            <span class="c1">#    + &#39;\nTo load an Operation, &#39;</span>
+            <span class="c1">#    + &#39;ensure the Operation subclass &#39;</span>
+            <span class="c1">#    + &#39;has the same name as its .py module file&#39;)</span>
+            <span class="c1">#    print(msg)</span>
 
-<div class="viewcode-block" id="load_ops_from_module"><a class="viewcode-back" href="../../../moduledoc_files/paws.core.operations.html#paws.core.operations.load_ops_from_module">[docs]</a><span class="k">def</span> <span class="nf">load_ops_from_module</span><span class="p">(</span><span class="n">mod</span><span class="p">,</span><span class="n">cat_root</span><span class="p">):</span>
-    <span class="c1"># iterate through the module&#39;s __dict__, find Operations </span>
-    <span class="n">ops</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="n">cats</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="c1">#print &#39;\n\nattempt load_ops_from_module on {}, root {}\n\n&#39;.format(mod,cat_root)</span>
-    <span class="k">for</span> <span class="n">nm</span><span class="p">,</span> <span class="n">itm</span> <span class="ow">in</span> <span class="n">mod</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="c1"># is it a class?</span>
-            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">itm</span><span class="p">,</span><span class="nb">type</span><span class="p">):</span>
-                <span class="c1"># is it a non-abstract subclass of Operation?</span>
-                <span class="k">if</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">itm</span><span class="p">,</span><span class="n">Operation</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">nm</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;Operation&#39;</span><span class="p">,</span><span class="s1">&#39;Realtime&#39;</span><span class="p">,</span><span class="s1">&#39;Batch&#39;</span><span class="p">]:</span>
-                    <span class="n">op</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">mod</span><span class="p">,</span><span class="n">nm</span><span class="p">)</span>
-                    <span class="c1">#op_cats = [cat_root]</span>
-                    <span class="n">ops</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="p">(</span><span class="n">cat_root</span><span class="p">,</span><span class="n">op</span><span class="p">)</span> <span class="p">)</span>
-                    <span class="c1">#for cat in op_cats:</span>
-                    <span class="k">if</span> <span class="ow">not</span> <span class="n">cat_root</span> <span class="ow">in</span> <span class="n">cats</span><span class="p">:</span>
-                        <span class="n">cats</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cat_root</span><span class="p">)</span>
-                        <span class="n">op_load_flags</span><span class="p">[</span><span class="n">cat_root</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
-                        <span class="n">op_load_keys</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cat_root</span><span class="p">)</span>
-                    <span class="n">cat</span> <span class="o">=</span> <span class="n">cat_root</span>
-                    <span class="n">parent_cats_done</span> <span class="o">=</span> <span class="kc">False</span>
-                    <span class="k">while</span> <span class="ow">not</span> <span class="n">parent_cats_done</span><span class="p">:</span>
-                        <span class="k">if</span> <span class="ow">not</span> <span class="n">cat</span><span class="o">.</span><span class="n">rfind</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
-                            <span class="n">parcat</span> <span class="o">=</span> <span class="n">cat</span><span class="p">[:</span><span class="n">cat</span><span class="o">.</span><span class="n">rfind</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)]</span>
-                            <span class="k">if</span> <span class="ow">not</span> <span class="n">parcat</span> <span class="ow">in</span> <span class="n">cats</span><span class="p">:</span>
-                                <span class="n">cats</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">parcat</span><span class="p">)</span>
-                                <span class="n">op_load_keys</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">parcat</span><span class="p">)</span>
-                            <span class="n">cat</span> <span class="o">=</span> <span class="n">parcat</span>
-                        <span class="k">else</span><span class="p">:</span>
-                            <span class="n">parent_cats_done</span> <span class="o">=</span> <span class="kc">True</span>
-                    <span class="n">op_load_flags</span><span class="p">[</span><span class="n">nm</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
-                    <span class="n">op_load_keys</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">nm</span><span class="p">)</span>
-        <span class="k">except</span> <span class="ne">ImportError</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
-            <span class="nb">print</span> <span class="s1">&#39;[</span><span class="si">{}</span><span class="s1">] had trouble dealing with </span><span class="si">{}</span><span class="s1">: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="vm">__name__</span><span class="p">,</span><span class="n">name</span><span class="p">,</span><span class="n">item</span><span class="p">)</span>
-            <span class="nb">print</span> <span class="s1">&#39;Error text: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ex</span><span class="o">.</span><span class="n">message</span><span class="p">)</span>
-            <span class="k">pass</span> 
-    <span class="k">return</span> <span class="n">ops</span><span class="p">,</span> <span class="n">cats</span></div>
+<div class="viewcode-block" id="disable_ops"><a class="viewcode-back" href="../../../moduledoc_files/paws.core.operations.html#paws.core.operations.disable_ops">[docs]</a><span class="k">def</span> <span class="nf">disable_ops</span><span class="p">(</span><span class="n">disable_root</span><span class="p">):</span>
+    <span class="c1"># get all keys that contain disable_root</span>
+    <span class="n">disable_keys</span> <span class="o">=</span> <span class="p">[</span><span class="n">k</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">load_flags</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="k">if</span> <span class="n">disable_root</span> <span class="ow">in</span> <span class="n">k</span><span class="p">]</span>
+    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">disable_keys</span><span class="p">:</span>
+        <span class="n">load_flags</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span> </div>
+
+<span class="c1">#print(load_flags)</span>
 
 <span class="n">cat_op_list</span><span class="p">,</span> <span class="n">cat_list</span> <span class="o">=</span> <span class="n">load_ops_from_path</span><span class="p">(</span><span class="n">__path__</span><span class="p">,</span><span class="vm">__name__</span><span class="p">)</span>
 
-<span class="c1"># remove any keys from op_load_flags that are not in op_load_keys</span>
-<span class="c1"># this serves to update the cfg file if ops or directories are removed</span>
-<span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">op_load_flags</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">op_load_keys</span><span class="p">:</span>
-        <span class="n">op_load_flags</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+<span class="n">update_load_flags</span><span class="p">()</span>
+
+<span class="c1">#op = load_op_from_module(mod,cat_root)</span>
+<span class="c1">#mod_ops, mod_cats = load_ops_from_module(mod,cat_root)</span>
+<span class="c1">#mod_ops = [op for op in mod_ops if not op in ops]</span>
+<span class="c1">#mod_cats = [cat for cat in mod_cats if not cat in cats]</span>
+<span class="c1">#ops = ops + mod_ops</span>
+<span class="c1">#cats = cats + mod_cats</span>
+
+<span class="c1">#def load_op_from_module(mod,cat_root):</span>
+    <span class="c1"># Get the operation from the module:</span>
+    <span class="c1"># assume Operation name is same as module name</span>
+    <span class="c1">#op = getattr(mod,mod)</span>
+    <span class="c1">#ops = []</span>
+    <span class="c1">#cats = []</span>
+    <span class="c1">#for nm, itm in mod.__dict__.items():</span>
+    <span class="c1">#    try:</span>
+    <span class="c1">#        # is it a class?</span>
+    <span class="c1">#        if isinstance(itm,type):</span>
+    <span class="c1">#            # is it a non-abstract subclass of Operation?</span>
+    <span class="c1">#            if issubclass(itm,Operation) and not nm in [&#39;Operation&#39;,&#39;Realtime&#39;,&#39;Batch&#39;]:</span>
+    <span class="c1">#                op = getattr(mod,nm)</span>
+    <span class="c1">#                ops.append( (cat_root,op) )</span>
+    <span class="c1">#                if not cat_root in cats:</span>
+    <span class="c1">#                    cats.append(cat_root)</span>
+    <span class="c1">#                    #load_flags[cat_root] = True</span>
+    <span class="c1">#                    #load_keys.append(cat_root)</span>
+    <span class="c1">#                #cat = cat_root</span>
+    <span class="c1">#                parent_cats_done = False</span>
+    <span class="c1">#                while not parent_cats_done:</span>
+    <span class="c1">#                    if not cat.rfind(&#39;.&#39;) == -1:</span>
+    <span class="c1">#                        parcat = cat[:cat.rfind(&#39;.&#39;)]</span>
+    <span class="c1">#                        if not parcat in cats:</span>
+    <span class="c1">#                            cats.append(parcat)</span>
+    <span class="c1">#                            load_keys.append(parcat)</span>
+    <span class="c1">#                        cat = parcat</span>
+    <span class="c1">#                    else:</span>
+    <span class="c1">#                        parent_cats_done = True</span>
+    <span class="c1">#                load_flags[nm] = True</span>
+    <span class="c1">#                load_keys.append(nm)</span>
+    <span class="c1">#    except ImportError as ex:</span>
+    <span class="c1">#        print &#39;[{}] had trouble dealing with {}: {}&#39;.format(__name__,name,item)</span>
+    <span class="c1">#        print &#39;Error text: {}&#39;.format(ex.message)</span>
+    <span class="c1">#        pass </span>
+    <span class="c1">#return ops, cats</span>
+
 
 
 </pre></div>
@@ -173,6 +199,31 @@
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../index.html">paws</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../intro.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Quick Start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../moduledoc.html">API Documentation</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
     <form class="search" action="../../../search.html" method="get">
@@ -187,22 +238,17 @@
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="related" role="navigation" aria-label="related navigation">
-      <h3>Navigation</h3>
-      <ul>
-        <li class="right" style="margin-right: 10px">
-          <a href="../../../genindex.html" title="General Index"
-             >index</a></li>
-        <li class="right" >
-          <a href="../../../py-modindex.html" title="Python Module Index"
-             >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">paws 0.4.0 documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li> 
-      </ul>
+    <div class="footer">
+      &copy;2017, Lenson A. Pellouchoud.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
     </div>
-    <div class="footer" role="contentinfo">
-        &#169; Copyright 2017, Lenson A. Pellouchoud.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.2.
-    </div>
+
+    
+
+    
   </body>
 </html>

@@ -1,20 +1,17 @@
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
-    <title>paws.core.workflow package &#8212; paws 0.4.0 documentation</title>
-    
-    <link rel="stylesheet" href="../_static/classic.css" type="text/css" />
+    <title>paws.core.workflow package &#8212; paws 0.7.1 documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '0.4.0',
+        VERSION:     '0.7.1',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -24,34 +21,20 @@
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
-    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="paws.ui package" href="paws.ui.html" />
-    <link rel="prev" title="paws.core.plugins package" href="paws.core.plugins.html" /> 
+    <link rel="next" title="paws.interfaces package" href="paws.interfaces.html" />
+    <link rel="prev" title="paws.core.tools package" href="paws.core.tools.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
   </head>
-  <body role="document">
-    <div class="related" role="navigation" aria-label="related navigation">
-      <h3>Navigation</h3>
-      <ul>
-        <li class="right" style="margin-right: 10px">
-          <a href="../genindex.html" title="General Index"
-             accesskey="I">index</a></li>
-        <li class="right" >
-          <a href="../py-modindex.html" title="Python Module Index"
-             >modules</a> |</li>
-        <li class="right" >
-          <a href="paws.ui.html" title="paws.ui package"
-             accesskey="N">next</a> |</li>
-        <li class="right" >
-          <a href="paws.core.plugins.html" title="paws.core.plugins package"
-             accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">paws 0.4.0 documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="../apidoc.html" >API Documentation</a> &#187;</li>
-          <li class="nav-item nav-item-2"><a href="paws.html" >paws package</a> &#187;</li>
-          <li class="nav-item nav-item-3"><a href="paws.core.html" accesskey="U">paws.core package</a> &#187;</li> 
-      </ul>
-    </div>  
+  <body>
+  
 
     <div class="document">
       <div class="documentwrapper">
@@ -63,261 +46,132 @@
 <div class="section" id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="module-paws.core.workflow.wf_manager">
-<span id="paws-core-workflow-wf-manager-module"></span><h2>paws.core.workflow.wf_manager module<a class="headerlink" href="#module-paws.core.workflow.wf_manager" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-paws.core.workflow.WfManager">
+<span id="paws-core-workflow-wfmanager-module"></span><h2>paws.core.workflow.WfManager module<a class="headerlink" href="#module-paws.core.workflow.WfManager" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
-<dt id="paws.core.workflow.wf_manager.WfManager">
-<em class="property">class </em><code class="descclassname">paws.core.workflow.wf_manager.</code><code class="descname">WfManager</code><span class="sig-paren">(</span><em>qapp_reference</em>, <em>plugin_manager</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paws/core/workflow/wf_manager.html#WfManager"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#paws.core.workflow.wf_manager.WfManager" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="paws.core.html#paws.core.treemodel.TreeSelectionModel" title="paws.core.treemodel.TreeSelectionModel"><code class="xref py py-class docutils literal"><span class="pre">paws.core.treemodel.TreeSelectionModel</span></code></a></p>
-<p>Tree structure for managing a Workflow built from paws Operations.</p>
+<dt id="paws.core.workflow.WfManager.WfManager">
+<em class="property">class </em><code class="descclassname">paws.core.workflow.WfManager.</code><code class="descname">WfManager</code><span class="sig-paren">(</span><em>plugin_manager</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paws/core/workflow/WfManager.html#WfManager"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#paws.core.workflow.WfManager.WfManager" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/2/library/functions.html#object" title="(in Python v2.7)"><code class="xref py py-class docutils literal"><span class="pre">object</span></code></a></p>
+<p>Manager for paws Workflows. 
+Stores a list of Workflow objects, 
+performs operations on them.
+Keeps a reference to a PluginManager
+for access to PawsPlugins.</p>
 <dl class="method">
-<dt id="paws.core.workflow.wf_manager.WfManager.add_op">
-<code class="descname">add_op</code><span class="sig-paren">(</span><em>uri</em>, <em>new_op</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paws/core/workflow/wf_manager.html#WfManager.add_op"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#paws.core.workflow.wf_manager.WfManager.add_op" title="Permalink to this definition">¶</a></dt>
-<dd><p>Add an Operation to the tree as a new top-level TreeItem.</p>
+<dt id="paws.core.workflow.WfManager.WfManager.add_wf">
+<code class="descname">add_wf</code><span class="sig-paren">(</span><em>wfname</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paws/core/workflow/WfManager.html#WfManager.add_wf"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#paws.core.workflow.WfManager.WfManager.add_wf" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a workflow to self.workflows, with key specified by wfname.
+If wfname is not unique (i.e. a workflow with that name already exists),
+this method will overwrite the existing workflow with a new one.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="paws.core.workflow.wf_manager.WfManager.batch_op_stack">
-<code class="descname">batch_op_stack</code><span class="sig-paren">(</span><em>b_itm</em>, <em>valid_wf_inputs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paws/core/workflow/wf_manager.html#WfManager.batch_op_stack"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#paws.core.workflow.wf_manager.WfManager.batch_op_stack" title="Permalink to this definition">¶</a></dt>
-<dd><p>Use b_itm.data.batch_ops() and a list of valid_wf_inputs 
-(a list of uris that are good inputs from the workflow)   
-to build a stack (list) of lists of operations 
-such that all Operations in the stack have their dependencies satisfied
-by the Operations above them.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="paws.core.workflow.wf_manager.WfManager.build_dict">
-<code class="descname">build_dict</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paws/core/workflow/wf_manager.html#WfManager.build_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#paws.core.workflow.wf_manager.WfManager.build_dict" title="Permalink to this definition">¶</a></dt>
-<dd><p>Overloaded build_dict to handle Operations.
-Base class method builds dicts from other data types.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="paws.core.workflow.wf_manager.WfManager.check_wf">
-<code class="descname">check_wf</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paws/core/workflow/wf_manager.html#WfManager.check_wf"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#paws.core.workflow.wf_manager.WfManager.check_wf" title="Permalink to this definition">¶</a></dt>
-<dd><p>Check the dependencies of the workflow.
-Ensure that all loaded operations have inputs that make sense.
-Return a status code and message for each of the Operations.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="paws.core.workflow.wf_manager.WfManager.columnCount">
-<code class="descname">columnCount</code><span class="sig-paren">(</span><em>parent</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paws/core/workflow/wf_manager.html#WfManager.columnCount"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#paws.core.workflow.wf_manager.WfManager.columnCount" title="Permalink to this definition">¶</a></dt>
-<dd><p>Let WfManager have two columns, one for item tag, one for item type</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="paws.core.workflow.wf_manager.WfManager.execution_stack">
-<code class="descname">execution_stack</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paws/core/workflow/wf_manager.html#WfManager.execution_stack"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#paws.core.workflow.wf_manager.WfManager.execution_stack" title="Permalink to this definition">¶</a></dt>
-<dd><p>Build a stack (list) of lists of TreeItems,
-such that each TreeItem list contains a set of Operations
-whose dependencies are satisfied by the operations above them.
-For Batch or Realtime operations, the layer should be of the form[batch_item,batch_stack],
-where batch_item.data is the batch controller Operation,
-and batch_stack is built from self.batch_op_stack().</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="paws.core.workflow.wf_manager.WfManager.finish_thread">
-<code class="descname">finish_thread</code><span class="sig-paren">(</span><em>th_idx</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paws/core/workflow/wf_manager.html#WfManager.finish_thread"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#paws.core.workflow.wf_manager.WfManager.finish_thread" title="Permalink to this definition">¶</a></dt>
+<dt id="paws.core.workflow.WfManager.WfManager.build_op_from_dict">
+<code class="descname">build_op_from_dict</code><span class="sig-paren">(</span><em>op_setup</em>, <em>opman</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paws/core/workflow/WfManager.html#WfManager.build_op_from_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#paws.core.workflow.WfManager.WfManager.build_op_from_dict" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
-<dt id="paws.core.workflow.wf_manager.WfManager.get_valid_wf_inputs">
-<code class="descname">get_valid_wf_inputs</code><span class="sig-paren">(</span><em>itm</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paws/core/workflow/wf_manager.html#WfManager.get_valid_wf_inputs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#paws.core.workflow.wf_manager.WfManager.get_valid_wf_inputs" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return all of the TreeModel uris of itm and its children
-which can be used as downstream inputs in the workflow.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="paws.core.workflow.wf_manager.WfManager.headerData">
-<code class="descname">headerData</code><span class="sig-paren">(</span><em>section</em>, <em>orientation</em>, <em>data_role</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paws/core/workflow/wf_manager.html#WfManager.headerData"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#paws.core.workflow.wf_manager.WfManager.headerData" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="paws.core.workflow.wf_manager.WfManager.inputs_tag">
-<code class="descname">inputs_tag</code><em class="property"> = 'inputs'</em><a class="headerlink" href="#paws.core.workflow.wf_manager.WfManager.inputs_tag" title="Permalink to this definition">¶</a></dt>
+<dt id="paws.core.workflow.WfManager.WfManager.execute_batch">
+<code class="descname">execute_batch</code><span class="sig-paren">(</span><em>wfname</em>, <em>batch_op_tag</em>, <em>batch_stk</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paws/core/workflow/WfManager.html#WfManager.execute_batch"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#paws.core.workflow.WfManager.WfManager.execute_batch" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
-<dt id="paws.core.workflow.wf_manager.WfManager.is_op_ready">
-<code class="descname">is_op_ready</code><span class="sig-paren">(</span><em>itm</em>, <em>valid_wf_inputs</em>, <em>batch_routes=[]</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paws/core/workflow/wf_manager.html#WfManager.is_op_ready"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#paws.core.workflow.wf_manager.WfManager.is_op_ready" title="Permalink to this definition">¶</a></dt>
+<dt id="paws.core.workflow.WfManager.WfManager.execute_realtime">
+<code class="descname">execute_realtime</code><span class="sig-paren">(</span><em>wfname</em>, <em>rt_op_tag</em>, <em>rt_stk</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paws/core/workflow/WfManager.html#WfManager.execute_realtime"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#paws.core.workflow.WfManager.WfManager.execute_realtime" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
-<dt id="paws.core.workflow.wf_manager.WfManager.is_running">
-<code class="descname">is_running</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paws/core/workflow/wf_manager.html#WfManager.is_running"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#paws.core.workflow.wf_manager.WfManager.is_running" title="Permalink to this definition">¶</a></dt>
+<dt id="paws.core.workflow.WfManager.WfManager.execute_serial">
+<code class="descname">execute_serial</code><span class="sig-paren">(</span><em>wfname</em>, <em>op_list</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paws/core/workflow/WfManager.html#WfManager.execute_serial"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#paws.core.workflow.WfManager.WfManager.execute_serial" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
-<dt id="paws.core.workflow.wf_manager.WfManager.load_from_dict">
-<code class="descname">load_from_dict</code><span class="sig-paren">(</span><em>opman</em>, <em>opdict</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paws/core/workflow/wf_manager.html#WfManager.load_from_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#paws.core.workflow.wf_manager.WfManager.load_from_dict" title="Permalink to this definition">¶</a></dt>
-<dd><p>Load things in to the Workflow from an OpManager
-using a dict that specifies operation setup.</p>
+<dt id="paws.core.workflow.WfManager.WfManager.load_from_dict">
+<code class="descname">load_from_dict</code><span class="sig-paren">(</span><em>wfname</em>, <em>opman</em>, <em>opdict</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paws/core/workflow/WfManager.html#WfManager.load_from_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#paws.core.workflow.WfManager.WfManager.load_from_dict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a workflow with name wfname.
+If wfname is not unique, self.workflows[wfname] is overwritten.
+Input opdict specifies operation setup,
+where each item in opdict provides enough information
+to get an Operation from OpManager opman
+and set up its Operation.input_locators.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="paws.core.workflow.wf_manager.WfManager.load_inputs">
-<code class="descname">load_inputs</code><span class="sig-paren">(</span><em>op</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paws/core/workflow/wf_manager.html#WfManager.load_inputs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#paws.core.workflow.wf_manager.WfManager.load_inputs" title="Permalink to this definition">¶</a></dt>
-<dd><p>Loads input data for an Operation from that Operation&#8217;s input_locators.
-It is expected that op.input_locator[name] will refer to an InputLocator.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="paws.core.workflow.wf_manager.WfManager.locate_input">
-<code class="descname">locate_input</code><span class="sig-paren">(</span><em>il</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paws/core/workflow/wf_manager.html#WfManager.locate_input"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#paws.core.workflow.wf_manager.WfManager.locate_input" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the data pointed to by a given InputLocator object.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="paws.core.workflow.wf_manager.WfManager.loopwait">
-<code class="descname">loopwait</code><span class="sig-paren">(</span><em>interval</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paws/core/workflow/wf_manager.html#WfManager.loopwait"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#paws.core.workflow.wf_manager.WfManager.loopwait" title="Permalink to this definition">¶</a></dt>
-<dd><p>Create an event loop to delay some time without busywaiting.
-Time interval is specified in milliseconds.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="paws.core.workflow.wf_manager.WfManager.next_available_thread">
-<code class="descname">next_available_thread</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paws/core/workflow/wf_manager.html#WfManager.next_available_thread"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#paws.core.workflow.wf_manager.WfManager.next_available_thread" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="paws.core.workflow.wf_manager.WfManager.outputs_tag">
-<code class="descname">outputs_tag</code><em class="property"> = 'outputs'</em><a class="headerlink" href="#paws.core.workflow.wf_manager.WfManager.outputs_tag" title="Permalink to this definition">¶</a></dt>
+<dt id="paws.core.workflow.WfManager.WfManager.n_wf">
+<code class="descname">n_wf</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paws/core/workflow/WfManager.html#WfManager.n_wf"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#paws.core.workflow.WfManager.WfManager.n_wf" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
-<dt id="paws.core.workflow.wf_manager.WfManager.remove_op">
-<code class="descname">remove_op</code><span class="sig-paren">(</span><em>rm_idx</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paws/core/workflow/wf_manager.html#WfManager.remove_op"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#paws.core.workflow.wf_manager.WfManager.remove_op" title="Permalink to this definition">¶</a></dt>
-<dd><p>Remove an Operation from the workflow tree</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="paws.core.workflow.wf_manager.WfManager.run_wf">
-<code class="descname">run_wf</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paws/core/workflow/wf_manager.html#WfManager.run_wf"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#paws.core.workflow.wf_manager.WfManager.run_wf" title="Permalink to this definition">¶</a></dt>
+<dt id="paws.core.workflow.WfManager.WfManager.op_setup_dict">
+<code class="descname">op_setup_dict</code><span class="sig-paren">(</span><em>op</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paws/core/workflow/WfManager.html#WfManager.op_setup_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#paws.core.workflow.WfManager.WfManager.op_setup_dict" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
-<dt id="paws.core.workflow.wf_manager.WfManager.run_wf_batch">
-<code class="descname">run_wf_batch</code><span class="sig-paren">(</span><em>b_itm</em>, <em>stk</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paws/core/workflow/wf_manager.html#WfManager.run_wf_batch"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#paws.core.workflow.wf_manager.WfManager.run_wf_batch" title="Permalink to this definition">¶</a></dt>
-<dd><p>Executes the items in the stack stk under the control of one Batch controller Operation</p>
+<dt id="paws.core.workflow.WfManager.WfManager.run_wf">
+<code class="descname">run_wf</code><span class="sig-paren">(</span><em>wfname</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paws/core/workflow/WfManager.html#WfManager.run_wf"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#paws.core.workflow.WfManager.WfManager.run_wf" title="Permalink to this definition">¶</a></dt>
+<dd><p>Serially execute the operations of WfManager.workflows[wfname].
+Uses optools.execution_stack() to determine execution order.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="paws.core.workflow.wf_manager.WfManager.run_wf_realtime">
-<code class="descname">run_wf_realtime</code><span class="sig-paren">(</span><em>rt_itm</em>, <em>stk</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paws/core/workflow/wf_manager.html#WfManager.run_wf_realtime"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#paws.core.workflow.wf_manager.WfManager.run_wf_realtime" title="Permalink to this definition">¶</a></dt>
-<dd><p>Executes the workflow under the control of one Realtime controller Operation,
-where the realtime controller Operation is found at rt_itm.data.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="paws.core.workflow.wf_manager.WfManager.run_wf_serial">
-<code class="descname">run_wf_serial</code><span class="sig-paren">(</span><em>stk</em>, <em>thd_idx=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paws/core/workflow/wf_manager.html#WfManager.run_wf_serial"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#paws.core.workflow.wf_manager.WfManager.run_wf_serial" title="Permalink to this definition">¶</a></dt>
-<dd><p>Serially execute the operations contained in the stack stk.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="paws.core.workflow.wf_manager.WfManager.set_op_input_at_uri">
-<code class="descname">set_op_input_at_uri</code><span class="sig-paren">(</span><em>uri</em>, <em>val</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paws/core/workflow/wf_manager.html#WfManager.set_op_input_at_uri"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#paws.core.workflow.wf_manager.WfManager.set_op_input_at_uri" title="Permalink to this definition">¶</a></dt>
-<dd><p>Set an op input, indicated by uri, to provided value.
-uri must be of the form op_name.inputs.input_name.
-Currently shallower uris (e.g. op_name.inputs) 
-and deeper uris (e.g. op_name.inputs.input_list.0)
-are not supported.</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="paws.core.workflow.wf_manager.WfManager.staticMetaObject">
-<code class="descname">staticMetaObject</code><em class="property"> = &lt;PySide.QtCore.QMetaObject object&gt;</em><a class="headerlink" href="#paws.core.workflow.wf_manager.WfManager.staticMetaObject" title="Permalink to this definition">¶</a></dt>
+<dt id="paws.core.workflow.WfManager.WfManager.update_embedded_dict">
+<code class="descname">update_embedded_dict</code><span class="sig-paren">(</span><em>d</em>, <em>d_new</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paws/core/workflow/WfManager.html#WfManager.update_embedded_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#paws.core.workflow.WfManager.WfManager.update_embedded_dict" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
-<dt id="paws.core.workflow.wf_manager.WfManager.stop_wf">
-<code class="descname">stop_wf</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paws/core/workflow/wf_manager.html#WfManager.stop_wf"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#paws.core.workflow.wf_manager.WfManager.stop_wf" title="Permalink to this definition">¶</a></dt>
+<dt id="paws.core.workflow.WfManager.WfManager.uri_to_embedded_dict">
+<code class="descname">uri_to_embedded_dict</code><span class="sig-paren">(</span><em>uri</em>, <em>data=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paws/core/workflow/WfManager.html#WfManager.uri_to_embedded_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#paws.core.workflow.WfManager.WfManager.uri_to_embedded_dict" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
-<dt id="paws.core.workflow.wf_manager.WfManager.updateOperation">
-<code class="descname">updateOperation</code><span class="sig-paren">(</span><em>tag</em>, <em>op</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paws/core/workflow/wf_manager.html#WfManager.updateOperation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#paws.core.workflow.wf_manager.WfManager.updateOperation" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="paws.core.workflow.wf_manager.WfManager.update_io_deps">
-<code class="descname">update_io_deps</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paws/core/workflow/wf_manager.html#WfManager.update_io_deps"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#paws.core.workflow.wf_manager.WfManager.update_io_deps" title="Permalink to this definition">¶</a></dt>
-<dd><p>Remove any broken dependencies in the workflow.
-Should only be called after all current data have been stored in the tree.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="paws.core.workflow.wf_manager.WfManager.update_op">
-<code class="descname">update_op</code><span class="sig-paren">(</span><em>uri</em>, <em>new_op</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paws/core/workflow/wf_manager.html#WfManager.update_op"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#paws.core.workflow.wf_manager.WfManager.update_op" title="Permalink to this definition">¶</a></dt>
-<dd><p>Update Operation in treeitem indicated by uri.
-It is expected that new_op is a reference to the Operation stored at uri.</p>
-</dd></dl>
-
-<dl class="staticmethod">
-<dt id="paws.core.workflow.wf_manager.WfManager.update_uri_dict">
-<em class="property">static </em><code class="descname">update_uri_dict</code><span class="sig-paren">(</span><em>d</em>, <em>d_new</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paws/core/workflow/wf_manager.html#WfManager.update_uri_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#paws.core.workflow.wf_manager.WfManager.update_uri_dict" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="paws.core.workflow.wf_manager.WfManager.uri_to_dict">
-<code class="descname">uri_to_dict</code><span class="sig-paren">(</span><em>uri</em>, <em>data</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paws/core/workflow/wf_manager.html#WfManager.uri_to_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#paws.core.workflow.wf_manager.WfManager.uri_to_dict" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="paws.core.workflow.wf_manager.WfManager.wait_for_thread">
-<code class="descname">wait_for_thread</code><span class="sig-paren">(</span><em>th_idx</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paws/core/workflow/wf_manager.html#WfManager.wait_for_thread"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#paws.core.workflow.wf_manager.WfManager.wait_for_thread" title="Permalink to this definition">¶</a></dt>
-<dd><p>Wait for the thread at self._wf_threads[th_idx] to be finished</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="paws.core.workflow.wf_manager.WfManager.wait_for_threads">
-<code class="descname">wait_for_threads</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paws/core/workflow/wf_manager.html#WfManager.wait_for_threads"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#paws.core.workflow.wf_manager.WfManager.wait_for_threads" title="Permalink to this definition">¶</a></dt>
-<dd><p>Wait for all workflow execution threads to finish</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="paws.core.workflow.wf_manager.WfManager.wfdone">
-<code class="descname">wfdone</code><em class="property"> = &lt;PySide.QtCore.Signal object&gt;</em><a class="headerlink" href="#paws.core.workflow.wf_manager.WfManager.wfdone" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="paws.core.workflow.wf_manager.WfManager.write_log">
-<code class="descname">write_log</code><span class="sig-paren">(</span><em>msg</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paws/core/workflow/wf_manager.html#WfManager.write_log"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#paws.core.workflow.wf_manager.WfManager.write_log" title="Permalink to this definition">¶</a></dt>
+<dt id="paws.core.workflow.WfManager.WfManager.write_log">
+<code class="descname">write_log</code><span class="sig-paren">(</span><em>msg</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paws/core/workflow/WfManager.html#WfManager.write_log"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#paws.core.workflow.WfManager.WfManager.write_log" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 </div>
-<div class="section" id="module-paws.core.workflow.wf_worker">
-<span id="paws-core-workflow-wf-worker-module"></span><h2>paws.core.workflow.wf_worker module<a class="headerlink" href="#module-paws.core.workflow.wf_worker" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-paws.core.workflow.Workflow">
+<span id="paws-core-workflow-workflow-module"></span><h2>paws.core.workflow.Workflow module<a class="headerlink" href="#module-paws.core.workflow.Workflow" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
-<dt id="paws.core.workflow.wf_worker.WfWorker">
-<em class="property">class </em><code class="descclassname">paws.core.workflow.wf_worker.</code><code class="descname">WfWorker</code><span class="sig-paren">(</span><em>to_run=None</em>, <em>parent=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paws/core/workflow/wf_worker.html#WfWorker"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#paws.core.workflow.wf_worker.WfWorker" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">PySide.QtCore.QObject</span></code></p>
-<p>Container for storing and executing parts of a workflow,
-to be pushed onto QtCore.QThread(s) as needed.</p>
-<dl class="attribute">
-<dt id="paws.core.workflow.wf_worker.WfWorker.finished">
-<code class="descname">finished</code><em class="property"> = &lt;PySide.QtCore.Signal object&gt;</em><a class="headerlink" href="#paws.core.workflow.wf_worker.WfWorker.finished" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dt id="paws.core.workflow.Workflow.Workflow">
+<em class="property">class </em><code class="descclassname">paws.core.workflow.Workflow.</code><code class="descname">Workflow</code><a class="reference internal" href="../_modules/paws/core/workflow/Workflow.html#Workflow"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#paws.core.workflow.Workflow.Workflow" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="paws.core.models.html#paws.core.models.TreeModel.TreeModel" title="paws.core.models.TreeModel.TreeModel"><code class="xref py py-class docutils literal"><span class="pre">paws.core.models.TreeModel.TreeModel</span></code></a></p>
+<p>Tree structure for a Workflow built from paws Operations.</p>
+<dl class="method">
+<dt id="paws.core.workflow.Workflow.Workflow.build_tree">
+<code class="descname">build_tree</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paws/core/workflow/Workflow.html#Workflow.build_tree"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#paws.core.workflow.Workflow.Workflow.build_tree" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reimplemented TreeModel.build_tree() 
+so that TreeItems are built from Operations.</p>
+</dd></dl>
 
-<dl class="attribute">
-<dt id="paws.core.workflow.wf_worker.WfWorker.opDone">
-<code class="descname">opDone</code><em class="property"> = &lt;PySide.QtCore.Signal object&gt;</em><a class="headerlink" href="#paws.core.workflow.wf_worker.WfWorker.opDone" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="paws.core.workflow.wf_worker.WfWorker.staticMetaObject">
-<code class="descname">staticMetaObject</code><em class="property"> = &lt;PySide.QtCore.QMetaObject object&gt;</em><a class="headerlink" href="#paws.core.workflow.wf_worker.WfWorker.staticMetaObject" title="Permalink to this definition">¶</a></dt>
+<dl class="method">
+<dt id="paws.core.workflow.Workflow.Workflow.keys">
+<code class="descname">keys</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paws/core/workflow/Workflow.html#Workflow.keys"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#paws.core.workflow.Workflow.Workflow.keys" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
-<dt id="paws.core.workflow.wf_worker.WfWorker.work">
-<code class="descname">work</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paws/core/workflow/wf_worker.html#WfWorker.work"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#paws.core.workflow.wf_worker.WfWorker.work" title="Permalink to this definition">¶</a></dt>
+<dt id="paws.core.workflow.Workflow.Workflow.list_op_tags">
+<code class="descname">list_op_tags</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paws/core/workflow/Workflow.html#Workflow.list_op_tags"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#paws.core.workflow.Workflow.Workflow.list_op_tags" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
+
+<dl class="method">
+<dt id="paws.core.workflow.Workflow.Workflow.n_ops">
+<code class="descname">n_ops</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paws/core/workflow/Workflow.html#Workflow.n_ops"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#paws.core.workflow.Workflow.Workflow.n_ops" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="paws.core.workflow.Workflow.Workflow.op_dict">
+<code class="descname">op_dict</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paws/core/workflow/Workflow.html#Workflow.op_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#paws.core.workflow.Workflow.Workflow.op_dict" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="paws.core.workflow.Workflow.Workflow.set_op_input_at_uri">
+<code class="descname">set_op_input_at_uri</code><span class="sig-paren">(</span><em>uri</em>, <em>val</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paws/core/workflow/Workflow.html#Workflow.set_op_input_at_uri"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#paws.core.workflow.Workflow.Workflow.set_op_input_at_uri" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set an op input at uri to provided value val.
+The uri must be a valid uri in the TreeModel,
+of the form opname.inputs.inpname.</p>
+</dd></dl>
 
 </dd></dl>
 
@@ -333,30 +187,45 @@ to be pushed onto QtCore.QThread(s) as needed.</p>
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
-  <h3><a href="../index.html">Table Of Contents</a></h3>
-  <ul>
-<li><a class="reference internal" href="#">paws.core.workflow package</a><ul>
-<li><a class="reference internal" href="#submodules">Submodules</a></li>
-<li><a class="reference internal" href="#module-paws.core.workflow.wf_manager">paws.core.workflow.wf_manager module</a></li>
-<li><a class="reference internal" href="#module-paws.core.workflow.wf_worker">paws.core.workflow.wf_worker module</a></li>
-<li><a class="reference internal" href="#module-paws.core.workflow">Module contents</a></li>
+<h1 class="logo"><a href="../index.html">paws</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../intro.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Quick Start</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../moduledoc.html">API Documentation</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="modules.html">paws</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="paws.html">paws package</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
 
-  <h4>Previous topic</h4>
-  <p class="topless"><a href="paws.core.plugins.html"
-                        title="previous chapter">paws.core.plugins package</a></p>
-  <h4>Next topic</h4>
-  <p class="topless"><a href="paws.ui.html"
-                        title="next chapter">paws.ui package</a></p>
-  <div role="note" aria-label="source link">
-    <h3>This Page</h3>
-    <ul class="this-page-menu">
-      <li><a href="../_sources/moduledoc_files/paws.core.workflow.rst.txt"
-            rel="nofollow">Show Source</a></li>
-    </ul>
-   </div>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="../moduledoc.html">API Documentation</a><ul>
+  <li><a href="modules.html">paws</a><ul>
+  <li><a href="paws.html">paws package</a><ul>
+  <li><a href="paws.core.html">paws.core package</a><ul>
+      <li>Previous: <a href="paws.core.tools.html" title="previous chapter">paws.core.tools package</a></li>
+      <li>Next: <a href="paws.interfaces.html" title="next chapter">paws.interfaces package</a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
     <form class="search" action="../search.html" method="get">
@@ -371,30 +240,20 @@ to be pushed onto QtCore.QThread(s) as needed.</p>
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="related" role="navigation" aria-label="related navigation">
-      <h3>Navigation</h3>
-      <ul>
-        <li class="right" style="margin-right: 10px">
-          <a href="../genindex.html" title="General Index"
-             >index</a></li>
-        <li class="right" >
-          <a href="../py-modindex.html" title="Python Module Index"
-             >modules</a> |</li>
-        <li class="right" >
-          <a href="paws.ui.html" title="paws.ui package"
-             >next</a> |</li>
-        <li class="right" >
-          <a href="paws.core.plugins.html" title="paws.core.plugins package"
-             >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">paws 0.4.0 documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="../apidoc.html" >API Documentation</a> &#187;</li>
-          <li class="nav-item nav-item-2"><a href="paws.html" >paws package</a> &#187;</li>
-          <li class="nav-item nav-item-3"><a href="paws.core.html" >paws.core package</a> &#187;</li> 
-      </ul>
+    <div class="footer">
+      &copy;2017, Lenson A. Pellouchoud.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="../_sources/moduledoc_files/paws.core.workflow.rst.txt"
+          rel="nofollow">Page source</a>
     </div>
-    <div class="footer" role="contentinfo">
-        &#169; Copyright 2017, Lenson A. Pellouchoud.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.2.
-    </div>
+
+    
+
+    
   </body>
 </html>

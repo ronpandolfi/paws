@@ -1,20 +1,17 @@
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
-    <title>paws.ui.uitools &#8212; paws 0.4.0 documentation</title>
-    
-    <link rel="stylesheet" href="../../../_static/classic.css" type="text/css" />
+    <title>paws.ui.uitools &#8212; paws 0.7.1 documentation</title>
+    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
-    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../../',
-        VERSION:     '0.4.0',
+        VERSION:     '0.7.1',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -24,25 +21,18 @@
     <script type="text/javascript" src="../../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../../_static/doctools.js"></script>
-    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
-    <link rel="search" title="Search" href="../../../search.html" /> 
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
   </head>
-  <body role="document">
-    <div class="related" role="navigation" aria-label="related navigation">
-      <h3>Navigation</h3>
-      <ul>
-        <li class="right" style="margin-right: 10px">
-          <a href="../../../genindex.html" title="General Index"
-             accesskey="I">index</a></li>
-        <li class="right" >
-          <a href="../../../py-modindex.html" title="Python Module Index"
-             >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">paws 0.4.0 documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
-          <li class="nav-item nav-item-2"><a href="../ui.html" accesskey="U">paws.ui</a> &#187;</li> 
-      </ul>
-    </div>  
+  <body>
+  
 
     <div class="document">
       <div class="documentwrapper">
@@ -62,9 +52,9 @@
 <span class="kn">from</span> <span class="nn">PySide</span> <span class="k">import</span> <span class="n">QtGui</span><span class="p">,</span> <span class="n">QtCore</span><span class="p">,</span> <span class="n">QtUiTools</span>
 <span class="kn">import</span> <span class="nn">yaml</span>
 
-<span class="kn">from</span> <span class="nn">..core.operations</span> <span class="k">import</span> <span class="n">optools</span>
-<span class="kn">from</span> <span class="nn">..core.listmodel</span> <span class="k">import</span> <span class="n">ListModel</span>
+<span class="kn">from</span> <span class="nn">..core.operations</span> <span class="k">import</span> <span class="n">Operation</span> <span class="k">as</span> <span class="n">op</span>
 <span class="kn">from</span> <span class="nn">..core</span> <span class="k">import</span> <span class="n">pawstools</span>
+<span class="kn">from</span> <span class="nn">..core.models.ListModel</span> <span class="k">import</span> <span class="n">ListModel</span>
 
 <span class="c1">## Test whether we have Qt &gt;= 4.7 </span>
 <span class="n">have_qt47</span> <span class="o">=</span> <span class="kc">True</span>
@@ -79,6 +69,19 @@
     <span class="n">have_windows</span> <span class="o">=</span> <span class="kc">True</span>
 <span class="k">else</span><span class="p">:</span>
     <span class="n">have_windows</span> <span class="o">=</span> <span class="kc">False</span>
+
+<div class="viewcode-block" id="QSourceEdit"><a class="viewcode-back" href="../../../moduledoc_files/paws.ui.html#paws.ui.uitools.QSourceEdit">[docs]</a><span class="k">class</span> <span class="nc">QSourceEdit</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QTextEdit</span><span class="p">):</span>
+    
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">QSourceEdit</span><span class="p">,</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+
+<div class="viewcode-block" id="QSourceEdit.keyPressEvent"><a class="viewcode-back" href="../../../moduledoc_files/paws.ui.html#paws.ui.uitools.QSourceEdit.keyPressEvent">[docs]</a>    <span class="k">def</span> <span class="nf">keyPressEvent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">evnt</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">evnt</span><span class="o">.</span><span class="n">key</span><span class="p">()</span> <span class="o">==</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">Key_Tab</span><span class="p">:</span>
+            <span class="c1"># insert 4 spaces</span>
+            <span class="c1"># TODO: Make this a user-configurable thing?</span>
+            <span class="nb">super</span><span class="p">(</span><span class="n">QSourceEdit</span><span class="p">,</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">insertPlainText</span><span class="p">(</span><span class="s1">&#39;    &#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">super</span><span class="p">(</span><span class="n">QSourceEdit</span><span class="p">,</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">keyPressEvent</span><span class="p">(</span><span class="n">evnt</span><span class="p">)</span></div></div>
 
 <div class="viewcode-block" id="text_widget"><a class="viewcode-back" href="../../../moduledoc_files/paws.ui.html#paws.ui.uitools.text_widget">[docs]</a><span class="k">def</span> <span class="nf">text_widget</span><span class="p">(</span><span class="n">text</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -95,24 +98,24 @@
 <div class="viewcode-block" id="type_selection_widget"><a class="viewcode-back" href="../../../moduledoc_files/paws.ui.html#paws.ui.uitools.type_selection_widget">[docs]</a><span class="k">def</span> <span class="nf">type_selection_widget</span><span class="p">(</span><span class="n">src</span><span class="p">,</span><span class="n">widg</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">widg</span><span class="p">:</span>
         <span class="n">widg</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QComboBox</span><span class="p">()</span>
-        <span class="n">lm</span> <span class="o">=</span> <span class="n">ListModel</span><span class="p">(</span><span class="n">optools</span><span class="o">.</span><span class="n">input_types</span><span class="p">,</span><span class="n">widg</span><span class="p">)</span>
+        <span class="n">lm</span> <span class="o">=</span> <span class="n">ListModel</span><span class="p">(</span><span class="n">op</span><span class="o">.</span><span class="n">input_types</span><span class="p">,</span><span class="n">widg</span><span class="p">)</span>
         <span class="n">widg</span><span class="o">.</span><span class="n">setModel</span><span class="p">(</span><span class="n">lm</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">lm</span> <span class="o">=</span> <span class="n">ListModel</span><span class="p">(</span><span class="n">optools</span><span class="o">.</span><span class="n">input_types</span><span class="p">,</span><span class="n">widg</span><span class="p">)</span>
+        <span class="n">lm</span> <span class="o">=</span> <span class="n">ListModel</span><span class="p">(</span><span class="n">op</span><span class="o">.</span><span class="n">input_types</span><span class="p">,</span><span class="n">widg</span><span class="p">)</span>
         <span class="n">widg</span><span class="o">.</span><span class="n">setModel</span><span class="p">(</span><span class="n">lm</span><span class="p">)</span>
-    <span class="k">for</span> <span class="n">tp</span> <span class="ow">in</span> <span class="n">optools</span><span class="o">.</span><span class="n">valid_types</span><span class="p">:</span>
+    <span class="k">for</span> <span class="n">tp</span> <span class="ow">in</span> <span class="n">op</span><span class="o">.</span><span class="n">valid_types</span><span class="p">:</span>
         <span class="n">lm</span><span class="o">.</span><span class="n">set_enabled</span><span class="p">(</span><span class="n">tp</span><span class="p">)</span>
-    <span class="k">for</span> <span class="n">tp</span> <span class="ow">in</span> <span class="n">optools</span><span class="o">.</span><span class="n">invalid_types</span><span class="p">[</span><span class="n">src</span><span class="p">]:</span>
+    <span class="k">for</span> <span class="n">tp</span> <span class="ow">in</span> <span class="n">op</span><span class="o">.</span><span class="n">invalid_types</span><span class="p">[</span><span class="n">src</span><span class="p">]:</span>
         <span class="n">lm</span><span class="o">.</span><span class="n">set_disabled</span><span class="p">(</span><span class="n">tp</span><span class="p">)</span>
         <span class="c1">#widg.model().set_disabled(tp)</span>
     <span class="k">return</span> <span class="n">widg</span> </div>
 
 <div class="viewcode-block" id="src_selection_widget"><a class="viewcode-back" href="../../../moduledoc_files/paws.ui.html#paws.ui.uitools.src_selection_widget">[docs]</a><span class="k">def</span> <span class="nf">src_selection_widget</span><span class="p">():</span>
     <span class="n">widg</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QComboBox</span><span class="p">()</span>
-    <span class="n">lm</span> <span class="o">=</span> <span class="n">ListModel</span><span class="p">(</span><span class="n">optools</span><span class="o">.</span><span class="n">input_sources</span><span class="p">,</span><span class="n">widg</span><span class="p">)</span>
-    <span class="c1">#widg.addItems(optools.input_sources)</span>
+    <span class="n">lm</span> <span class="o">=</span> <span class="n">ListModel</span><span class="p">(</span><span class="n">op</span><span class="o">.</span><span class="n">input_sources</span><span class="p">,</span><span class="n">widg</span><span class="p">)</span>
+    <span class="c1">#widg.addItems(op.input_sources)</span>
     <span class="n">widg</span><span class="o">.</span><span class="n">setModel</span><span class="p">(</span><span class="n">lm</span><span class="p">)</span>
-    <span class="n">maxlen</span> <span class="o">=</span> <span class="nb">max</span><span class="p">([</span><span class="nb">len</span><span class="p">(</span><span class="n">srctext</span><span class="p">)</span> <span class="k">for</span> <span class="n">srctext</span> <span class="ow">in</span> <span class="n">optools</span><span class="o">.</span><span class="n">input_sources</span><span class="p">])</span>
+    <span class="n">maxlen</span> <span class="o">=</span> <span class="nb">max</span><span class="p">([</span><span class="nb">len</span><span class="p">(</span><span class="n">srctext</span><span class="p">)</span> <span class="k">for</span> <span class="n">srctext</span> <span class="ow">in</span> <span class="n">op</span><span class="o">.</span><span class="n">input_sources</span><span class="p">])</span>
     <span class="n">widg</span><span class="o">.</span><span class="n">setMinimumWidth</span><span class="p">(</span><span class="mi">20</span><span class="o">*</span><span class="n">maxlen</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">widg</span> </div>
         
@@ -145,25 +148,56 @@
     <span class="n">name_widget</span><span class="o">.</span><span class="n">setSizePolicy</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QSizePolicy</span><span class="o">.</span><span class="n">Minimum</span><span class="p">,</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QSizePolicy</span><span class="o">.</span><span class="n">Fixed</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">name_widget</span></div>
 
-<div class="viewcode-block" id="bigtext_widget"><a class="viewcode-back" href="../../../moduledoc_files/paws.ui.html#paws.ui.uitools.bigtext_widget">[docs]</a><span class="k">def</span> <span class="nf">bigtext_widget</span><span class="p">(</span><span class="n">text</span><span class="p">):</span>
+<div class="viewcode-block" id="bigtext_widget"><a class="viewcode-back" href="../../../moduledoc_files/paws.ui.html#paws.ui.uitools.bigtext_widget">[docs]</a><span class="k">def</span> <span class="nf">bigtext_widget</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="c1">#trunc_limit = 200</span>
     <span class="c1">#if len(text) &gt; trunc_limit:</span>
     <span class="c1">#    text = text[:trunc_limit]+&#39;...&#39;</span>
+    <span class="k">if</span> <span class="n">text</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">text</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
     <span class="n">widg</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QLineEdit</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
     <span class="n">widg</span><span class="o">.</span><span class="n">setReadOnly</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">widg</span><span class="o">.</span><span class="n">setAlignment</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">AlignLeft</span><span class="p">)</span>
     <span class="n">ht</span> <span class="o">=</span> <span class="n">widg</span><span class="o">.</span><span class="n">sizeHint</span><span class="p">()</span><span class="o">.</span><span class="n">height</span><span class="p">()</span>
     <span class="n">widg</span><span class="o">.</span><span class="n">sizeHint</span> <span class="o">=</span> <span class="k">lambda</span><span class="p">:</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">QSize</span><span class="p">(</span><span class="mi">20</span><span class="o">*</span><span class="nb">len</span><span class="p">(</span><span class="n">text</span><span class="p">),</span><span class="n">ht</span><span class="p">)</span>
-    <span class="n">widg</span><span class="o">.</span><span class="n">setSizePolicy</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QSizePolicy</span><span class="o">.</span><span class="n">Maximum</span><span class="p">,</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QSizePolicy</span><span class="o">.</span><span class="n">Fixed</span><span class="p">)</span>
+    <span class="c1">#widg.setSizePolicy(QtGui.QSizePolicy.Maximum,QtGui.QSizePolicy.Fixed)</span>
+    <span class="n">widg</span><span class="o">.</span><span class="n">setSizePolicy</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QSizePolicy</span><span class="o">.</span><span class="n">Expanding</span><span class="p">,</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QSizePolicy</span><span class="o">.</span><span class="n">Fixed</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">widg</span></div>
 
-<div class="viewcode-block" id="toggle_load_button"><a class="viewcode-back" href="../../../moduledoc_files/paws.ui.html#paws.ui.uitools.toggle_load_button">[docs]</a><span class="k">def</span> <span class="nf">toggle_load_button</span><span class="p">(</span><span class="n">ui</span><span class="p">,</span><span class="n">txt</span><span class="p">):</span>
-    <span class="n">idx</span> <span class="o">=</span> <span class="n">ui</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">model</span><span class="p">()</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">txt</span><span class="p">)</span>
-    <span class="k">if</span> <span class="p">(</span><span class="n">idx</span><span class="o">.</span><span class="n">isValid</span><span class="p">()</span> <span class="ow">and</span> <span class="n">ui</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">model</span><span class="p">()</span><span class="o">.</span><span class="n">isDir</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span> 
-    <span class="ow">or</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">txt</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;.wfl&#39;</span><span class="p">):</span>
-        <span class="n">ui</span><span class="o">.</span><span class="n">load_button</span><span class="o">.</span><span class="n">setEnabled</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">ui</span><span class="o">.</span><span class="n">load_button</span><span class="o">.</span><span class="n">setEnabled</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span></div>
+<div class="viewcode-block" id="start_save_ui"><a class="viewcode-back" href="../../../moduledoc_files/paws.ui.html#paws.ui.uitools.start_save_ui">[docs]</a><span class="k">def</span> <span class="nf">start_save_ui</span><span class="p">(</span><span class="n">parent</span><span class="p">,</span><span class="n">fspath</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="n">ui_file</span> <span class="o">=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">QFile</span><span class="p">(</span><span class="n">pawstools</span><span class="o">.</span><span class="n">sourcedir</span><span class="o">+</span><span class="s2">&quot;/ui/qtui/save_browser.ui&quot;</span><span class="p">)</span>
+    <span class="n">ui_file</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">QFile</span><span class="o">.</span><span class="n">ReadOnly</span><span class="p">)</span>
+    <span class="n">save_ui</span> <span class="o">=</span> <span class="n">QtUiTools</span><span class="o">.</span><span class="n">QUiLoader</span><span class="p">()</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">ui_file</span><span class="p">)</span>
+    <span class="n">ui_file</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="c1"># set ui to be deleted and to emit destroyed() signal when its window is closed</span>
+    <span class="n">save_ui</span><span class="o">.</span><span class="n">setAttribute</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">WA_DeleteOnClose</span><span class="p">)</span>
+    <span class="n">trmod</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QFileSystemModel</span><span class="p">()</span>
+    <span class="n">trmod</span><span class="o">.</span><span class="n">setNameFilters</span><span class="p">([</span><span class="s1">&#39;*.wfl&#39;</span><span class="p">])</span>
+    <span class="c1">#save_ui.tree_box.setTitle(&#39;Select or enter a .wfl file to save current workflow&#39;.format(wfname))</span>
+    <span class="n">save_ui</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">setModel</span><span class="p">(</span><span class="n">trmod</span><span class="p">)</span>
+    <span class="n">save_ui</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">hideColumn</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">save_ui</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">hideColumn</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+    <span class="n">save_ui</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">setColumnWidth</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">400</span><span class="p">)</span>
+    <span class="n">save_ui</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">expandAll</span><span class="p">()</span>
+    <span class="n">save_ui</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">clicked</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span> <span class="n">partial</span><span class="p">(</span><span class="n">save_path</span><span class="p">,</span><span class="n">save_ui</span><span class="p">)</span> <span class="p">)</span>
+    <span class="n">save_ui</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">expanded</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span> <span class="n">partial</span><span class="p">(</span><span class="n">save_path</span><span class="p">,</span><span class="n">save_ui</span><span class="p">)</span> <span class="p">)</span>
+    <span class="n">trmod</span><span class="o">.</span><span class="n">setRootPath</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">QDir</span><span class="o">.</span><span class="n">currentPath</span><span class="p">())</span>
+    <span class="n">idx</span> <span class="o">=</span> <span class="n">trmod</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">QDir</span><span class="o">.</span><span class="n">currentPath</span><span class="p">())</span>
+    <span class="k">if</span> <span class="n">fspath</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">trmod</span><span class="o">.</span><span class="n">setRootPath</span><span class="p">(</span><span class="n">fspath</span><span class="p">)</span>
+            <span class="n">idx</span> <span class="o">=</span> <span class="n">trmod</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">fspath</span><span class="p">)</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="k">pass</span>
+    <span class="k">while</span> <span class="n">idx</span><span class="o">.</span><span class="n">isValid</span><span class="p">():</span>
+        <span class="n">save_ui</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">setExpanded</span><span class="p">(</span><span class="n">idx</span><span class="p">,</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">idx</span> <span class="o">=</span> <span class="n">idx</span><span class="o">.</span><span class="n">parent</span><span class="p">()</span>
+    <span class="n">save_ui</span><span class="o">.</span><span class="n">setParent</span><span class="p">(</span><span class="n">parent</span><span class="p">,</span><span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">Window</span><span class="p">)</span>
+    <span class="n">save_ui</span><span class="o">.</span><span class="n">setWindowModality</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">ApplicationModal</span><span class="p">)</span>
+    <span class="n">save_ui</span><span class="o">.</span><span class="n">save_button</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="s1">&#39;&amp;Save&#39;</span><span class="p">)</span>
+    <span class="c1">#save_ui.filename.returnPressed.connect(partial(stop_save_ui,save_ui))</span>
+    <span class="n">save_ui</span><span class="o">.</span><span class="n">filename</span><span class="o">.</span><span class="n">textChanged</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span> <span class="n">partial</span><span class="p">(</span><span class="n">toggle_save_button</span><span class="p">,</span><span class="n">save_ui</span><span class="p">)</span> <span class="p">)</span>
+    <span class="n">save_ui</span><span class="o">.</span><span class="n">filename</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="n">trmod</span><span class="o">.</span><span class="n">rootPath</span><span class="p">())</span>
+    <span class="k">return</span> <span class="n">save_ui</span></div>
 
 <div class="viewcode-block" id="toggle_save_button"><a class="viewcode-back" href="../../../moduledoc_files/paws.ui.html#paws.ui.uitools.toggle_save_button">[docs]</a><span class="k">def</span> <span class="nf">toggle_save_button</span><span class="p">(</span><span class="n">ui</span><span class="p">,</span><span class="n">txt</span><span class="p">):</span>
     <span class="n">idx</span> <span class="o">=</span> <span class="n">ui</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">model</span><span class="p">()</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">ui</span><span class="o">.</span><span class="n">filename</span><span class="o">.</span><span class="n">text</span><span class="p">())</span>
@@ -177,6 +211,39 @@
         <span class="n">p</span> <span class="o">=</span> <span class="n">ui</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">model</span><span class="p">()</span><span class="o">.</span><span class="n">filePath</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span>
         <span class="n">ui</span><span class="o">.</span><span class="n">filename</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="n">p</span><span class="p">)</span></div>
 
+<div class="viewcode-block" id="start_load_ui"><a class="viewcode-back" href="../../../moduledoc_files/paws.ui.html#paws.ui.uitools.start_load_ui">[docs]</a><span class="k">def</span> <span class="nf">start_load_ui</span><span class="p">(</span><span class="n">parent</span><span class="p">,</span><span class="n">fspath</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="n">ui_file</span> <span class="o">=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">QFile</span><span class="p">(</span><span class="n">pawstools</span><span class="o">.</span><span class="n">sourcedir</span><span class="o">+</span><span class="s2">&quot;/ui/qtui/load_browser.ui&quot;</span><span class="p">)</span>
+    <span class="n">ui_file</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">QFile</span><span class="o">.</span><span class="n">ReadOnly</span><span class="p">)</span>
+    <span class="n">load_ui</span> <span class="o">=</span> <span class="n">QtUiTools</span><span class="o">.</span><span class="n">QUiLoader</span><span class="p">()</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">ui_file</span><span class="p">)</span>
+    <span class="n">ui_file</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="c1"># set ui to be deleted and to emit destroyed() signal when its window is closed</span>
+    <span class="n">load_ui</span><span class="o">.</span><span class="n">setAttribute</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">WA_DeleteOnClose</span><span class="p">)</span>
+    <span class="n">trmod</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QFileSystemModel</span><span class="p">()</span>
+    <span class="n">trmod</span><span class="o">.</span><span class="n">setNameFilters</span><span class="p">([</span><span class="s1">&#39;*.wfl&#39;</span><span class="p">])</span>
+    <span class="c1">#load_ui.tree_box.setTitle(&#39;Select a .wfl file from which to load a workflow&#39;)</span>
+    <span class="n">load_ui</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">setModel</span><span class="p">(</span><span class="n">trmod</span><span class="p">)</span>
+    <span class="n">load_ui</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">hideColumn</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">load_ui</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">hideColumn</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+    <span class="n">load_ui</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">setColumnWidth</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">400</span><span class="p">)</span>
+    <span class="n">load_ui</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">expandAll</span><span class="p">()</span>
+    <span class="n">load_ui</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">clicked</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span> <span class="n">partial</span><span class="p">(</span><span class="n">load_path</span><span class="p">,</span><span class="n">load_ui</span><span class="p">)</span> <span class="p">)</span>
+    <span class="n">trmod</span><span class="o">.</span><span class="n">setRootPath</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">QDir</span><span class="o">.</span><span class="n">currentPath</span><span class="p">())</span>
+    <span class="n">idx</span> <span class="o">=</span> <span class="n">trmod</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">QDir</span><span class="o">.</span><span class="n">currentPath</span><span class="p">())</span>
+    <span class="k">if</span> <span class="n">fspath</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">trmod</span><span class="o">.</span><span class="n">setRootPath</span><span class="p">(</span><span class="n">fspath</span><span class="p">)</span>
+            <span class="n">idx</span> <span class="o">=</span> <span class="n">trmod</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">fspath</span><span class="p">)</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="k">pass</span>
+    <span class="k">while</span> <span class="n">idx</span><span class="o">.</span><span class="n">isValid</span><span class="p">():</span>
+        <span class="n">load_ui</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">setExpanded</span><span class="p">(</span><span class="n">idx</span><span class="p">,</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">idx</span> <span class="o">=</span> <span class="n">idx</span><span class="o">.</span><span class="n">parent</span><span class="p">()</span>
+    <span class="n">load_ui</span><span class="o">.</span><span class="n">setParent</span><span class="p">(</span><span class="n">parent</span><span class="p">,</span><span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">Window</span><span class="p">)</span>
+    <span class="c1">#load_ui.setAttribute(QtCore.Qt.WA_OpaquePaintEvent)</span>
+    <span class="n">load_ui</span><span class="o">.</span><span class="n">setWindowModality</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">ApplicationModal</span><span class="p">)</span>
+    <span class="n">load_ui</span><span class="o">.</span><span class="n">load_button</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="s1">&#39;&amp;Load&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">load_ui</span></div>
+
 <div class="viewcode-block" id="load_path"><a class="viewcode-back" href="../../../moduledoc_files/paws.ui.html#paws.ui.uitools.load_path">[docs]</a><span class="k">def</span> <span class="nf">load_path</span><span class="p">(</span><span class="n">ui</span><span class="p">,</span><span class="n">idx</span><span class="o">=</span><span class="n">QtCore</span><span class="o">.</span><span class="n">QModelIndex</span><span class="p">()):</span>
     <span class="k">if</span> <span class="n">idx</span><span class="o">.</span><span class="n">isValid</span><span class="p">():</span>
         <span class="n">p</span> <span class="o">=</span> <span class="n">ui</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">model</span><span class="p">()</span><span class="o">.</span><span class="n">filePath</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span>
@@ -186,113 +253,14 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">ui</span><span class="o">.</span><span class="n">load_button</span><span class="o">.</span><span class="n">setEnabled</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span></div>
     
-<div class="viewcode-block" id="save_to_file"><a class="viewcode-back" href="../../../moduledoc_files/paws.ui.html#paws.ui.uitools.save_to_file">[docs]</a><span class="k">def</span> <span class="nf">save_to_file</span><span class="p">(</span><span class="n">d</span><span class="p">,</span><span class="n">filename</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Save the items in dict d as YAML in filename</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span>
-    <span class="c1">#yaml.dump(d, f, encoding=&#39;utf-8&#39;)</span>
-    <span class="n">yaml</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
-    <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
-
-<div class="viewcode-block" id="stop_save_ui"><a class="viewcode-back" href="../../../moduledoc_files/paws.ui.html#paws.ui.uitools.stop_save_ui">[docs]</a><span class="k">def</span> <span class="nf">stop_save_ui</span><span class="p">(</span><span class="n">ui</span><span class="p">,</span><span class="n">uiman</span><span class="p">):</span>
-    <span class="n">fname</span> <span class="o">=</span> <span class="n">ui</span><span class="o">.</span><span class="n">filename</span><span class="o">.</span><span class="n">text</span><span class="p">()</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">fname</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;.wfl&#39;</span><span class="p">:</span>
-        <span class="n">fname</span> <span class="o">=</span> <span class="n">fname</span> <span class="o">+</span> <span class="s1">&#39;.wfl&#39;</span>
-    <span class="n">uiman</span><span class="o">.</span><span class="n">msg_board_log</span><span class="p">(</span> <span class="s1">&#39;dumping current state to </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span> <span class="p">)</span>
-    <span class="n">d</span> <span class="o">=</span> <span class="p">{}</span> 
-    <span class="n">wf_dict</span> <span class="o">=</span> <span class="p">{}</span> 
-    <span class="k">for</span> <span class="n">itm</span> <span class="ow">in</span> <span class="n">uiman</span><span class="o">.</span><span class="n">wfman</span><span class="o">.</span><span class="n">root_items</span><span class="p">:</span>
-        <span class="n">wf_dict</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">itm</span><span class="o">.</span><span class="n">tag</span><span class="p">())]</span> <span class="o">=</span> <span class="n">optools</span><span class="o">.</span><span class="n">op_dict</span><span class="p">(</span><span class="n">itm</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
-    <span class="n">pgin_dict</span> <span class="o">=</span> <span class="p">{}</span>
-    <span class="k">for</span> <span class="n">itm</span> <span class="ow">in</span> <span class="n">uiman</span><span class="o">.</span><span class="n">plugman</span><span class="o">.</span><span class="n">root_items</span><span class="p">:</span>
-        <span class="n">pgin_dict</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">itm</span><span class="o">.</span><span class="n">tag</span><span class="p">())]</span> <span class="o">=</span> <span class="n">optools</span><span class="o">.</span><span class="n">plugin_dict</span><span class="p">(</span><span class="n">itm</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
-    <span class="n">d</span><span class="p">[</span><span class="s1">&#39;WORKFLOW&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">wf_dict</span>
-    <span class="n">d</span><span class="p">[</span><span class="s1">&#39;PLUGINS&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pgin_dict</span>
-    <span class="n">save_to_file</span><span class="p">(</span><span class="n">d</span><span class="p">,</span><span class="n">fname</span><span class="p">)</span>
-    <span class="n">ui</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
-
-<div class="viewcode-block" id="stop_load_ui"><a class="viewcode-back" href="../../../moduledoc_files/paws.ui.html#paws.ui.uitools.stop_load_ui">[docs]</a><span class="k">def</span> <span class="nf">stop_load_ui</span><span class="p">(</span><span class="n">ui</span><span class="p">,</span><span class="n">uiman</span><span class="p">):</span>
-    <span class="c1">#fname = ui.filename.text()</span>
-    <span class="n">fname</span> <span class="o">=</span> <span class="n">ui</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">model</span><span class="p">()</span><span class="o">.</span><span class="n">filePath</span><span class="p">(</span><span class="n">ui</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">currentIndex</span><span class="p">())</span>
-    <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span><span class="s1">&#39;r&#39;</span><span class="p">)</span>
-    <span class="n">d</span> <span class="o">=</span> <span class="n">yaml</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
-    <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-    <span class="k">if</span> <span class="s1">&#39;WORKFLOW&#39;</span> <span class="ow">in</span> <span class="n">d</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-        <span class="n">uiman</span><span class="o">.</span><span class="n">wfman</span><span class="o">.</span><span class="n">load_from_dict</span><span class="p">(</span><span class="n">uiman</span><span class="o">.</span><span class="n">opman</span><span class="p">,</span><span class="n">d</span><span class="p">[</span><span class="s1">&#39;WORKFLOW&#39;</span><span class="p">])</span>
-    <span class="k">if</span> <span class="s1">&#39;PLUGINS&#39;</span> <span class="ow">in</span> <span class="n">d</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-        <span class="n">uiman</span><span class="o">.</span><span class="n">plugman</span><span class="o">.</span><span class="n">load_from_dict</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="s1">&#39;PLUGINS&#39;</span><span class="p">])</span>
-    <span class="n">ui</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
-
-<div class="viewcode-block" id="start_save_ui"><a class="viewcode-back" href="../../../moduledoc_files/paws.ui.html#paws.ui.uitools.start_save_ui">[docs]</a><span class="k">def</span> <span class="nf">start_save_ui</span><span class="p">(</span><span class="n">uiman</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Start a modal window dialog to choose a save destination for the current workflow  </span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">ui_file</span> <span class="o">=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">QFile</span><span class="p">(</span><span class="n">pawstools</span><span class="o">.</span><span class="n">rootdir</span><span class="o">+</span><span class="s2">&quot;/ui/qtui/save_browser.ui&quot;</span><span class="p">)</span>
-    <span class="n">ui_file</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">QFile</span><span class="o">.</span><span class="n">ReadOnly</span><span class="p">)</span>
-    <span class="n">save_ui</span> <span class="o">=</span> <span class="n">QtUiTools</span><span class="o">.</span><span class="n">QUiLoader</span><span class="p">()</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">ui_file</span><span class="p">)</span>
-    <span class="n">ui_file</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-    <span class="c1">#save_ui.setAttribute(QtCore.Qt.WA_DeleteOnClose)</span>
-    <span class="n">trmod</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QFileSystemModel</span><span class="p">()</span>
-    <span class="n">trmod</span><span class="o">.</span><span class="n">setRootPath</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">QDir</span><span class="o">.</span><span class="n">currentPath</span><span class="p">())</span>
-    <span class="c1">#trmod.setRootPath(&#39;.&#39;)</span>
-    <span class="c1">#trmod.setRootPath(pawstools.rootdir)</span>
-    <span class="n">trmod</span><span class="o">.</span><span class="n">setNameFilters</span><span class="p">([</span><span class="s1">&#39;*.wfl&#39;</span><span class="p">])</span>
-    <span class="n">save_ui</span><span class="o">.</span><span class="n">tree_box</span><span class="o">.</span><span class="n">setTitle</span><span class="p">(</span><span class="s1">&#39;Select a file to save the current workflow&#39;</span><span class="p">)</span>
-    <span class="n">save_ui</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">setModel</span><span class="p">(</span><span class="n">trmod</span><span class="p">)</span>
-    <span class="n">save_ui</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">hideColumn</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
-    <span class="n">save_ui</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">hideColumn</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
-    <span class="n">save_ui</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">setColumnWidth</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">400</span><span class="p">)</span>
-    <span class="n">save_ui</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">expandAll</span><span class="p">()</span>
-    <span class="n">save_ui</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">clicked</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span> <span class="n">partial</span><span class="p">(</span><span class="n">save_path</span><span class="p">,</span><span class="n">save_ui</span><span class="p">)</span> <span class="p">)</span>
-    <span class="n">save_ui</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">expanded</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span> <span class="n">partial</span><span class="p">(</span><span class="n">save_path</span><span class="p">,</span><span class="n">save_ui</span><span class="p">)</span> <span class="p">)</span>
-    <span class="c1">#save_ui.tree.activated.connect( save_ui.tree.setCurrentIndex )</span>
-    <span class="c1">#save_ui.tree.selectionModel().selectionChanged.connect( save_ui.tree.selectionChanged )</span>
-    <span class="n">save_ui</span><span class="o">.</span><span class="n">setParent</span><span class="p">(</span><span class="n">uiman</span><span class="o">.</span><span class="n">ui</span><span class="p">,</span><span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">Window</span><span class="p">)</span>
-    <span class="c1">#save_ui.setAttribute(QtCore.Qt.WA_OpaquePaintEvent)</span>
-    <span class="n">save_ui</span><span class="o">.</span><span class="n">setWindowModality</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">ApplicationModal</span><span class="p">)</span>
-    <span class="n">save_ui</span><span class="o">.</span><span class="n">save_button</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="s1">&#39;&amp;Save&#39;</span><span class="p">)</span>
-    <span class="n">save_ui</span><span class="o">.</span><span class="n">save_button</span><span class="o">.</span><span class="n">clicked</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">partial</span><span class="p">(</span><span class="n">stop_save_ui</span><span class="p">,</span><span class="n">save_ui</span><span class="p">,</span><span class="n">uiman</span><span class="p">))</span>
-    <span class="c1">#save_ui.filename.returnPressed.connect(partial(stop_save_ui,save_ui,uiman))</span>
-    <span class="n">save_ui</span><span class="o">.</span><span class="n">filename</span><span class="o">.</span><span class="n">textChanged</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span> <span class="n">partial</span><span class="p">(</span><span class="n">toggle_save_button</span><span class="p">,</span><span class="n">save_ui</span><span class="p">)</span> <span class="p">)</span>
-    <span class="n">save_ui</span><span class="o">.</span><span class="n">filename</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="n">trmod</span><span class="o">.</span><span class="n">rootPath</span><span class="p">())</span>
-    <span class="n">save_ui</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
-    <span class="n">save_ui</span><span class="o">.</span><span class="n">activateWindow</span><span class="p">()</span></div>
-
-<div class="viewcode-block" id="start_load_ui"><a class="viewcode-back" href="../../../moduledoc_files/paws.ui.html#paws.ui.uitools.start_load_ui">[docs]</a><span class="k">def</span> <span class="nf">start_load_ui</span><span class="p">(</span><span class="n">uiman</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Start a modal window dialog to load a previously saved workflow</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">ui_file</span> <span class="o">=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">QFile</span><span class="p">(</span><span class="n">pawstools</span><span class="o">.</span><span class="n">rootdir</span><span class="o">+</span><span class="s2">&quot;/ui/qtui/load_browser.ui&quot;</span><span class="p">)</span>
-    <span class="n">ui_file</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">QFile</span><span class="o">.</span><span class="n">ReadOnly</span><span class="p">)</span>
-    <span class="n">load_ui</span> <span class="o">=</span> <span class="n">QtUiTools</span><span class="o">.</span><span class="n">QUiLoader</span><span class="p">()</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">ui_file</span><span class="p">)</span>
-    <span class="n">ui_file</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-    <span class="n">trmod</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QFileSystemModel</span><span class="p">()</span>
-    <span class="n">trmod</span><span class="o">.</span><span class="n">setRootPath</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">QDir</span><span class="o">.</span><span class="n">currentPath</span><span class="p">())</span>
-    <span class="n">trmod</span><span class="o">.</span><span class="n">setNameFilters</span><span class="p">([</span><span class="s1">&#39;*.wfl&#39;</span><span class="p">])</span>
-    <span class="n">load_ui</span><span class="o">.</span><span class="n">tree_box</span><span class="o">.</span><span class="n">setTitle</span><span class="p">(</span><span class="s1">&#39;Select a .wfl file to load a workflow&#39;</span><span class="p">)</span>
-    <span class="n">load_ui</span><span class="o">.</span><span class="n">setWindowTitle</span><span class="p">(</span><span class="s1">&#39;workflow loader&#39;</span><span class="p">)</span>
-    <span class="n">load_ui</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">setModel</span><span class="p">(</span><span class="n">trmod</span><span class="p">)</span>
-    <span class="n">load_ui</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">hideColumn</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
-    <span class="n">load_ui</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">hideColumn</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
-    <span class="n">load_ui</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">setColumnWidth</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">400</span><span class="p">)</span>
-    <span class="n">load_ui</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">expandAll</span><span class="p">()</span>
-    <span class="n">load_ui</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">clicked</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span> <span class="n">partial</span><span class="p">(</span><span class="n">load_path</span><span class="p">,</span><span class="n">load_ui</span><span class="p">)</span> <span class="p">)</span>
-    <span class="n">load_ui</span><span class="o">.</span><span class="n">setParent</span><span class="p">(</span><span class="n">uiman</span><span class="o">.</span><span class="n">ui</span><span class="p">,</span><span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">Window</span><span class="p">)</span>
-    <span class="c1">#load_ui.setAttribute(QtCore.Qt.WA_OpaquePaintEvent)</span>
-    <span class="n">load_ui</span><span class="o">.</span><span class="n">setWindowModality</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">ApplicationModal</span><span class="p">)</span>
-    <span class="n">load_ui</span><span class="o">.</span><span class="n">load_button</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="s1">&#39;&amp;Load&#39;</span><span class="p">)</span>
-    <span class="n">load_ui</span><span class="o">.</span><span class="n">load_button</span><span class="o">.</span><span class="n">clicked</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">partial</span><span class="p">(</span><span class="n">stop_load_ui</span><span class="p">,</span><span class="n">load_ui</span><span class="p">,</span><span class="n">uiman</span><span class="p">))</span>
-    <span class="n">load_ui</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
-    <span class="n">load_ui</span><span class="o">.</span><span class="n">activateWindow</span><span class="p">()</span></div>
-
-<div class="viewcode-block" id="message_ui"><a class="viewcode-back" href="../../../moduledoc_files/paws.ui.html#paws.ui.uitools.message_ui">[docs]</a><span class="k">def</span> <span class="nf">message_ui</span><span class="p">(</span><span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="n">ui_file</span> <span class="o">=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">QFile</span><span class="p">(</span><span class="n">pawstools</span><span class="o">.</span><span class="n">rootdir</span><span class="o">+</span><span class="s2">&quot;/ui/qtui/message.ui&quot;</span><span class="p">)</span>
+<div class="viewcode-block" id="message_ui"><a class="viewcode-back" href="../../../moduledoc_files/paws.ui.html#paws.ui.uitools.message_ui">[docs]</a><span class="k">def</span> <span class="nf">message_ui</span><span class="p">(</span><span class="n">parent</span><span class="p">):</span>
+    <span class="n">ui_file</span> <span class="o">=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">QFile</span><span class="p">(</span><span class="n">pawstools</span><span class="o">.</span><span class="n">sourcedir</span><span class="o">+</span><span class="s2">&quot;/ui/qtui/message.ui&quot;</span><span class="p">)</span>
     <span class="n">ui_file</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">QFile</span><span class="o">.</span><span class="n">ReadOnly</span><span class="p">)</span>
     <span class="n">msg_ui</span> <span class="o">=</span> <span class="n">QtUiTools</span><span class="o">.</span><span class="n">QUiLoader</span><span class="p">()</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">ui_file</span><span class="p">)</span>
     <span class="n">ui_file</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
     <span class="n">msg_ui</span><span class="o">.</span><span class="n">setParent</span><span class="p">(</span><span class="n">parent</span><span class="p">,</span><span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">Window</span><span class="p">)</span>
     <span class="n">msg_ui</span><span class="o">.</span><span class="n">setAttribute</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">WA_OpaquePaintEvent</span><span class="p">)</span>
+    <span class="n">msg_ui</span><span class="o">.</span><span class="n">setAttribute</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">WA_DeleteOnClose</span><span class="p">)</span>
     <span class="n">msg_ui</span><span class="o">.</span><span class="n">setWindowModality</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">WindowModal</span><span class="p">)</span>
     <span class="c1">#msg_ui.setMaximumHeight(200)</span>
     <span class="n">msg_ui</span><span class="o">.</span><span class="n">message_box</span><span class="o">.</span><span class="n">setReadOnly</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
@@ -311,6 +279,33 @@
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../index.html">paws</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../intro.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Quick Start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../moduledoc.html">API Documentation</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  <li><a href="../ui.html">paws.ui</a><ul>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
     <form class="search" action="../../../search.html" method="get">
@@ -325,23 +320,17 @@
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="related" role="navigation" aria-label="related navigation">
-      <h3>Navigation</h3>
-      <ul>
-        <li class="right" style="margin-right: 10px">
-          <a href="../../../genindex.html" title="General Index"
-             >index</a></li>
-        <li class="right" >
-          <a href="../../../py-modindex.html" title="Python Module Index"
-             >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">paws 0.4.0 documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
-          <li class="nav-item nav-item-2"><a href="../ui.html" >paws.ui</a> &#187;</li> 
-      </ul>
+    <div class="footer">
+      &copy;2017, Lenson A. Pellouchoud.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
     </div>
-    <div class="footer" role="contentinfo">
-        &#169; Copyright 2017, Lenson A. Pellouchoud.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.2.
-    </div>
+
+    
+
+    
   </body>
 </html>
