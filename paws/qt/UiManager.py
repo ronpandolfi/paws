@@ -114,7 +114,7 @@ class UiManager(QtCore.QObject):
         self.ui.add_workflow_button.setText('Add')
         self.ui.add_workflow_button.clicked.connect( self.add_wf )
         self.paw._wf_manager.wfAdded.connect(self.append_to_wf_selector)
-        lm = ListModel(self.paw.list_wf_tags())
+        lm = ListModel(self.paw.list_wf_names())
         self.ui.wf_selector.setModel(lm)
         self.ui.wf_selector.currentIndexChanged.connect( partial(self.set_wf) )
         self.ui.run_wf_button.setText("&Run")
@@ -236,12 +236,12 @@ class UiManager(QtCore.QObject):
         to ensure that it doesn't clobber an existing workflow.
         """
         wfname = self.ui.wf_name_entry.text()
-        if wfname in self.paw.list_wf_tags():
+        if wfname in self.paw.list_wf_names():
             msg_ui = qttools.message_ui(self.ui)
             msg_ui.setWindowTitle("Workflow Name Error")
             msg = '[{}] Name {} already assigned to a Workflow. '.format(
                 __name__,wfname) + 'Loaded workflows: {}'.format(
-                self.paw.list_wf_tags())
+                self.paw.list_wf_names())
             msg_ui.message_box.setPlainText(msg)
             msg_ui.show()
         else:
